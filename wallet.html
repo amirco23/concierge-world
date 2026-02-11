@@ -29,7 +29,62 @@
   --font:'Poppins',sans-serif;
   --transition:all .18s ease;
 }
-html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+/* ===== DARK THEME ===== */
+html.dark{
+  --bg:#1A1D2B;--surface:#22263A;--border:#333850;--border-light:#2A2F45;
+  --text:#E8E9ED;--text-secondary:#9A9DB0;--text-muted:#5A5E72;
+  --primary:#4C9AFF;--primary-hover:#70B2FF;--primary-light:rgba(76,154,255,.15);--primary-bg:rgba(76,154,255,.1);
+  --success:#00D68F;--success-bg:rgba(0,214,143,.12);
+  --warning:#FFB347;--warning-bg:rgba(255,179,71,.14);
+  --danger:#FF6B6B;--danger-bg:rgba(255,107,107,.1);
+  --info:#74B9FF;--info-bg:rgba(116,185,255,.1);
+  --purple:#B794F6;--purple-bg:rgba(183,148,246,.1);
+  --credits:#B794F6;--credits-bg:rgba(183,148,246,.12);
+  --seats:#74B9FF;--seats-bg:rgba(116,185,255,.12);
+  --shadow:0 2px 8px rgba(0,0,0,.2);
+  --shadow-md:0 4px 16px rgba(0,0,0,.25);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.35);
+}
+html.dark ::-webkit-scrollbar-thumb{background:var(--border)}
+html.dark ::-webkit-scrollbar-thumb:hover{background:#4A4F68}
+html.dark .header-icon{box-shadow:0 2px 8px rgba(76,154,255,.3)}
+html.dark th{background:#1E2235}
+html.dark tr.data-row:hover td{background:rgba(76,154,255,.04)}
+html.dark .alloc-row:hover{background:rgba(76,154,255,.03)}
+html.dark .pill-healthy{background:var(--success);color:#fff}
+html.dark .pill-near{background:var(--warning);color:#1A1D2B}
+html.dark .pill-locked{background:var(--text-muted);color:#fff}
+html.dark .toast{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+html.dark .toast-success{background:var(--success);border:none}
+html.dark .toast-error{background:var(--danger);border:none}
+html.dark .toast-info{background:var(--primary);border:none}
+html.dark .modal-overlay{background:rgba(0,0,0,.55)}
+html.dark .input-money,html.dark .input-cap,html.dark .detail-group input,html.dark .detail-group select{
+  background:var(--bg);color:var(--text);border-color:var(--border);
+}
+html.dark select.type-select,html.dark select.dept-select{
+  background:var(--bg);color:var(--text);border-color:var(--border);
+}
+html.dark .modal{background:var(--surface);border:1px solid var(--border)}
+html.dark .modal input{background:var(--bg);color:var(--text);border-color:var(--border)}
+html.dark .sandbox-badge{background:rgba(255,179,71,.1);color:#FFB347}
+
+/* Dark mode toggle */
+.theme-toggle{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s ease;color:var(--text-secondary);
+  flex-shrink:0;
+}
+.theme-toggle:hover{background:var(--primary-bg);border-color:var(--primary);color:var(--primary)}
+.theme-toggle svg{width:18px;height:18px;transition:transform .3s ease}
+.theme-toggle:hover svg{transform:rotate(30deg)}
+.theme-toggle .icon-sun,.theme-toggle .icon-moon{display:none}
+html:not(.dark) .theme-toggle .icon-moon{display:block}
+html.dark .theme-toggle .icon-sun{display:block}
+
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;transition:background .3s ease,color .3s ease}
 @media(min-width:901px){html,body{overflow:hidden}}
 button{font-family:inherit;cursor:pointer;border:none;outline:none;font-size:inherit}
 input,select{font-family:inherit;font-size:inherit;outline:none}
@@ -42,7 +97,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none}
 #app{display:flex;flex-direction:column;height:100vh;max-height:100vh}
 
 /* ===== HEADER ===== */
-.header{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;transition:background .3s ease,border-color .3s ease}
 .header-left{display:flex;align-items:center;gap:16px}
 .header-title{font-size:19px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
 .header-icon{width:38px;height:38px;background:linear-gradient(135deg,#00D2B4 0%,#0073EA 50%,#7B68EE 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,115,234,.25);overflow:hidden}
@@ -65,7 +120,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none}
 .main{display:grid;grid-template-columns:270px 1fr 230px;gap:14px;padding:14px 28px;flex:1;min-height:0;overflow:hidden}
 
 /* ===== LEFT COLUMN ===== */
-.card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow)}
+.card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);transition:background .3s ease,border-color .3s ease,box-shadow .3s ease}
 .left-col{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
 .wallet-card{padding:16px}
 .wallet-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
@@ -204,7 +259,7 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
 .activity-time{font-size:9.5px;color:var(--text-muted);white-space:nowrap;flex-shrink:0;font-weight:500}
 
 /* ===== FOOTER ===== */
-.footer{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.footer{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;transition:background .3s ease,border-color .3s ease}
 .footer-left{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-muted);font-weight:500}
 .sandbox-badge{display:inline-flex;align-items:center;gap:4px;background:var(--warning-bg);color:#D5890B;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600}
 .footer-right{display:flex;gap:8px}
@@ -405,6 +460,10 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
       </div>
     </div>
     <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
       <div class="billing-chip">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         Corporate Card &bull;&bull;&bull;&bull; 1842
@@ -1087,6 +1146,24 @@ $('#exportBtn').addEventListener('click', ()=>{
   toast('Allocation report exported (CSV)','info');
   activities.unshift({text:'<strong>Admin</strong> exported allocation report', time:'Just now', color:'#0073EA'});
   renderActivity();
+});
+
+/* =================================================================
+   DARK MODE
+   ================================================================= */
+function initTheme(){
+  const saved = localStorage.getItem('wallet-theme');
+  if(saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)){
+    document.documentElement.classList.add('dark');
+  }
+}
+initTheme();
+
+$('#themeToggle').addEventListener('click', ()=>{
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('wallet-theme', isDark ? 'dark' : 'light');
+  toast(isDark ? 'Dark mode enabled' : 'Light mode enabled', 'info');
 });
 
 /* =================================================================
