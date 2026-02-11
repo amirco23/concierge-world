@@ -364,9 +364,17 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   transition:left .4s var(--ease-expo);
 }
 .toggle-switch.on .toggle-knob{left:25px}
+
+/* Controls layout: panel + toasts side by side on desktop */
+.ctrl-layout{position:relative;display:flex;align-items:flex-start;gap:clamp(16px,2vw,32px)}
+.toast-stack{
+  display:flex;flex-direction:column;gap:12px;
+  position:absolute;right:clamp(-280px,-20vw,-160px);top:0;
+  width:clamp(200px,22vw,280px);
+}
+
 /* Toasts */
 .scene-toast{
-  position:absolute;right:clamp(16px,3vw,40px);
   padding:16px 24px;border-radius:16px;
   font-size:clamp(12px,1.1vw,15px);font-weight:600;
   display:flex;align-items:center;gap:12px;
@@ -375,12 +383,10 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
 }
 .scene-toast.v{opacity:1;transform:translateX(0) scale(1)}
 .toast-warn{
-  top:clamp(60px,12vh,120px);
   background:rgba(253,203,110,.1);border:1px solid rgba(253,203,110,.2);
   color:var(--gold);backdrop-filter:blur(12px);
 }
 .toast-ok{
-  top:clamp(120px,20vh,200px);
   background:rgba(245,183,49,.08);border:1px solid rgba(245,183,49,.2);
   color:var(--accent);backdrop-filter:blur(12px);
 }
@@ -651,14 +657,21 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   .alloc-name{font-size:11px}
   .alloc-amount{font-size:12px}
 
-  /* Scene 5 — Controls */
+  /* Scene 5 — Controls: stack panel + toasts vertically */
+  .ctrl-layout{flex-direction:column!important;align-items:center!important;gap:10px!important}
+  .toast-stack{
+    position:relative!important;right:auto!important;top:auto!important;
+    width:90vw!important;flex-direction:column;gap:8px;
+  }
   .ctrl-panel{width:90vw!important;min-width:0!important}
   .ctrl-header{padding:12px 14px;font-size:13px}
   .toggle-row{padding:10px 14px}
   .toggle-label{font-size:11px;gap:8px}
-  .scene-toast{right:12px;padding:8px 14px;font-size:10px;border-radius:10px;max-width:65vw}
-  .toast-warn{top:50px}
-  .toast-ok{top:96px}
+  .scene-toast{
+    padding:10px 16px;font-size:11px;border-radius:10px;
+    width:100%;transform:translateY(10px) scale(.98);
+  }
+  .scene-toast.v{transform:translateY(0) scale(1)}
 
   /* Scene 6 — Visibility */
   .vis-grid{grid-template-columns:1fr!important;width:92vw!important;min-width:0!important;gap:10px}
@@ -766,7 +779,9 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   .ctrl-header{padding:10px 12px;font-size:12px}
   .toggle-row{padding:8px 12px}
   .toggle-label{font-size:10px}
-  .scene-toast{right:8px;max-width:60vw;font-size:9px;padding:6px 10px}
+  .toast-stack{width:96vw!important;gap:6px}
+  .scene-toast{font-size:10px;padding:8px 12px;border-radius:8px;gap:8px}
+  .toast-emoji{font-size:16px}
 
   /* Vis grid */
   .vis-grid{width:96vw!important}
@@ -1038,34 +1053,38 @@ function Scene5(){
     {label:'Alerts at 80%',onAt:4},{label:'Approval required above threshold',onAt:5},
   ];
   return(
-    <div className="scene">
+    <div className="scene scene-ctrl">
       <h2 className={`headline a-blur ${step>=1?'v':''}`} style={{fontSize:'clamp(22px,2.8vw,36px)',marginBottom:'clamp(14px,2vh,24px)'}}>
         Control & <span className="headline-glow">Governance</span>
       </h2>
-      <div className={`ctrl-panel glass a-scale ${step>=1?'v':''}`} style={{transitionDelay:'100ms'}}>
-        <div className="ctrl-header">
-          <div className="ctrl-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1117" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
+      <div className="ctrl-layout">
+        <div className={`ctrl-panel glass a-scale ${step>=1?'v':''}`} style={{transitionDelay:'100ms'}}>
+          <div className="ctrl-header">
+            <div className="ctrl-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1117" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            Budget Controls
           </div>
-          Budget Controls
+          {toggles.map((t,i)=>(
+            <div key={i} className="toggle-row">
+              <span className="toggle-label">
+                <span className={`toggle-check ${step>=t.onAt?'on':''}`}>{step>=t.onAt?'✓':''}</span>
+                {t.label}
+              </span>
+              <div className={`toggle-switch ${step>=t.onAt?'on':''}`}><div className="toggle-knob"/></div>
+            </div>
+          ))}
         </div>
-        {toggles.map((t,i)=>(
-          <div key={i} className="toggle-row">
-            <span className="toggle-label">
-              <span className={`toggle-check ${step>=t.onAt?'on':''}`}>{step>=t.onAt?'✓':''}</span>
-              {t.label}
-            </span>
-            <div className={`toggle-switch ${step>=t.onAt?'on':''}`}><div className="toggle-knob"/></div>
+        <div className="toast-stack">
+          <div className={`scene-toast toast-warn ${step>=7?'v':''}`}>
+            <span className="toast-emoji">⚠️</span>Agents reached 80% of budget
           </div>
-        ))}
-      </div>
-      <div className={`scene-toast toast-warn ${step>=7?'v':''}`}>
-        <span className="toast-emoji">⚠️</span>Agents reached 80% of budget
-      </div>
-      <div className={`scene-toast toast-ok ${step>=8?'v':''}`}>
-        <span className="toast-emoji">⬆️</span>Auto-top-up triggered: +$2,000
+          <div className={`scene-toast toast-ok ${step>=8?'v':''}`}>
+            <span className="toast-emoji">⬆️</span>Auto-top-up triggered: +$2,000
+          </div>
+        </div>
       </div>
     </div>
   );
