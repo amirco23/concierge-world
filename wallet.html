@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>monday Wallet — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  /* monday.com palette */
+  --bg:#F6F7FB;--surface:#FFFFFF;--border:#D0D4E4;--border-light:#E6E9EF;
+  --text:#323338;--text-secondary:#676879;--text-muted:#C5C7D0;
+  --primary:#0073EA;--primary-hover:#0060C2;--primary-light:#CCE5FF;--primary-bg:rgba(0,115,234,.07);
+  --success:#00CA72;--success-bg:rgba(0,202,114,.12);
+  --warning:#FDAB3D;--warning-bg:rgba(253,171,61,.14);
+  --danger:#E2445C;--danger-bg:rgba(226,68,92,.1);
+  --info:#579BFC;--info-bg:rgba(87,155,252,.1);
+  --purple:#A25DDC;--purple-bg:rgba(162,93,220,.1);
+  --credits:#A25DDC;--credits-bg:rgba(162,93,220,.1);
+  --seats:#579BFC;--seats-bg:rgba(87,155,252,.1);
+  --radius:8px;--radius-lg:12px;--radius-sm:4px;
+  --shadow:0 1px 4px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.1);
+  --font:'Poppins',sans-serif;
+  --transition:all .18s ease;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;font-size:inherit}
+input,select{font-family:inherit;font-size:inherit;outline:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ===== APP SHELL ===== */
+#app{display:flex;flex-direction:column;height:100vh;max-height:100vh}
+
+/* ===== HEADER ===== */
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:16px}
+.header-title{font-size:19px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
+.header-icon{width:38px;height:38px;background:linear-gradient(135deg,#00D2B4 0%,#0073EA 50%,#7B68EE 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,115,234,.25);overflow:hidden}
+.header-icon img{width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1)}
+.header-subtitle{font-size:12px;color:var(--text-secondary);margin-top:2px;font-weight:400}
+.header-right{display:flex;align-items:center;gap:10px}
+.billing-chip{display:flex;align-items:center;gap:6px;background:var(--bg);padding:6px 14px;border-radius:20px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);font-weight:500}
+.billing-chip svg{width:14px;height:14px;color:var(--text-muted)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-weight:600;font-size:12px;transition:var(--transition);letter-spacing:.01em}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:0 4px 12px rgba(0,115,234,.25)}
+.btn-secondary{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg);border-color:var(--text-muted)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none!important}
+
+/* ===== MAIN GRID ===== */
+.main{display:grid;grid-template-columns:270px 1fr 230px;gap:14px;padding:14px 28px;flex:1;min-height:0;overflow:hidden}
+
+/* ===== LEFT COLUMN ===== */
+.card{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow)}
+.left-col{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.wallet-card{padding:16px}
+.wallet-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
+.wallet-balance{font-size:30px;font-weight:800;color:var(--text);margin:4px 0 10px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.wallet-bar-wrapper{margin-bottom:10px}
+.wallet-bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden;display:flex}
+.wallet-bar-spent{background:var(--primary);transition:width .4s ease;border-radius:4px 0 0 4px}
+.wallet-bar-alloc{background:var(--primary-light);transition:width .4s ease}
+.wallet-breakdown{display:flex;justify-content:space-between;font-size:10.5px;margin-top:5px;color:var(--text-secondary);font-weight:500}
+.wallet-breakdown span{display:flex;align-items:center;gap:4px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-spent{background:var(--primary)}
+.dot-alloc{background:var(--primary-light)}
+.dot-unalloc{background:var(--border)}
+.wallet-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+
+/* ===== BILLING CYCLE ===== */
+.billing-cycle{margin-bottom:12px;padding:10px 12px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border-light)}
+.cycle-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.cycle-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;display:flex;align-items:center;gap:5px}
+.cycle-label svg{width:12px;height:12px;color:var(--text-muted)}
+.cycle-dates{font-size:11px;font-weight:600;color:var(--text)}
+.cycle-bar{height:6px;border-radius:3px;background:var(--border-light);overflow:hidden;position:relative}
+.cycle-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--primary),var(--info));transition:width .4s ease}
+.cycle-bar-marker{position:absolute;top:-3px;width:2px;height:12px;background:var(--text);border-radius:1px;transition:left .4s ease}
+.cycle-meta{display:flex;justify-content:space-between;font-size:9.5px;color:var(--text-muted);font-weight:500;margin-top:4px}
+.cycle-meta strong{color:var(--text-secondary);font-weight:600}
+
+/* ===== ALLOCATION POOLS CARD ===== */
+.pools-card{padding:16px}
+.pools-title{font-size:10px;font-weight:700;margin-bottom:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+.pool-section{margin-bottom:12px}
+.pool-section:last-of-type{margin-bottom:0}
+.pool-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.pool-name{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.pool-name .pool-icon{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.pool-amount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.pool-bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;margin-bottom:4px}
+.pool-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.pool-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);font-weight:500}
+.pool-meta strong{color:var(--text-secondary);font-weight:600}
+.pool-divider{height:1px;background:var(--border-light);margin:10px 0}
+.pool-unalloc{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text-secondary);font-weight:500}
+.pool-unalloc strong{color:var(--text);font-weight:700;font-size:14px}
+
+/* ===== POLICY ===== */
+.policy-card{padding:14px}
+.policy-title{font-size:10px;font-weight:700;margin-bottom:8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px}
+.policy-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-light)}
+.policy-row:last-child{border:none}
+.policy-label{font-size:11px;color:var(--text-secondary);flex:1;font-weight:500}
+.toggle{position:relative;width:36px;height:20px;border-radius:10px;background:var(--border);cursor:pointer;transition:var(--transition);flex-shrink:0}
+.toggle.active{background:var(--success)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:var(--transition);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.toggle.active::after{left:18px}
+
+/* ===== CENTER COLUMN ===== */
+.center-col{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.alloc-card{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0}
+.alloc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
+.alloc-header h3{font-size:14px;font-weight:700}
+.alloc-error{background:var(--danger-bg);color:var(--danger);padding:8px 16px;font-size:11px;font-weight:600;display:none;align-items:center;gap:6px}
+.alloc-error.visible{display:flex}
+.alloc-table-wrapper{flex:1;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;z-index:2}
+th{background:#F5F6F8;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle;white-space:nowrap}
+tr.data-row{border-left:3px solid transparent}
+tr.data-row:hover td{background:rgba(0,115,234,.02)}
+.offering-cell{display:flex;align-items:center;gap:8px}
+.offering-icon{width:28px;height:28px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden}
+.offering-icon img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
+.offering-icon svg{width:22px;height:22px}
+.offering-icon.icon-credits{width:32px;height:32px}
+.offering-icon.icon-credits svg{width:30px;height:30px}
+.offering-name{font-weight:600;font-size:12px}
+.offering-sub{font-size:9.5px;color:var(--text-muted);font-weight:500}
+.pool-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.pool-badge-credits{background:var(--credits-bg);color:var(--credits)}
+.pool-badge-seats{background:var(--seats-bg);color:var(--seats)}
+.input-money{width:72px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;transition:var(--transition);font-size:12px;font-weight:500}
+.input-money:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
+.input-money.error{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-bg)}
+select.type-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:11px;font-weight:500}
+select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:10.5px;font-weight:500;max-width:96px}
+.converts-to{font-size:11.5px;color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
+.input-cap{width:64px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;font-size:12px;font-weight:500}
+.input-cap:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
+.pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;min-width:62px;text-align:center}
+.pill-healthy{background:var(--success);color:#fff}
+.pill-near{background:var(--warning);color:#fff}
+.pill-locked{background:var(--text-muted);color:#fff}
+.btn-details{font-size:10.5px;color:var(--primary);cursor:pointer;background:none;font-weight:600;padding:3px 6px;border-radius:var(--radius-sm)}
+.btn-details:hover{background:var(--primary-bg)}
+
+/* ===== DETAILS DRAWER ===== */
+.details-drawer{display:none;background:#FAFBFC;border-bottom:1px solid var(--border)}
+.details-drawer.open{display:table-row}
+.details-inner{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px 20px}
+.detail-group label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:3px}
+.detail-group input,.detail-group select{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11.5px;font-weight:500}
+.detail-group input:focus,.detail-group select:focus{border-color:var(--primary)}
+.team-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.team-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--surface);color:var(--text-secondary)}
+.team-pill.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+.dept-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.dept-pill{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--surface);color:var(--text-secondary)}
+.dept-pill.selected{background:var(--info);color:#fff;border-color:var(--info)}
+.detail-row{display:flex;align-items:center;gap:8px}
+.detail-row label{margin-bottom:0;min-width:0}
+.detail-row .toggle{margin-left:auto}
+
+/* ===== RIGHT COLUMN ===== */
+.right-col{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.insight-card{padding:12px}
+.insight-title{font-size:10px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary)}
+.spend-bars{display:flex;flex-direction:column;gap:5px}
+.spend-bar-row{display:flex;align-items:center;gap:5px}
+.spend-bar-label{width:60px;font-size:10px;color:var(--text-secondary);text-align:right;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.spend-bar-track{flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:hidden}
+.spend-bar-fill{height:100%;border-radius:5px;transition:width .5s ease}
+.spend-bar-val{width:42px;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.top-teams{margin-top:2px}
+.team-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-light);font-size:11px}
+.team-row:last-child{border:none}
+.team-name{font-weight:600;color:var(--text)}
+.team-spend{color:var(--text-secondary);font-variant-numeric:tabular-nums;font-weight:500}
+.activity-card{padding:12px;flex:1;min-height:0;display:flex;flex-direction:column}
+.activity-list{display:flex;flex-direction:column;gap:0;flex:1;overflow-y:auto}
+.activity-item{padding:5px 0;border-bottom:1px solid var(--border-light);display:flex;gap:6px;align-items:flex-start;font-size:10.5px}
+.activity-item:last-child{border:none}
+.activity-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.activity-text{flex:1;color:var(--text-secondary);line-height:1.4;font-weight:400}
+.activity-text strong{color:var(--text);font-weight:600}
+.activity-time{font-size:9.5px;color:var(--text-muted);white-space:nowrap;flex-shrink:0;font-weight:500}
+
+/* ===== FOOTER ===== */
+.footer{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0}
+.footer-left{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-muted);font-weight:500}
+.sandbox-badge{display:inline-flex;align-items:center;gap:4px;background:var(--warning-bg);color:#D5890B;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600}
+.footer-right{display:flex;gap:8px}
+
+/* ===== TOAST ===== */
+.toast-container{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 20px;border-radius:var(--radius);background:var(--text);color:#fff;font-size:12px;font-weight:600;box-shadow:var(--shadow-lg);transform:translateX(120%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:8px}
+.toast.show{transform:translateX(0)}
+.toast-success{background:var(--success)}
+.toast-error{background:var(--danger)}
+.toast-info{background:var(--primary)}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(50,51,56,.45);z-index:500;display:none;align-items:center;justify-content:center;animation:fadeIn .2s ease}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:28px;width:380px;animation:slideUp .25s ease}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.modal p{font-size:12.5px;color:var(--text-secondary);margin-bottom:18px;font-weight:400}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.modal label{display:block;font-size:11px;font-weight:600;margin-bottom:4px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px}
+.modal input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:15px;margin-bottom:16px;font-weight:500}
+.modal input:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1200px){
+  .main{grid-template-columns:240px 1fr 200px;gap:10px;padding:12px 16px}
+  .header{padding:10px 16px}
+  .footer{padding:8px 16px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="header-icon">
+        <img src="assets/wallet-icon.png" alt="monday Wallet"/>
+      </div>
+      <div>
+        <div class="header-title"><span style="font-weight:400">monday</span> Wallet</div>
+        <div class="header-subtitle">Centralize funding and allocate budgets across AI offerings</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="billing-chip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="3"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Corporate Card &bull;&bull;&bull;&bull; 1842
+      </div>
+      <button class="btn btn-primary" id="headerAddFunds" aria-label="Add Funds">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Funds
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+      <!-- Wallet Funds -->
+      <div class="card wallet-card">
+        <div class="wallet-label">Available Funds</div>
+        <div class="wallet-balance" id="walletBalance">$25,000</div>
+        <!-- Billing Cycle -->
+        <div class="billing-cycle">
+          <div class="cycle-header">
+            <span class="cycle-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Billing Cycle
+            </span>
+            <span class="cycle-dates" id="cycleDates">Feb 1 &ndash; Mar 1</span>
+          </div>
+          <div class="cycle-bar">
+            <div class="cycle-bar-fill" id="cycleFill" style="width:39%"></div>
+            <div class="cycle-bar-marker" id="cycleMarker" style="left:39%"></div>
+          </div>
+          <div class="cycle-meta">
+            <span>Day <strong id="cycleDay">11</strong> of <strong id="cycleTotalDays">28</strong></span>
+            <span><strong id="cycleDaysLeft">18</strong> days remaining</span>
+          </div>
+        </div>
+
+        <div class="wallet-bar-wrapper">
+          <div class="wallet-bar">
+            <div class="wallet-bar-spent" id="barSpent" style="width:15%"></div>
+            <div class="wallet-bar-alloc" id="barAlloc" style="width:45%"></div>
+          </div>
+          <div class="wallet-breakdown">
+            <span><span class="dot dot-alloc"></span> Allocated: <strong id="lblAlloc">$15,000</strong></span>
+            <span><span class="dot dot-unalloc"></span> Free: <strong id="lblFree">$10,000</strong></span>
+          </div>
+          <div class="wallet-breakdown" style="margin-top:2px">
+            <span><span class="dot dot-spent"></span> Spent: <strong id="lblSpent">$3,750</strong></span>
+          </div>
+        </div>
+        <div class="wallet-actions">
+          <button class="btn btn-primary btn-sm" id="leftAddFunds">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Funds
+          </button>
+          <button class="btn btn-secondary btn-sm" id="transferBack" disabled>Transfer Back</button>
+          <button class="btn btn-ghost btn-sm" id="exportBtn">Export</button>
+        </div>
+      </div>
+
+      <!-- Allocation Pools: Credits & Seats -->
+      <div class="card pools-card">
+        <div class="pools-title">Fund Allocation</div>
+
+        <!-- Credits Pool -->
+        <div class="pool-section">
+          <div class="pool-header">
+            <span class="pool-name">
+              <span class="pool-icon" style="background:var(--credits)">C</span>
+              Credits
+            </span>
+            <span class="pool-amount" id="poolCreditsAmt" style="color:var(--credits)">$8,000</span>
+          </div>
+          <div class="pool-bar"><div class="pool-bar-fill" id="poolCreditsBar" style="width:50%;background:var(--credits)"></div></div>
+          <div class="pool-meta">
+            <span>Converts to <strong id="poolCreditsUnits">8,000,000</strong> credits</span>
+            <span>Spent <strong id="poolCreditsSpent">$1,990</strong></span>
+          </div>
+        </div>
+
+        <!-- Seats Pool -->
+        <div class="pool-section">
+          <div class="pool-header">
+            <span class="pool-name">
+              <span class="pool-icon" style="background:var(--seats)">S</span>
+              Seats
+            </span>
+            <span class="pool-amount" id="poolSeatsAmt" style="color:var(--seats)">$9,500</span>
+          </div>
+          <div class="pool-bar"><div class="pool-bar-fill" id="poolSeatsBar" style="width:50%;background:var(--seats)"></div></div>
+          <div class="pool-meta">
+            <span>Covers <strong id="poolSeatsUnits">650</strong> seats</span>
+            <span>Spent <strong id="poolSeatsSpent">$2,360</strong></span>
+          </div>
+        </div>
+
+        <div class="pool-divider"></div>
+        <div class="pool-unalloc">
+          <span>Unallocated</span>
+          <strong id="poolUnalloc">$7,500</strong>
+        </div>
+      </div>
+
+      <!-- Policy -->
+      <div class="card policy-card">
+        <div class="policy-title">Policy &amp; Guardrails</div>
+        <div class="policy-row">
+          <span class="policy-label">Require approval above $500</span>
+          <div class="toggle active" data-policy="approval" tabindex="0" role="switch" aria-checked="true"></div>
+        </div>
+        <div class="policy-row">
+          <span class="policy-label">Block spend when depleted</span>
+          <div class="toggle active" data-policy="block" tabindex="0" role="switch" aria-checked="true"></div>
+        </div>
+        <div class="policy-row">
+          <span class="policy-label">Notify when 80% used</span>
+          <div class="toggle active" data-policy="notify" tabindex="0" role="switch" aria-checked="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER COLUMN -->
+    <div class="center-col">
+      <div class="card alloc-card">
+        <div class="alloc-header">
+          <h3>Budget Allocation</h3>
+          <span style="font-size:11px;color:var(--text-muted);font-weight:500" id="allocSummary">6 offerings &middot; 5 active</span>
+        </div>
+        <div class="alloc-error" id="allocError">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          Total allocation exceeds wallet balance. Reduce allocations or add funds.
+        </div>
+        <div class="alloc-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:18%">Offering</th>
+                <th style="width:6%">Type</th>
+                <th style="width:10%">Period</th>
+                <th style="width:12%">Dept / Workspace</th>
+                <th style="width:11%">Allocated ($)</th>
+                <th style="width:15%">Converts To</th>
+                <th style="width:9%">Cap</th>
+                <th style="width:8%">Status</th>
+                <th style="width:5%"></th>
+              </tr>
+            </thead>
+            <tbody id="allocBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <div class="card insight-card">
+        <div class="insight-title">This Month Spend</div>
+        <div class="spend-bars" id="spendBars"></div>
+      </div>
+      <div class="card insight-card">
+        <div class="insight-title">Top Depts by Spend</div>
+        <div class="top-teams" id="topTeams"></div>
+      </div>
+      <div class="card activity-card">
+        <div class="insight-title">Recent Activity</div>
+        <div class="activity-list" id="activityList"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-left">
+      <span id="lastSaved">Last saved: just now</span>
+      <span class="sandbox-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Sandbox mode
+      </span>
+    </div>
+    <div class="footer-right">
+      <button class="btn btn-secondary" id="discardBtn">Discard</button>
+      <button class="btn btn-primary" id="saveBtn">Save Changes</button>
+    </div>
+  </footer>
+</div>
+
+<!-- ADD FUNDS MODAL -->
+<div class="modal-overlay" id="addFundsModal">
+  <div class="modal">
+    <h3>Add Funds to Wallet</h3>
+    <p>Funds will be charged to Corporate Card ending in 1842.</p>
+    <label for="addFundsInput">Amount ($)</label>
+    <input type="number" id="addFundsInput" value="5000" min="100" step="100"/>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="addFundsCancel">Cancel</button>
+      <button class="btn btn-primary" id="addFundsConfirm">Add Funds</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* =================================================================
+   STATE
+   ================================================================= */
+const TEAMS = ['Sales','CS','R&D','Marketing','Product'];
+const DEPARTMENTS = ['All Workspaces','Engineering','Sales','Customer Success','Marketing','Product','Finance'];
+
+let walletBalance = 25000;
+let policies = { approval: true, block: true, notify: true };
+
+/*  monday.com palette per offering
+    poolType: 'credits' = usage-based, 'seats' = seat-based */
+/* Icon: 'img:path' for product images, 'svg:...' for inline SVG, or emoji fallback */
+const ICON_CREDITS_SVG = `<svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="coinG" x1="8" y1="8" x2="36" y2="36"><stop offset="0%" stop-color="#F5D060"/><stop offset="50%" stop-color="#D4A520"/><stop offset="100%" stop-color="#B8860B"/></linearGradient><linearGradient id="coinF" x1="10" y1="10" x2="34" y2="34"><stop offset="0%" stop-color="#FFE87C"/><stop offset="50%" stop-color="#DAA520"/><stop offset="100%" stop-color="#C49000"/></linearGradient><linearGradient id="starG" x1="16" y1="12" x2="28" y2="30"><stop offset="0%" stop-color="#FFF8DC"/><stop offset="100%" stop-color="#FFD700"/></linearGradient></defs><circle cx="22" cy="23" r="17" fill="#8B6914" opacity=".35"/><circle cx="22" cy="21" r="17" fill="url(#coinG)"/><circle cx="22" cy="21" r="13.5" fill="url(#coinF)"/><circle cx="22" cy="21" r="11.5" fill="none" stroke="#B8860B" stroke-width=".7" opacity=".5"/><polygon points="22,12.5 24.4,17.8 30.2,18.5 26,22.4 27,28 22,25.2 17,28 18,22.4 13.8,18.5 19.6,17.8" fill="url(#starG)" stroke="#B8860B" stroke-width=".3"/></svg>`;
+const ICON_SEATS_SVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="32" height="32" rx="8" fill="#9AADBD"/><circle cx="15" cy="16" r="4" fill="#fff"/><circle cx="25" cy="16" r="4" fill="#fff"/><path d="M10 28c0-4 4-6 10-6s10 2 10 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>`;
+
+const offerings = [
+  { id:'credits',  name:'AI Credits',     iconType:'svg', iconData:ICON_CREDITS_SVG,       color:'#DAA520', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:5000, cap:6000,  locked:false, rate:1000,  rateUnit:'$1 =',    perLabel:'credits',    spent:1200, teams:['Sales','R&D'],       departments:['Engineering','Sales'],       autoTopUp:false, topUpThreshold:500,  topUpAmount:1000 },
+  { id:'vibe',     name:'Vibe Apps',      iconType:'img', iconData:'assets/vibe.png',      color:'#E8618C', poolType:'seats',   budgetType:'Monthly',   department:'Engineering',    allocated:4000, cap:5000,  locked:false, rate:20,    rateUnit:'$20 =',   perLabel:'app seat/mo',spent:800,  teams:['Product','R&D'],     departments:['Engineering','Product'],     autoTopUp:false, topUpThreshold:400,  topUpAmount:500 },
+  { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:3000, cap:4000,  locked:false, rate:12,    rateUnit:'$12 =',   perLabel:'seat/mo',    spent:960,  teams:['Sales','CS'],        departments:['Sales','Customer Success'],  autoTopUp:true,  topUpThreshold:300,  topUpAmount:600 },
+  { id:'agents',   name:'AI Agents',      iconType:'img', iconData:'assets/agents.png',    color:'#7B68EE', poolType:'credits', budgetType:'Quarterly', department:'Engineering',    allocated:2000, cap:3000,  locked:false, rate:0.02,  rateUnit:'$0.02/',  perLabel:'action',     spent:540,  teams:['CS','Marketing'],    departments:['Engineering','Marketing'],   autoTopUp:false, topUpThreshold:200,  topUpAmount:500 },
+  { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:1000, cap:2000,  locked:false, rate:0.01,  rateUnit:'$0.01/',  perLabel:'minute',     spent:250,  teams:['Sales','Product'],   departments:['Sales','Product'],           autoTopUp:false, topUpThreshold:100,  topUpAmount:300 },
+  { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:2500, cap:3500,  locked:false, rate:10,    rateUnit:'$10 =',   perLabel:'seat/mo',    spent:400,  teams:['Sales','CS','R&D'],  departments:['Engineering','Sales','Customer Success'], autoTopUp:false, topUpThreshold:250, topUpAmount:500 },
+];
+
+let activities = [
+  { text:'<strong>Admin</strong> allocated <strong>$5,000</strong> to AI Credits', time:'2 min ago', color:'#DAA520' },
+  { text:'<strong>Admin</strong> added <strong>Seats</strong> budget for all workspaces', time:'10 min ago', color:'#9AADBD' },
+  { text:'<strong>Admin</strong> enabled auto top-up for <strong>Sidekick</strong>', time:'15 min ago', color:'#00D2D3' },
+  { text:'<strong>Engineering</strong> reached <strong>80%</strong> budget on Credits', time:'1 hr ago', color:'#DAA520' },
+  { text:'<strong>Admin</strong> added <strong>$10,000</strong> to wallet', time:'3 hrs ago', color:'#0073EA' },
+  { text:'<strong>Sales</strong> provisioned 5 new <strong>Sidekick</strong> seats', time:'5 hrs ago', color:'#00D2D3' },
+];
+
+const deptSpend = [
+  { name:'Engineering',      amount:1620 },
+  { name:'Sales',            amount:1180 },
+  { name:'Customer Success', amount:620 },
+  { name:'Product',          amount:380 },
+  { name:'Marketing',        amount:350 },
+];
+
+let openDrawer = null;
+let snapshotState = null;
+
+function saveSnapshot(){
+  snapshotState = JSON.stringify(offerings.map(o=>({allocated:o.allocated,cap:o.cap,budgetType:o.budgetType,department:o.department,locked:o.locked,teams:[...o.teams],departments:[...o.departments],autoTopUp:o.autoTopUp,topUpThreshold:o.topUpThreshold,topUpAmount:o.topUpAmount,rate:o.rate})));
+}
+saveSnapshot();
+
+/* =================================================================
+   HELPERS
+   ================================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const fmt = n => n.toLocaleString('en-US');
+const fmtMoney = n => '$'+fmt(n);
+
+function totalAllocated(){ return offerings.reduce((s,o)=>s+o.allocated,0); }
+function totalSpent(){ return offerings.reduce((s,o)=>s+o.spent,0); }
+
+function poolAllocated(type){ return offerings.filter(o=>o.poolType===type).reduce((s,o)=>s+o.allocated,0); }
+function poolSpent(type){ return offerings.filter(o=>o.poolType===type).reduce((s,o)=>s+o.spent,0); }
+
+function poolCreditsUnits(){
+  return offerings.filter(o=>o.poolType==='credits').reduce((s,o)=>{
+    if(o.id==='credits')   return s + o.allocated * o.rate;
+    if(o.id==='agents')    return s + Math.floor(o.allocated / o.rate);
+    if(o.id==='notetaker') return s + Math.floor(o.allocated / o.rate);
+    return s;
+  },0);
+}
+
+function poolSeatsUnits(){
+  return offerings.filter(o=>o.poolType==='seats').reduce((s,o)=>{
+    return s + Math.floor(o.allocated / o.rate);
+  },0);
+}
+
+function getStatus(o){
+  if(o.locked) return 'locked';
+  const pct = o.allocated > 0 ? o.spent / o.allocated : 0;
+  if(pct >= 0.8) return 'near';
+  return 'healthy';
+}
+
+function convertsTo(o){
+  if(o.id === 'agents')    return fmt(Math.floor(o.allocated / o.rate))+' actions';
+  if(o.id === 'notetaker') return fmt(Math.floor(o.allocated / o.rate))+' minutes';
+  if(o.id === 'credits')   return fmt(o.allocated * o.rate)+' credits';
+  if(o.id === 'vibe')      return fmt(Math.floor(o.allocated / o.rate))+' app seats';
+  if(o.id === 'sidekick')  return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
+  if(o.id === 'seats')     return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
+  return '-';
+}
+
+/* =================================================================
+   RENDER — WALLET SIDEBAR
+   ================================================================= */
+function renderWallet(){
+  const alloc = totalAllocated();
+  const spent = totalSpent();
+  const free = walletBalance - alloc;
+  const pctSpent = walletBalance > 0 ? (spent / walletBalance * 100) : 0;
+  const pctAllocRemaining = walletBalance > 0 ? ((alloc - spent) / walletBalance * 100) : 0;
+
+  $('#walletBalance').textContent = fmtMoney(walletBalance);
+  $('#lblAlloc').textContent = fmtMoney(alloc);
+  $('#lblFree').textContent = fmtMoney(Math.max(0, free));
+  $('#lblSpent').textContent = fmtMoney(spent);
+  $('#barSpent').style.width = Math.min(pctSpent, 100)+'%';
+  $('#barAlloc').style.width = Math.max(0, Math.min(pctAllocRemaining, 100))+'%';
+  $('#transferBack').disabled = alloc <= 0;
+
+  // Allocation pools
+  const creditsAlloc = poolAllocated('credits');
+  const creditsSpent = poolSpent('credits');
+  const seatsAlloc = poolAllocated('seats');
+  const seatsSpent = poolSpent('seats');
+  const unalloc = Math.max(0, walletBalance - alloc);
+
+  $('#poolCreditsAmt').textContent = fmtMoney(creditsAlloc);
+  $('#poolCreditsBar').style.width = (walletBalance > 0 ? creditsAlloc/walletBalance*100 : 0)+'%';
+  $('#poolCreditsUnits').textContent = fmt(poolCreditsUnits());
+  $('#poolCreditsSpent').textContent = fmtMoney(creditsSpent);
+
+  $('#poolSeatsAmt').textContent = fmtMoney(seatsAlloc);
+  $('#poolSeatsBar').style.width = (walletBalance > 0 ? seatsAlloc/walletBalance*100 : 0)+'%';
+  $('#poolSeatsUnits').textContent = fmt(poolSeatsUnits());
+  $('#poolSeatsSpent').textContent = fmtMoney(seatsSpent);
+
+  $('#poolUnalloc').textContent = fmtMoney(unalloc);
+
+  const overBudget = alloc > walletBalance;
+  $('#allocError').classList.toggle('visible', overBudget);
+  $('#saveBtn').disabled = overBudget;
+}
+
+/* =================================================================
+   RENDER — BILLING CYCLE
+   ================================================================= */
+function renderBillingCycle(){
+  const cycleStart = new Date(2026, 1, 1); // Feb 1
+  const cycleEnd   = new Date(2026, 2, 1); // Mar 1
+  const today      = new Date();
+  const totalMs    = cycleEnd - cycleStart;
+  const elapsedMs  = Math.max(0, Math.min(today - cycleStart, totalMs));
+  const totalDays  = Math.round(totalMs / 86400000);
+  const dayNum     = Math.max(1, Math.ceil(elapsedMs / 86400000));
+  const daysLeft   = Math.max(0, totalDays - dayNum);
+  const pct        = Math.min(100, (elapsedMs / totalMs) * 100);
+
+  const fmtDate = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  $('#cycleDates').innerHTML = `${fmtDate(cycleStart)} &ndash; ${fmtDate(cycleEnd)}`;
+  $('#cycleFill').style.width = pct + '%';
+  $('#cycleMarker').style.left = pct + '%';
+  $('#cycleDay').textContent = dayNum;
+  $('#cycleTotalDays').textContent = totalDays;
+  $('#cycleDaysLeft').textContent = daysLeft;
+}
+
+/* =================================================================
+   RENDER — TABLE
+   ================================================================= */
+function renderTable(){
+  const tbody = $('#allocBody');
+  tbody.innerHTML = '';
+  let activeCount = 0;
+
+  offerings.forEach(o => {
+    if(!o.locked) activeCount++;
+    const st = getStatus(o);
+    const pillClass = st === 'healthy' ? 'pill-healthy' : st === 'near' ? 'pill-near' : 'pill-locked';
+    const pillText = st === 'healthy' ? 'Healthy' : st === 'near' ? 'Near limit' : 'Locked';
+    const poolBadge = o.poolType === 'credits'
+      ? '<span class="pool-badge pool-badge-credits">Credits</span>'
+      : '<span class="pool-badge pool-badge-seats">Seats</span>';
+
+    const tr = document.createElement('tr');
+    tr.className = 'data-row';
+    tr.dataset.id = o.id;
+    tr.style.borderLeftColor = o.color;
+    tr.innerHTML = `
+      <td>
+        <div class="offering-cell">
+          <div class="offering-icon${o.id==='credits'?' icon-credits':''}" style="background:${o.iconType==='img'?'transparent':o.color+'18'};color:${o.color}">${o.iconType==='img'?`<img src="${o.iconData}" alt="${o.name}"/>`:o.iconData}</div>
+          <div>
+            <div class="offering-name">${o.name}</div>
+            <div class="offering-sub">${o.rateUnit} ${o.id==='agents'||o.id==='notetaker'?'per '+o.perLabel:fmt(o.rate)+' '+o.perLabel}</div>
+          </div>
+        </div>
+      </td>
+      <td>${poolBadge}</td>
+      <td><select class="type-select" data-id="${o.id}" ${o.locked?'disabled':''}>
+        ${['Monthly','Quarterly','Annual','One-time'].map(t=>`<option${t===o.budgetType?' selected':''}>${t}</option>`).join('')}
+      </select></td>
+      <td><select class="dept-select" data-id="${o.id}" data-field="department" ${o.locked?'disabled':''}>
+        ${DEPARTMENTS.map(d=>`<option${d===o.department?' selected':''}>${d}</option>`).join('')}
+      </select></td>
+      <td><input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
+      <td><span class="converts-to">${convertsTo(o)}</span></td>
+      <td><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
+      <td><span class="pill ${pillClass}">${pillText}</span></td>
+      <td><button class="btn-details" data-id="${o.id}">${openDrawer===o.id?'Close':'Details'}</button></td>
+    `;
+    tbody.appendChild(tr);
+
+    // drawer row
+    if(openDrawer === o.id){
+      const dr = document.createElement('tr');
+      dr.className = 'details-drawer open';
+      dr.innerHTML = `<td colspan="9">
+        <div class="details-inner">
+          <div class="detail-group">
+            <label>Conversion Rate</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="number" step="any" min="0" value="${o.rate}" data-field="rate" data-id="${o.id}" style="width:80px" ${o.locked?'disabled':''}/>
+              <span style="font-size:10.5px;color:var(--text-muted);font-weight:500">${o.id==='agents'?'$ per action':o.id==='notetaker'?'$ per minute':o.id==='credits'?'credits per $1':'$ per seat/mo'}</span>
+            </div>
+          </div>
+          <div class="detail-group">
+            <label>Assigned Teams</label>
+            <div class="team-pills">${TEAMS.map(t=>`<span class="team-pill${o.teams.includes(t)?' selected':''}" data-team="${t}" data-id="${o.id}">${t}</span>`).join('')}</div>
+          </div>
+          <div class="detail-group">
+            <label>Departments / Workspaces</label>
+            <div class="dept-pills">${DEPARTMENTS.filter(d=>d!=='All Workspaces').map(d=>`<span class="dept-pill${o.departments.includes(d)?' selected':''}" data-dept="${d}" data-id="${o.id}">${d}</span>`).join('')}</div>
+          </div>
+          <div class="detail-group">
+            <label style="display:flex;align-items:center;gap:8px">Auto Top-up <div class="toggle${o.autoTopUp?' active':''}" data-field="autoTopUp" data-id="${o.id}" tabindex="0" role="switch" aria-checked="${o.autoTopUp}"></div></label>
+            ${o.autoTopUp?`
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <div><label style="font-size:9.5px">Threshold ($)</label><input type="number" min="0" step="50" value="${o.topUpThreshold}" data-field="topUpThreshold" data-id="${o.id}" ${o.locked?'disabled':''}/></div>
+              <div><label style="font-size:9.5px">Top-up Amt ($)</label><input type="number" min="0" step="50" value="${o.topUpAmount}" data-field="topUpAmount" data-id="${o.id}" ${o.locked?'disabled':''}/></div>
+            </div>`:''}
+          </div>
+          <div class="detail-group" style="grid-column:1/-1;display:flex;gap:24px;align-items:center">
+            <label style="display:flex;align-items:center;gap:8px;margin:0">Lock Budget <div class="toggle${o.locked?' active':''}" data-field="locked" data-id="${o.id}" tabindex="0" role="switch" aria-checked="${o.locked}"></div></label>
+            <span style="font-size:10px;color:var(--text-muted);font-weight:500">Locking prevents all spend and edits</span>
+          </div>
+        </div>
+      </td>`;
+      tbody.appendChild(dr);
+    }
+  });
+
+  $('#allocSummary').textContent = `${offerings.length} offerings \u00B7 ${activeCount} active`;
+  renderWallet();
+}
+
+/* =================================================================
+   RENDER — RIGHT COLUMN
+   ================================================================= */
+function renderInsights(){
+  const maxSpend = Math.max(...offerings.map(o=>o.spent));
+  $('#spendBars').innerHTML = offerings.map(o=>{
+    const pct = maxSpend > 0 ? o.spent / maxSpend * 100 : 0;
+    return `<div class="spend-bar-row">
+      <span class="spend-bar-label">${o.name.replace('AI ','')}</span>
+      <div class="spend-bar-track"><div class="spend-bar-fill" style="width:${pct}%;background:${o.color}"></div></div>
+      <span class="spend-bar-val">${fmtMoney(o.spent)}</span>
+    </div>`;
+  }).join('');
+
+  $('#topTeams').innerHTML = deptSpend.map(t=>`
+    <div class="team-row"><span class="team-name">${t.name}</span><span class="team-spend">${fmtMoney(t.amount)}</span></div>
+  `).join('');
+}
+
+function renderActivity(){
+  $('#activityList').innerHTML = activities.slice(0,6).map(a=>`
+    <div class="activity-item">
+      <span class="activity-dot" style="background:${a.color}"></span>
+      <span class="activity-text">${a.text}</span>
+      <span class="activity-time">${a.time}</span>
+    </div>
+  `).join('');
+}
+
+/* =================================================================
+   TOAST
+   ================================================================= */
+function toast(msg, type='success'){
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = msg;
+  $('#toastContainer').appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),400); }, 2500);
+}
+
+/* =================================================================
+   ADD FUNDS MODAL
+   ================================================================= */
+function openAddFunds(){
+  $('#addFundsModal').classList.add('open');
+  $('#addFundsInput').value = 5000;
+  $('#addFundsInput').focus();
+}
+function closeAddFunds(){ $('#addFundsModal').classList.remove('open'); }
+
+$('#headerAddFunds').addEventListener('click', openAddFunds);
+$('#leftAddFunds').addEventListener('click', openAddFunds);
+$('#addFundsCancel').addEventListener('click', closeAddFunds);
+$('#addFundsModal').addEventListener('click', e=>{ if(e.target === $('#addFundsModal')) closeAddFunds(); });
+
+$('#addFundsConfirm').addEventListener('click', ()=>{
+  const amt = parseInt($('#addFundsInput').value) || 0;
+  if(amt < 100){ toast('Minimum $100','error'); return; }
+  walletBalance += amt;
+  activities.unshift({ text:`<strong>Admin</strong> added <strong>${fmtMoney(amt)}</strong> to wallet`, time:'Just now', color:'#0073EA' });
+  closeAddFunds();
+  renderWallet();
+  renderActivity();
+  toast(`${fmtMoney(amt)} added to wallet`);
+});
+
+/* =================================================================
+   TABLE INTERACTIONS (delegation)
+   ================================================================= */
+$('#allocBody').addEventListener('click', e=>{
+  const detBtn = e.target.closest('.btn-details');
+  if(detBtn){
+    const id = detBtn.dataset.id;
+    openDrawer = openDrawer === id ? null : id;
+    renderTable();
+    renderInsights();
+    return;
+  }
+  const tp = e.target.closest('.team-pill');
+  if(tp){
+    const o = offerings.find(x=>x.id===tp.dataset.id);
+    if(o.locked) return;
+    const t = tp.dataset.team;
+    if(o.teams.includes(t)) o.teams = o.teams.filter(x=>x!==t);
+    else o.teams.push(t);
+    renderTable();
+    return;
+  }
+  const dp = e.target.closest('.dept-pill');
+  if(dp){
+    const o = offerings.find(x=>x.id===dp.dataset.id);
+    if(o.locked) return;
+    const d = dp.dataset.dept;
+    if(o.departments.includes(d)) o.departments = o.departments.filter(x=>x!==d);
+    else o.departments.push(d);
+    activities.unshift({text:`<strong>Admin</strong> updated departments for <strong>${o.name}</strong>`,time:'Just now',color:o.color});
+    renderTable();
+    renderActivity();
+    return;
+  }
+  const tog = e.target.closest('.toggle');
+  if(tog && tog.dataset.field){
+    const o = offerings.find(x=>x.id===tog.dataset.id);
+    if(tog.dataset.field === 'autoTopUp'){
+      o.autoTopUp = !o.autoTopUp;
+      if(o.autoTopUp){
+        activities.unshift({text:`<strong>Admin</strong> enabled auto top-up for <strong>${o.name}</strong>`,time:'Just now',color:o.color});
+      }
+    } else if(tog.dataset.field === 'locked'){
+      o.locked = !o.locked;
+      activities.unshift({text:`<strong>Admin</strong> ${o.locked?'locked':'unlocked'} <strong>${o.name}</strong> budget`,time:'Just now',color:o.color});
+    }
+    renderTable();
+    renderInsights();
+    renderActivity();
+    return;
+  }
+});
+
+$('#allocBody').addEventListener('input', e=>{
+  const id = e.target.dataset.id;
+  const o = offerings.find(x=>x.id===id);
+  if(!o) return;
+
+  if(e.target.classList.contains('input-money')){
+    o.allocated = Math.max(0, parseInt(e.target.value)||0);
+    renderWallet();
+    const row = e.target.closest('tr');
+    const ct = row.querySelector('.converts-to');
+    if(ct) ct.textContent = convertsTo(o);
+    const overBudget = totalAllocated() > walletBalance;
+    e.target.classList.toggle('error', overBudget);
+  }
+  if(e.target.classList.contains('input-cap')){
+    o.cap = Math.max(0, parseInt(e.target.value)||0);
+  }
+  if(e.target.dataset.field === 'rate'){
+    o.rate = Math.max(0, parseFloat(e.target.value)||0);
+    renderTable();
+  }
+  if(e.target.dataset.field === 'topUpThreshold'){
+    o.topUpThreshold = Math.max(0, parseInt(e.target.value)||0);
+  }
+  if(e.target.dataset.field === 'topUpAmount'){
+    o.topUpAmount = Math.max(0, parseInt(e.target.value)||0);
+  }
+});
+
+$('#allocBody').addEventListener('change', e=>{
+  if(e.target.classList.contains('type-select')){
+    const o = offerings.find(x=>x.id===e.target.dataset.id);
+    if(o) o.budgetType = e.target.value;
+  }
+  if(e.target.classList.contains('dept-select')){
+    const o = offerings.find(x=>x.id===e.target.dataset.id);
+    if(o){
+      o.department = e.target.value;
+      activities.unshift({text:`<strong>Admin</strong> assigned <strong>${o.name}</strong> to <strong>${o.department}</strong>`,time:'Just now',color:o.color});
+      renderActivity();
+    }
+  }
+});
+
+/* =================================================================
+   POLICY TOGGLES
+   ================================================================= */
+document.addEventListener('click', e=>{
+  const tog = e.target.closest('.toggle[data-policy]');
+  if(!tog) return;
+  const key = tog.dataset.policy;
+  policies[key] = !policies[key];
+  tog.classList.toggle('active', policies[key]);
+  tog.setAttribute('aria-checked', policies[key]);
+  toast(`Policy "${key}" ${policies[key]?'enabled':'disabled'}`, 'info');
+  activities.unshift({text:`<strong>Admin</strong> ${policies[key]?'enabled':'disabled'} policy <strong>${key}</strong>`, time:'Just now', color:'#0073EA'});
+  renderActivity();
+});
+
+document.addEventListener('keydown', e=>{
+  if((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('toggle')){
+    e.preventDefault();
+    e.target.click();
+  }
+});
+
+/* =================================================================
+   FOOTER ACTIONS
+   ================================================================= */
+$('#saveBtn').addEventListener('click', ()=>{
+  if(totalAllocated() > walletBalance) return;
+  saveSnapshot();
+  activities.unshift({text:'<strong>Admin</strong> saved all allocation changes', time:'Just now', color:'#00CA72'});
+  renderActivity();
+  $('#lastSaved').textContent = 'Last saved: just now';
+  toast('Changes saved successfully');
+});
+
+$('#discardBtn').addEventListener('click', ()=>{
+  if(!snapshotState) return;
+  const snap = JSON.parse(snapshotState);
+  offerings.forEach((o,i)=>{
+    Object.assign(o, snap[i]);
+  });
+  openDrawer = null;
+  renderTable();
+  renderInsights();
+  renderActivity();
+  toast('Changes discarded','info');
+});
+
+$('#transferBack').addEventListener('click', ()=>{
+  const active = offerings.filter(o=>o.allocated > 0 && !o.locked);
+  if(!active.length) return;
+  const smallest = active.reduce((a,b)=>a.allocated < b.allocated ? a : b);
+  const amt = smallest.allocated;
+  smallest.allocated = 0;
+  activities.unshift({text:`<strong>Admin</strong> transferred <strong>${fmtMoney(amt)}</strong> back from <strong>${smallest.name}</strong>`, time:'Just now', color:smallest.color});
+  renderTable();
+  renderInsights();
+  renderActivity();
+  toast(`${fmtMoney(amt)} transferred back from ${smallest.name}`);
+});
+
+$('#exportBtn').addEventListener('click', ()=>{
+  toast('Allocation report exported (CSV)','info');
+  activities.unshift({text:'<strong>Admin</strong> exported allocation report', time:'Just now', color:'#0073EA'});
+  renderActivity();
+});
+
+/* =================================================================
+   INIT
+   ================================================================= */
+renderTable();
+renderInsights();
+renderActivity();
+renderBillingCycle();
+</script>
+</body>
+</html>
