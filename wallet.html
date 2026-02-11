@@ -249,7 +249,6 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   }
   .left-col,.center-col,.right-col{overflow:visible}
   .alloc-card{overflow:visible}
-  .alloc-table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
   /* Header */
   .header{flex-wrap:wrap;gap:10px;padding:10px 14px}
@@ -264,9 +263,6 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .footer{flex-wrap:wrap;gap:8px;padding:8px 14px}
   .footer-left{flex-wrap:wrap;gap:8px}
 
-  /* Table min-width for horizontal scroll */
-  table{min-width:700px}
-
   /* Insights */
   .right-col{gap:8px}
   .insight-card{padding:10px}
@@ -275,14 +271,14 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .modal{width:90vw;max-width:380px;padding:20px}
 }
 
-/* ===== PHONE (≤ 600px) ===== */
+/* ===== PHONE (≤ 600px) — CARD LAYOUT ===== */
 @media(max-width:600px){
   .main{padding:8px;gap:8px}
 
   /* Header — stack title and actions */
   .header{padding:10px 12px;gap:8px}
   .header-left{width:100%}
-  .header-right{width:100%;justify-content:flex-start}
+  .header-right{width:100%;justify-content:flex-start;flex-wrap:wrap;gap:6px}
   .billing-chip{font-size:10px;padding:4px 10px}
   .header-title{font-size:15px}
   .header-subtitle{font-size:10px}
@@ -292,8 +288,8 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .wallet-card{padding:12px}
   .wallet-balance{font-size:26px}
   .wallet-label{font-size:9px}
-  .wallet-actions{gap:4px}
-  .wallet-actions .btn{font-size:10px;padding:5px 10px}
+  .wallet-actions{gap:6px;flex-wrap:wrap}
+  .wallet-actions .btn{font-size:11px;padding:6px 12px;flex:1;min-width:0;justify-content:center}
   .wallet-breakdown{font-size:9.5px}
 
   /* Billing cycle */
@@ -314,27 +310,53 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .toggle::after{width:14px;height:14px}
   .toggle.active::after{left:16px}
 
-  /* Table — card-style rows on very small screens */
-  table{min-width:600px}
-  th{font-size:9px;padding:6px 6px;letter-spacing:.4px}
-  td{padding:6px 6px;font-size:11px}
-  .offering-icon{width:24px;height:24px;border-radius:6px}
-  .offering-icon.icon-credits{width:26px;height:26px}
-  .offering-icon.icon-credits svg{width:24px;height:24px}
-  .offering-name{font-size:11px}
-  .offering-sub{font-size:8.5px}
-  .input-money{width:60px;font-size:11px;padding:4px 6px}
-  .input-cap{width:52px;font-size:11px;padding:4px 6px}
-  .converts-to{font-size:10px}
-  .pill{font-size:9px;padding:2px 8px;min-width:50px}
-  .pool-badge{font-size:8px;padding:2px 6px}
-  select.type-select,select.dept-select{font-size:10px;padding:3px 4px}
-  .btn-details{font-size:9.5px;padding:2px 4px}
+  /* ===== TABLE → CARD LAYOUT ===== */
+  .alloc-table-wrapper{overflow-x:visible}
+  table,thead,tbody,tr,th,td{display:block;width:100%;min-width:0!important}
+  table{min-width:0!important}
+  thead{display:none}
+  tr.data-row{
+    border:1px solid var(--border);border-radius:var(--radius-lg);
+    margin-bottom:8px;padding:12px;position:relative;
+    border-left:3px solid;background:var(--surface);
+  }
+  tr.data-row td{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:3px 0;border:none;white-space:normal;
+  }
+  tr.data-row td::before{
+    content:attr(data-label);font-size:10px;font-weight:600;
+    color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;
+    min-width:80px;flex-shrink:0;
+  }
+  /* First cell (offering) is the card header */
+  tr.data-row td:first-child{
+    padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid var(--border-light)!important;
+  }
+  tr.data-row td:first-child::before{display:none}
+  .offering-cell{gap:10px}
+  .offering-icon{width:28px;height:28px;border-radius:7px}
+  .offering-icon.icon-credits{width:30px;height:30px}
+  .offering-icon.icon-credits svg{width:28px;height:28px}
+  .offering-name{font-size:13px;font-weight:700}
+  .offering-sub{font-size:10px}
+  .input-money{width:80px;font-size:13px;padding:6px 8px;text-align:right}
+  .input-cap{width:70px;font-size:13px;padding:6px 8px}
+  .converts-to{font-size:12px}
+  .pill{font-size:10px;padding:3px 12px;min-width:60px}
+  .pool-badge{font-size:9px;padding:3px 8px}
+  select.type-select{font-size:12px;padding:5px 8px}
+  select.dept-select{font-size:11px;padding:5px 8px;max-width:none}
+  .btn-details{font-size:11px;padding:4px 8px}
 
-  /* Details drawer */
-  .details-inner{grid-template-columns:1fr;gap:10px}
-  .team-pills,.dept-pills{gap:3px}
-  .team-pill,.dept-pill{font-size:9px;padding:3px 8px}
+  /* Details drawer in card mode */
+  .details-drawer{display:none}
+  .details-drawer.open{display:block}
+  .details-drawer.open td{display:block;padding:0;border:none}
+  .details-drawer.open td::before{display:none}
+  .details-inner{grid-template-columns:1fr;gap:10px;padding:12px}
+  .team-pills,.dept-pills{gap:4px}
+  .team-pill,.dept-pill{font-size:10px;padding:4px 10px}
 
   /* Alloc header */
   .alloc-header{padding:10px 12px;flex-wrap:wrap;gap:6px}
@@ -342,41 +364,30 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .alloc-error{font-size:10px;padding:6px 10px}
 
   /* Insights */
-  .spend-bar-label{width:48px;font-size:9px}
-  .spend-bar-val{width:36px;font-size:9px}
+  .spend-bar-label{width:52px;font-size:9.5px}
+  .spend-bar-val{width:40px;font-size:9.5px}
   .spend-bar-track{height:8px}
-  .team-row{font-size:10px}
-  .activity-item{font-size:9.5px;gap:4px}
-  .activity-dot{width:5px;height:5px;margin-top:4px}
-  .activity-time{font-size:8.5px}
+  .team-row{font-size:10.5px;padding:6px 0}
+  .activity-item{font-size:10px;gap:5px;padding:6px 0}
+  .activity-dot{width:5px;height:5px;margin-top:5px}
+  .activity-time{font-size:9px}
 
   /* Footer */
-  .footer{padding:8px 12px;gap:6px}
+  .footer{padding:10px 12px;gap:6px}
   .footer-left{font-size:10px;gap:8px}
-  .footer-right{gap:6px}
-  .footer-right .btn{font-size:11px;padding:6px 12px}
+  .footer-right{gap:6px;width:100%;justify-content:stretch}
+  .footer-right .btn{font-size:11px;padding:8px 14px;flex:1;justify-content:center}
   .sandbox-badge{font-size:9px;padding:2px 8px}
 
   /* Modal */
   .modal{width:calc(100vw - 32px);padding:20px;border-radius:12px}
   .modal h3{font-size:15px}
   .modal p{font-size:11.5px}
-  .modal input{font-size:14px;padding:8px 12px}
+  .modal input{font-size:16px;padding:10px 14px}
 
   /* Toast */
   .toast-container{top:10px;right:10px;left:10px}
-  .toast{font-size:11px;padding:8px 14px}
-}
-
-/* ===== SMALL PHONE (≤ 400px) ===== */
-@media(max-width:400px){
-  .header-right{flex-direction:column;align-items:stretch}
-  .billing-chip{justify-content:center}
-  .wallet-balance{font-size:22px}
-  .wallet-actions{flex-direction:column}
-  .wallet-actions .btn{justify-content:center}
-  table{min-width:520px}
-  .modal{padding:16px}
+  .toast{font-size:11px;padding:8px 14px;border-radius:var(--radius)}
 }
 </style>
 </head>
@@ -790,18 +801,18 @@ function renderTable(){
           </div>
         </div>
       </td>
-      <td>${poolBadge}</td>
-      <td><select class="type-select" data-id="${o.id}" ${o.locked?'disabled':''}>
+      <td data-label="Type">${poolBadge}</td>
+      <td data-label="Period"><select class="type-select" data-id="${o.id}" ${o.locked?'disabled':''}>
         ${['Monthly','Quarterly','Annual','One-time'].map(t=>`<option${t===o.budgetType?' selected':''}>${t}</option>`).join('')}
       </select></td>
-      <td><select class="dept-select" data-id="${o.id}" data-field="department" ${o.locked?'disabled':''}>
+      <td data-label="Dept"><select class="dept-select" data-id="${o.id}" data-field="department" ${o.locked?'disabled':''}>
         ${DEPARTMENTS.map(d=>`<option${d===o.department?' selected':''}>${d}</option>`).join('')}
       </select></td>
-      <td><input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
-      <td><span class="converts-to">${convertsTo(o)}</span></td>
-      <td><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
-      <td><span class="pill ${pillClass}">${pillText}</span></td>
-      <td><button class="btn-details" data-id="${o.id}">${openDrawer===o.id?'Close':'Details'}</button></td>
+      <td data-label="Allocated"><input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
+      <td data-label="Converts To"><span class="converts-to">${convertsTo(o)}</span></td>
+      <td data-label="Cap"><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
+      <td data-label="Status"><span class="pill ${pillClass}">${pillText}</span></td>
+      <td data-label=""><button class="btn-details" data-id="${o.id}">${openDrawer===o.id?'Close':'Details'}</button></td>
     `;
     tbody.appendChild(tr);
 

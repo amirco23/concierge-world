@@ -627,122 +627,178 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   .headline{font-size:clamp(22px,6vw,36px)}
   .subtitle{font-size:clamp(13px,3vw,18px);max-width:90vw!important}
 
-  /* Scene 1 — Products */
-  .product-row{gap:8px;padding:4px 0}
-  .product-chip{padding:6px 10px;gap:6px}
-  .product-chip-icon{width:24px;height:24px;border-radius:6px}
+  /* Scene 1 — Products: keep horizontal, allow wrapping */
+  .product-row{gap:6px;padding:4px 0;flex-wrap:wrap;justify-content:center}
+  .product-chip{padding:5px 8px;gap:5px}
+  .product-chip-icon{width:22px;height:22px;border-radius:5px}
   .product-chip-name{font-size:10px}
   .chaos-labels{gap:6px}
-  .chaos-tag{padding:6px 14px;font-size:11px}
+  .chaos-tag{padding:5px 12px;font-size:10px}
 
   /* Scene 2 — Wallet intro */
-  .wallet-hero-icon{width:80px;height:80px;border-radius:20px}
-  .wallet-hero-icon svg{width:50px;height:50px}
+  .wallet-hero-icon{width:70px;height:70px;border-radius:18px}
+  .wallet-hero-icon svg{width:44px;height:44px}
   .wallet-tag-row{gap:6px}
-  .wallet-tag{padding:6px 14px;font-size:11px}
+  .wallet-tag{padding:5px 12px;font-size:10px}
 
   /* Scene 3 — Allocation table */
   .alloc-panel{width:92vw!important;min-width:0!important}
-  .alloc-header{padding:12px 16px;flex-wrap:wrap;gap:8px}
-  .alloc-header h3{font-size:14px}
-  .unalloc-chip{font-size:11px;padding:6px 12px}
-  .alloc-row{grid-template-columns:1.2fr .8fr .5fr;gap:8px;padding:10px 16px}
-  .alloc-icon{width:32px;height:32px;border-radius:8px}
-  .alloc-name{font-size:12px}
-  .alloc-amount{font-size:13px}
+  .alloc-header{padding:10px 14px;flex-wrap:wrap;gap:6px}
+  .alloc-header h3{font-size:13px}
+  .unalloc-chip{font-size:10px;padding:5px 10px}
+  .alloc-row{grid-template-columns:1.2fr .8fr .5fr;gap:6px;padding:8px 14px}
+  .alloc-icon{width:28px;height:28px;border-radius:8px}
+  .alloc-name{font-size:11px}
+  .alloc-amount{font-size:12px}
 
   /* Scene 5 — Controls */
   .ctrl-panel{width:90vw!important;min-width:0!important}
-  .ctrl-header{padding:14px 16px;font-size:14px}
-  .toggle-row{padding:12px 16px}
-  .toggle-label{font-size:12px;gap:8px}
-  .scene-toast{right:12px;padding:10px 16px;font-size:11px;border-radius:12px;max-width:70vw}
-  .toast-warn{top:60px}
-  .toast-ok{top:110px}
+  .ctrl-header{padding:12px 14px;font-size:13px}
+  .toggle-row{padding:10px 14px}
+  .toggle-label{font-size:11px;gap:8px}
+  .scene-toast{right:12px;padding:8px 14px;font-size:10px;border-radius:10px;max-width:65vw}
+  .toast-warn{top:50px}
+  .toast-ok{top:96px}
 
   /* Scene 6 — Visibility */
-  .vis-grid{grid-template-columns:1fr!important;width:92vw!important;min-width:0!important;gap:12px}
-  .vis-card{padding:14px}
-  .vis-title{font-size:10px;margin-bottom:10px}
-  .bar-label{width:60px;font-size:10px}
-  .bar-val{font-size:10px;width:44px}
-  .team-chips{gap:6px;margin-bottom:12px}
-  .team-chip{padding:7px 16px;font-size:12px}
+  .vis-grid{grid-template-columns:1fr!important;width:92vw!important;min-width:0!important;gap:10px}
+  .vis-card{padding:12px}
+  .vis-title{font-size:9px;margin-bottom:8px}
+  .bar-label{width:54px;font-size:9px}
+  .bar-val{font-size:9px;width:40px}
+  .team-chips{gap:5px;margin-bottom:10px}
+  .team-chip{padding:6px 12px;font-size:11px}
 
-  /* Scene 7 — Platform mock */
-  .platform-mock{width:94vw!important;min-width:0!important;transform:none!important}
+  /* Scene 7 — Platform mock: compact single column */
+  .platform-mock{width:92vw!important;min-width:0!important;transform:none!important}
   .pm-body{grid-template-columns:1fr!important;min-height:auto}
-  .pm-sidebar{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:12px}
-  .pm-balance{font-size:20px}
-  .pm-center{padding:10px;overflow-x:auto}
-  .pm-table-header,.pm-table-row{grid-template-columns:1.5fr .8fr .8fr .8fr .7fr;gap:4px;font-size:7px}
-  .pm-table-row{padding:5px 6px}
-  .pm-row-name{font-size:8px;gap:4px}
-  .pm-row-icon{width:14px;height:14px;border-radius:3px}
-  .pm-row-val{font-size:8px}
-  .pm-row-pill{font-size:6.5px;padding:1px 5px}
-  .pm-right{border-left:none;border-top:1px solid rgba(255,255,255,.06);padding:10px}
-  .pm-header-title{font-size:9px}
-  .sub-headline{font-size:clamp(13px,3.5vw,20px)}
+  .pm-sidebar{
+    border-right:none;border-bottom:1px solid rgba(255,255,255,.06);
+    padding:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;align-items:start;
+  }
+  .pm-sidebar>div:first-child{grid-column:1/-1}
+  .pm-balance{font-size:18px;margin:2px 0 6px}
+  .pm-balance-label{font-size:7px}
+  .pm-bar-legend{font-size:6.5px}
+  .pm-center{padding:8px}
+  .pm-table-header,.pm-table-row{grid-template-columns:1.5fr .8fr .8fr .8fr .7fr;gap:3px;font-size:7px}
+  .pm-table-header{font-size:6.5px;padding:4px 6px}
+  .pm-table-row{padding:4px 6px}
+  .pm-row-name{font-size:7.5px;gap:3px}
+  .pm-row-icon{width:12px;height:12px;border-radius:2px}
+  .pm-row-val{font-size:7.5px}
+  .pm-row-pill{font-size:6px;padding:1px 4px}
+  .pm-right{display:none}
+  .pm-header{padding:6px 10px}
+  .pm-header-title{font-size:8px}
+  .pm-dots{gap:3px}
+  .pm-dot{width:6px;height:6px}
+  .sub-headline{font-size:clamp(12px,3.5vw,18px)}
 
-  /* CTA */
-  .cta-btn{padding:12px 28px;font-size:14px;border-radius:12px}
+  /* Scene 7 specific — tighten everything to fit CTA */
+  .scene-7{gap:clamp(4px,1vh,12px)!important;padding-top:clamp(8px,2vh,24px)!important}
+  .scene-7 .headline{font-size:clamp(18px,5vw,32px)!important;margin-bottom:0!important}
+  .scene-7 .sub-headline{margin-bottom:clamp(2px,.5vh,8px)!important}
+
+  /* CTA — always visible */
+  .cta-btn{padding:10px 24px;font-size:13px;border-radius:10px;z-index:10;position:relative}
 
   /* UI nav */
-  .scene-dots{bottom:16px;left:12px;gap:6px}
+  .scene-dots{bottom:14px;left:10px;gap:5px}
   .scene-dot{width:6px;height:6px}
-  .scene-dot.active{width:22px}
-  .pause-btn{width:24px;height:24px}
-  .monday-logo{top:12px;left:12px}
-  .monday-logo-img{height:22px}
-  .replay-btn{bottom:16px;right:12px;padding:8px 16px;font-size:12px;gap:6px}
+  .scene-dot.active{width:20px}
+  .pause-btn{width:22px;height:22px}
+  .monday-logo{top:10px;left:10px}
+  .monday-logo-img{height:20px}
+  .replay-btn{bottom:14px;right:10px;padding:7px 14px;font-size:11px;gap:5px}
   .progress{height:2px}
 
   /* Orbit */
-  .orbit-wrapper{width:clamp(220px,55vw,360px)!important;height:clamp(220px,55vw,360px)!important}
-  .orbit-center{width:60px!important;height:60px!important;border-radius:18px}
-  .orbit-center svg{width:28px;height:28px}
-  .orbit-node{width:32px!important;height:32px!important}
+  .orbit-wrapper{width:clamp(200px,50vw,320px)!important;height:clamp(200px,50vw,320px)!important}
+  .orbit-center{width:56px!important;height:56px!important;border-radius:16px}
+  .orbit-center svg{width:26px;height:26px}
+  .orbit-node{width:28px!important;height:28px!important}
 
   /* Transform container */
-  .transform-container{width:90vw!important;min-width:0!important;height:clamp(200px,40vh,360px)!important}
+  .transform-container{width:90vw!important;min-width:0!important;height:clamp(180px,35vh,320px)!important}
 }
 
 /* ============================================================
    MOBILE RESPONSIVE — PHONES (≤ 480px)
    ============================================================ */
 @media(max-width:480px){
-  .scene{padding:16px 10px}
-  .headline{font-size:clamp(18px,5.5vw,28px)}
-  .subtitle{font-size:clamp(12px,3.2vw,15px)}
+  /* Allow scene to scroll vertically if content overflows */
+  #root{overflow-y:auto;overflow-x:hidden}
+  .stage{overflow-y:auto;overflow-x:hidden}
+  .scene{
+    padding:50px 12px 60px;
+    min-height:100vh;height:auto;
+    position:relative;
+    overflow:visible;
+    justify-content:flex-start;
+    padding-top:60px;
+  }
 
-  /* Products */
-  .product-row{flex-direction:column;align-items:center;gap:6px}
-  .product-chip{width:auto;max-width:200px}
+  .headline{font-size:clamp(18px,5.5vw,26px);line-height:1.2}
+  .subtitle{font-size:clamp(11px,3vw,14px)}
+
+  /* Products: keep horizontal with small chips */
+  .product-row{flex-direction:row!important;flex-wrap:wrap;gap:5px;justify-content:center}
+  .product-chip{padding:4px 7px;gap:4px;border-radius:60px}
+  .product-chip-icon{width:18px;height:18px;border-radius:4px}
+  .product-chip-name{font-size:9px}
+  .chaos-labels{gap:4px}
+  .chaos-tag{padding:4px 10px;font-size:9px}
 
   /* Allocation */
   .alloc-panel{width:96vw!important}
-  .alloc-row{grid-template-columns:1fr;gap:6px;padding:10px 12px}
-  .alloc-info{margin-bottom:4px}
-  .alloc-bar-track{height:8px}
-  .alloc-amount{text-align:left;font-size:14px}
+  .alloc-header{padding:8px 10px;gap:4px}
+  .alloc-header h3{font-size:12px}
+  .unalloc-chip{font-size:9px;padding:4px 8px}
+  .alloc-row{grid-template-columns:1fr .6fr .4fr;gap:4px;padding:6px 10px}
+  .alloc-icon{width:24px;height:24px;border-radius:6px}
+  .alloc-name{font-size:10px}
+  .alloc-bar-track{height:6px}
+  .alloc-amount{font-size:11px}
 
   /* Controls */
-  .ctrl-panel{width:95vw!important}
-  .scene-toast{position:relative;right:auto;top:auto!important;margin-top:8px;max-width:100%;transform:none}
-  .scene-toast.v{transform:none}
+  .ctrl-panel{width:96vw!important}
+  .ctrl-header{padding:10px 12px;font-size:12px}
+  .toggle-row{padding:8px 12px}
+  .toggle-label{font-size:10px}
+  .scene-toast{right:8px;max-width:60vw;font-size:9px;padding:6px 10px}
 
   /* Vis grid */
   .vis-grid{width:96vw!important}
+  .bar-row{gap:6px}
 
-  /* Platform mock */
-  .platform-mock{width:98vw!important}
-  .pm-sidebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .pm-pool{flex:1;min-width:120px}
+  /* Scene 7 on phone — make platform even more compact */
+  .scene-7{padding-top:50px!important}
+  .scene-7 .headline{font-size:clamp(16px,5vw,24px)!important}
+  .platform-mock{width:96vw!important;border-radius:10px}
+  .pm-sidebar{grid-template-columns:1fr 1fr 1fr;padding:8px;gap:4px}
+  .pm-sidebar>div:first-child{grid-column:1/-1}
+  .pm-balance{font-size:16px!important;margin:1px 0 4px!important}
+  .pm-pool{min-width:0}
+  .pm-pool-name{font-size:7px}
+  .pm-pool-val{font-size:8px}
+  .pm-pool-icon{width:14px;height:14px;border-radius:3px}
+  .pm-bar{height:4px}
+  .pm-bar-legend{font-size:6px}
 
-  /* Nav dots */
-  .scene-dots{bottom:10px;left:8px;gap:5px}
-  .replay-btn{bottom:10px;right:8px;padding:6px 12px;font-size:11px}
+  /* CTA always visible at bottom */
+  .cta-btn{padding:10px 20px;font-size:12px;border-radius:10px;box-shadow:0 6px 30px rgba(245,183,49,.35)}
+
+  /* Sub headline */
+  .sub-headline{font-size:clamp(10px,3vw,15px);letter-spacing:.1em}
+
+  /* Nav */
+  .scene-dots{bottom:8px;left:6px;gap:4px}
+  .scene-dot{width:5px;height:5px}
+  .scene-dot.active{width:18px}
+  .pause-btn{width:20px;height:20px}
+  .pause-btn svg{width:10px;height:10px}
+  .replay-btn{bottom:8px;right:6px;padding:5px 10px;font-size:10px}
 }
 </style>
 </head>
@@ -1090,11 +1146,11 @@ function Scene7(){
     {name:'AI Credits',     icon:null,                          alloc:'$9,800',  spent:'$8,610',  cap:'$10,000', status:'near'},
   ],[]);
   return(
-    <div className="scene" style={{gap:'clamp(10px,1.5vh,20px)',paddingTop:'clamp(16px,3vh,36px)'}}>
-      <h1 className={`headline a-blur ${step>=1?'v':''}`} style={{fontSize:'clamp(26px,3.6vw,50px)',marginBottom:0}}>
+    <div className="scene scene-7" style={{gap:'clamp(6px,1.2vh,16px)',paddingTop:'clamp(10px,2vh,36px)'}}>
+      <h1 className={`headline a-blur ${step>=1?'v':''}`} style={{fontSize:'clamp(22px,3.6vw,50px)',marginBottom:0}}>
         One wallet for your entire <span className="headline-glow">Work OS.</span>
       </h1>
-      <p className={`sub-headline a-up ${step>=2?'v':''}`} style={{marginBottom:'clamp(4px,1vh,12px)'}}>Standardize. Govern. Scale.</p>
+      <p className={`sub-headline a-up ${step>=2?'v':''}`} style={{marginBottom:'clamp(2px,.8vh,12px)'}}>Standardize. Govern. Scale.</p>
 
       {/* Platform sneak-peek mock */}
       <div className={`a-up ${step>=3?'v':''}`} style={{width:'100%',display:'flex',justifyContent:'center'}}>
