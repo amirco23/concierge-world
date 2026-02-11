@@ -365,23 +365,23 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
 }
 .toggle-switch.on .toggle-knob{left:25px}
 
-/* Controls layout: panel + toasts side by side on desktop */
-.ctrl-layout{position:relative;display:flex;align-items:flex-start;gap:clamp(16px,2vw,32px)}
+/* Controls layout: panel + toasts stacked vertically */
+.ctrl-layout{display:flex;flex-direction:column;align-items:center;gap:clamp(10px,1.5vh,16px)}
 .toast-stack{
-  display:flex;flex-direction:column;gap:12px;
-  position:absolute;right:clamp(-280px,-20vw,-160px);top:0;
-  width:clamp(200px,22vw,280px);
+  display:flex;flex-direction:row;gap:12px;flex-wrap:wrap;justify-content:center;
+  width:clamp(400px,60vw,700px);
 }
 
 /* Toasts */
 .scene-toast{
-  padding:16px 24px;border-radius:16px;
+  padding:12px 20px;border-radius:14px;
   font-size:clamp(12px,1.1vw,15px);font-weight:600;
-  display:flex;align-items:center;gap:12px;
-  opacity:0;transform:translateX(40px) scale(.95);
+  display:flex;align-items:center;gap:10px;
+  opacity:0;transform:translateY(12px) scale(.95);
   transition:opacity .6s var(--ease-expo),transform .6s var(--ease-expo);
+  flex:1;min-width:0;
 }
-.scene-toast.v{opacity:1;transform:translateX(0) scale(1)}
+.scene-toast.v{opacity:1;transform:translateY(0) scale(1)}
 .toast-warn{
   background:rgba(253,203,110,.1);border:1px solid rgba(253,203,110,.2);
   color:var(--gold);backdrop-filter:blur(12px);
@@ -616,17 +616,30 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   /* Invert black text to white for dark background, keep colors via hue-rotate */
   filter:brightness(0) invert(1);
 }
+/* Arrow nav buttons */
+.nav-arrow{
+  width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.5);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s ease;padding:0;flex-shrink:0;
+}
+.nav-arrow:hover{background:rgba(245,183,49,.1);border-color:rgba(245,183,49,.25);color:var(--accent)}
+.nav-arrow:disabled{opacity:.2;cursor:not-allowed;pointer-events:none}
+.nav-arrow svg{display:block;width:16px;height:16px}
+.nav-divider{width:1px;height:20px;background:rgba(255,255,255,.1);flex-shrink:0}
+
 .replay-btn{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(12px);z-index:100;
+  position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(12px);z-index:100;
   padding:12px 28px;border-radius:100px;
   background:var(--card);border:1px solid var(--card-border);
   color:var(--text-sec);font-family:var(--font);font-size:14px;font-weight:600;
   cursor:pointer;display:flex;align-items:center;gap:8px;
   box-shadow:0 8px 32px rgba(0,0,0,.2);
-  opacity:0;
+  opacity:0;pointer-events:none;
   transition:opacity .6s ease,transform .6s var(--ease-expo),background .2s ease,border-color .2s ease;
 }
-.replay-btn.v{opacity:1;transform:translateX(-50%) translateY(0)}
+.replay-btn.v{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 .replay-btn:hover{background:rgba(245,183,49,.08);border-color:rgba(245,183,49,.2);color:var(--accent)}
 
 /* ============================================================
@@ -664,21 +677,17 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   .alloc-name{font-size:11px}
   .alloc-amount{font-size:12px}
 
-  /* Scene 5 — Controls: stack panel + toasts vertically */
-  .ctrl-layout{flex-direction:column!important;align-items:center!important;gap:10px!important}
-  .toast-stack{
-    position:relative!important;right:auto!important;top:auto!important;
-    width:90vw!important;flex-direction:column;gap:8px;
-  }
+  /* Scene 5 — Controls */
   .ctrl-panel{width:90vw!important;min-width:0!important}
   .ctrl-header{padding:12px 14px;font-size:13px}
   .toggle-row{padding:10px 14px}
   .toggle-label{font-size:11px;gap:8px}
-  .scene-toast{
-    padding:10px 16px;font-size:11px;border-radius:10px;
-    width:100%;transform:translateY(10px) scale(.98);
-  }
-  .scene-toast.v{transform:translateY(0) scale(1)}
+  .toast-stack{width:90vw!important;flex-direction:column;gap:8px}
+  .scene-toast{padding:10px 14px;font-size:11px;border-radius:10px}
+
+  /* Nav arrows on tablet */
+  .nav-arrow{width:30px;height:30px}
+  .nav-arrow svg{width:14px;height:14px}
 
   /* Scene 6 — Visibility */
   .vis-grid{grid-template-columns:1fr!important;width:92vw!important;min-width:0!important;gap:10px}
@@ -797,9 +806,14 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
   .ctrl-header{padding:10px 12px;font-size:12px}
   .toggle-row{padding:8px 12px}
   .toggle-label{font-size:10px}
-  .toast-stack{width:96vw!important;gap:6px}
+  .toast-stack{width:96vw!important;gap:6px;flex-direction:column}
   .scene-toast{font-size:10px;padding:8px 12px;border-radius:8px;gap:8px}
   .toast-emoji{font-size:16px}
+
+  /* Nav arrows on phone */
+  .nav-arrow{width:28px;height:28px}
+  .nav-arrow svg{width:12px;height:12px}
+  .nav-divider{height:16px}
 
   /* Vis grid */
   .vis-grid{width:96vw!important}
@@ -1333,22 +1347,36 @@ function App(){
     return()=>{clearTimeout(autoTimer1.current);clearTimeout(autoTimer2.current)};
   },[si,done,key,paused]);
 
-  /* Navigate to a specific scene by clicking a dot */
+  /* Navigate to a specific scene */
   function goToScene(idx){
+    if(idx<0||idx>=SCENES.length||idx===si) return;
     clearTimeout(autoTimer1.current);
     clearTimeout(autoTimer2.current);
     setFading(true);
     setTimeout(()=>{
       setSi(idx);
       setFading(false);
-      setDone(idx===SCENES.length-1?false:false);
+      setDone(false);
       setPaused(false);
-      /* Recalculate elapsed so progress bar jumps correctly */
       const elapsedUpTo=SCENES.slice(0,idx).reduce((s,x)=>s+x.dur,0);
       t0.current=performance.now()-elapsedUpTo;
       setKey(k=>k+1);
     },400);
   }
+
+  function goPrev(){ if(si>0) goToScene(si-1); }
+  function goNext(){ if(si<SCENES.length-1) goToScene(si+1); }
+
+  /* Keyboard navigation */
+  useEffect(()=>{
+    function onKey(e){
+      if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goPrev()}
+      else if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();goNext()}
+      else if(e.key===' '){e.preventDefault();setPaused(p=>!p)}
+    }
+    window.addEventListener('keydown',onKey);
+    return()=>window.removeEventListener('keydown',onKey);
+  });
 
   function replay(){
     clearTimeout(autoTimer1.current);clearTimeout(autoTimer2.current);
@@ -1360,6 +1388,13 @@ function App(){
   const Scenes=[Scene1,Scene2,Scene3,Scene5,Scene6,Scene7];
   const S=Scenes[si];
 
+  const ArrowLeft=()=>(
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  );
+  const ArrowRight=()=>(
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  );
+
   return(
     <React.Fragment>
       <Background/>
@@ -1367,17 +1402,30 @@ function App(){
       <div className={`stage ${fading?'fading':''}`} key={`${key}-${si}`}><S/></div>
       <div className="progress"><div className="progress-fill" style={{width:`${progress*100}%`}}/></div>
       <div className="scene-dots">
+        {/* Left arrow */}
+        <button className="nav-arrow" onClick={goPrev} disabled={si===0} title="Previous (←)">
+          <ArrowLeft/>
+        </button>
+
         {SCENES.map((s,i)=>(
           <button key={s.id} className={`scene-dot ${i===si?'active':''}`}
                   onClick={()=>goToScene(i)} title={SCENE_LABELS[i]}>
             <span className="scene-dot-tip">{SCENE_LABELS[i]}</span>
           </button>
         ))}
-        <button className="pause-btn" onClick={()=>setPaused(p=>!p)} title={paused?'Play':'Pause'}>
+
+        {/* Right arrow */}
+        <button className="nav-arrow" onClick={goNext} disabled={si===SCENES.length-1} title="Next (→)">
+          <ArrowRight/>
+        </button>
+
+        <div className="nav-divider"/>
+
+        <button className="pause-btn" onClick={()=>setPaused(p=>!p)} title={paused?'Play (Space)':'Pause (Space)'}>
           {paused?(
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 21,12 6,21"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 21,12 6,21"/></svg>
           ):(
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="5" height="18" rx="1"/><rect x="14" y="3" width="5" height="18" rx="1"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="5" height="18" rx="1"/><rect x="14" y="3" width="5" height="18" rx="1"/></svg>
           )}
         </button>
       </div>
