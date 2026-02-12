@@ -69,6 +69,42 @@ html.dark .modal{background:var(--surface);border:1px solid var(--border)}
 html.dark .modal input{background:var(--bg);color:var(--text);border-color:var(--border)}
 html.dark .sandbox-badge{background:rgba(255,179,71,.1);color:#FFB347}
 
+/* Details drawer dark */
+html.dark .details-drawer{background:#1E2235;border-bottom-color:var(--border)}
+html.dark .details-inner{color:var(--text)}
+html.dark .detail-group label{color:var(--text-muted)}
+html.dark .detail-group input,html.dark .detail-group select{
+  background:var(--bg);color:var(--text);border-color:var(--border);
+}
+html.dark .detail-group input:focus,html.dark .detail-group select:focus{
+  border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg);
+}
+html.dark .team-pill{
+  background:var(--bg);color:var(--text-secondary);border-color:var(--border);
+}
+html.dark .team-pill.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
+html.dark .team-pill:hover:not(.selected){background:rgba(76,154,255,.08);border-color:rgba(76,154,255,.3)}
+html.dark .dept-pill{
+  background:var(--bg);color:var(--text-secondary);border-color:var(--border);
+}
+html.dark .dept-pill.selected{background:var(--info);color:#fff;border-color:var(--info)}
+html.dark .dept-pill:hover:not(.selected){background:rgba(116,185,255,.08);border-color:rgba(116,185,255,.3)}
+html.dark .toggle{background:var(--border)}
+html.dark .toggle.active{background:var(--success)}
+html.dark .toggle::after{background:#E8E9ED;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+html.dark .btn-details{color:var(--primary)}
+html.dark .btn-details:hover{background:var(--primary-bg)}
+html.dark .btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
+html.dark .btn-secondary:hover{background:var(--bg);border-color:var(--text-muted)}
+html.dark .btn-ghost{color:var(--text-secondary)}
+html.dark .btn-ghost:hover{background:rgba(255,255,255,.05)}
+html.dark .billing-chip{background:var(--bg);border-color:var(--border);color:var(--text-secondary)}
+html.dark .billing-chip svg{color:var(--text-muted)}
+html.dark .converts-to{color:var(--primary)}
+html.dark .offering-sub{color:var(--text-muted)}
+html.dark .pool-badge-credits{background:var(--credits-bg);color:var(--credits)}
+html.dark .pool-badge-seats{background:var(--seats-bg);color:var(--seats)}
+
 /* Dark mode toggle */
 .theme-toggle{
   width:36px;height:36px;border-radius:50%;
@@ -218,7 +254,7 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
 .btn-details:hover{background:var(--primary-bg)}
 
 /* ===== DETAILS DRAWER ===== */
-.details-drawer{display:none;background:#FAFBFC;border-bottom:1px solid var(--border)}
+.details-drawer{display:none;background:var(--bg);border-bottom:1px solid var(--border)}
 .details-drawer.open{display:table-row}
 .details-inner{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px 20px}
 .detail-group label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:3px}
