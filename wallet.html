@@ -22,6 +22,7 @@
   --purple:#A25DDC;--purple-bg:rgba(162,93,220,.1);
   --credits:#A25DDC;--credits-bg:rgba(162,93,220,.1);
   --seats:#579BFC;--seats-bg:rgba(87,155,252,.1);
+  --vibe:#E8618C;--vibe-bg:rgba(232,97,140,.1);
   --radius:8px;--radius-lg:12px;--radius-sm:4px;
   --shadow:0 1px 4px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.06);
@@ -41,15 +42,21 @@ html.dark{
   --purple:#B794F6;--purple-bg:rgba(183,148,246,.1);
   --credits:#B794F6;--credits-bg:rgba(183,148,246,.12);
   --seats:#74B9FF;--seats-bg:rgba(116,185,255,.12);
+  --vibe:#F28AAE;--vibe-bg:rgba(242,138,174,.12);
   --shadow:0 2px 8px rgba(0,0,0,.2);
   --shadow-md:0 4px 16px rgba(0,0,0,.25);
   --shadow-lg:0 8px 32px rgba(0,0,0,.35);
 }
 html.dark ::-webkit-scrollbar-thumb{background:var(--border)}
 html.dark ::-webkit-scrollbar-thumb:hover{background:#4A4F68}
-html.dark .header-icon{box-shadow:0 2px 8px rgba(76,154,255,.3)}
+html.dark .header-icon{box-shadow:0 2px 8px rgba(255,138,71,.35)}
 html.dark th{background:#1E2235}
-html.dark tr.data-row:hover td{background:rgba(76,154,255,.04)}
+html.dark th:first-child,html.dark td:first-child{background:#22263A}
+html.dark th:first-child{background:#1E2235}
+html.dark tr.data-row td:first-child{box-shadow:2px 0 4px rgba(0,0,0,.15)}
+html.dark tr.data-row:hover td{background:#272B40}
+html.dark tr.data-row:hover td:first-child{background:#272B40}
+html.dark .details-drawer td:first-child{background:#1E2235!important}
 html.dark .alloc-row:hover{background:rgba(76,154,255,.03)}
 html.dark .pill-healthy{background:var(--success);color:#fff}
 html.dark .pill-near{background:var(--warning);color:#1A1D2B}
@@ -104,6 +111,7 @@ html.dark .converts-to{color:var(--primary)}
 html.dark .offering-sub{color:var(--text-muted)}
 html.dark .pool-badge-credits{background:var(--credits-bg);color:var(--credits)}
 html.dark .pool-badge-seats{background:var(--seats-bg);color:var(--seats)}
+html.dark .pool-badge-vibe{background:var(--vibe-bg);color:var(--vibe)}
 
 /* Dark mode toggle */
 .theme-toggle{
@@ -136,8 +144,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none}
 .header{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;transition:background .3s ease,border-color .3s ease}
 .header-left{display:flex;align-items:center;gap:16px}
 .header-title{font-size:19px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
-.header-icon{width:38px;height:38px;background:linear-gradient(135deg,#00D2B4 0%,#0073EA 50%,#7B68EE 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,115,234,.25);overflow:hidden}
-.header-icon img{width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1)}
+.header-icon{width:38px;height:38px;background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,138,71,.3);overflow:hidden}
+.header-icon svg{width:22px;height:22px}
 .header-subtitle{font-size:12px;color:var(--text-secondary);margin-top:2px;font-weight:400}
 .header-right{display:flex;align-items:center;gap:10px}
 .billing-chip{display:flex;align-items:center;gap:6px;background:var(--bg);padding:6px 14px;border-radius:20px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border);font-weight:500}
@@ -220,13 +228,19 @@ input,select{font-family:inherit;font-size:inherit;outline:none}
 .alloc-header h3{font-size:14px;font-weight:700}
 .alloc-error{background:var(--danger-bg);color:var(--danger);padding:8px 16px;font-size:11px;font-weight:600;display:none;align-items:center;gap:6px}
 .alloc-error.visible{display:flex}
-.alloc-table-wrapper{flex:1;overflow-y:auto}
-table{width:100%;border-collapse:collapse}
+.alloc-table-wrapper{flex:1;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
 thead{position:sticky;top:0;z-index:2}
 th{background:#F5F6F8;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
 td{padding:7px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle;white-space:nowrap}
+/* Frozen first column */
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;background:#fff}
+th:first-child{background:#F5F6F8;z-index:3}
+tr.data-row td:first-child{border-right:1px solid var(--border-light);box-shadow:2px 0 4px rgba(0,0,0,.04)}
 tr.data-row{border-left:3px solid transparent}
-tr.data-row:hover td{background:rgba(0,115,234,.02)}
+tr.data-row:hover td{background:#F0F6FF}
+tr.data-row:hover td:first-child{background:#F0F6FF}
+.details-drawer td:first-child{background:var(--bg)!important;box-shadow:none!important;border-right:none!important}
 .offering-cell{display:flex;align-items:center;gap:8px}
 .offering-icon{width:28px;height:28px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden}
 .offering-icon img{width:100%;height:100%;object-fit:cover;border-radius:var(--radius)}
@@ -234,24 +248,50 @@ tr.data-row:hover td{background:rgba(0,115,234,.02)}
 .offering-icon.icon-credits{width:32px;height:32px}
 .offering-icon.icon-credits svg{width:30px;height:30px}
 .offering-name{font-weight:600;font-size:12px}
+span.mobile-pill{display:none!important}
 .offering-sub{font-size:9.5px;color:var(--text-muted);font-weight:500}
 .pool-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
 .pool-badge-credits{background:var(--credits-bg);color:var(--credits)}
 .pool-badge-seats{background:var(--seats-bg);color:var(--seats)}
+.pool-badge-vibe{background:var(--vibe-bg);color:var(--vibe)}
 .input-money{width:72px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;transition:var(--transition);font-size:12px;font-weight:500}
 .input-money:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
 .input-money.error{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-bg)}
 select.type-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:11px;font-weight:500}
 select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:10.5px;font-weight:500;max-width:96px}
 .converts-to{font-size:11.5px;color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
+/* ===== USAGE CELL ===== */
+.usage-cell{display:flex;flex-direction:column;gap:3px;min-width:120px;white-space:normal}
+.usage-row{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:500;color:var(--text-secondary)}
+.usage-row strong{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.usage-bar{width:48px;height:4px;border-radius:2px;background:var(--border-light);overflow:hidden;flex-shrink:0}
+.usage-bar-fill{height:100%;border-radius:2px;transition:width .3s ease}
+.usage-tags{display:flex;flex-wrap:wrap;gap:3px}
+.usage-tag{display:inline-block;padding:1px 6px;border-radius:10px;font-size:8.5px;font-weight:600;background:var(--bg);color:var(--text-secondary);border:1px solid var(--border-light)}
+/* ===== AGENT BREAKDOWN ===== */
+.agent-breakdown{grid-column:1/-1;margin-top:4px}
+.agent-breakdown-title{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;margin-bottom:6px}
+.agent-cards{display:flex;gap:10px;flex-wrap:wrap}
+.agent-card{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);padding:10px 12px}
+.agent-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.agent-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.agent-card-name{font-size:12px;font-weight:700;color:var(--text)}
+.agent-card-desc{font-size:10px;color:var(--text-muted);margin-bottom:6px;font-weight:400}
+.agent-stat-row{display:flex;justify-content:space-between;font-size:10px;padding:2px 0;color:var(--text-secondary);font-weight:500}
+.agent-stat-row strong{color:var(--text);font-weight:700}
+.agent-stat-bar{height:3px;border-radius:2px;background:var(--border-light);overflow:hidden;margin-top:4px}
+.agent-stat-bar-fill{height:100%;border-radius:2px}
 .input-cap{width:64px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;font-size:12px;font-weight:500}
 .input-cap:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
 .pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;min-width:62px;text-align:center}
 .pill-healthy{background:var(--success);color:#fff}
 .pill-near{background:var(--warning);color:#fff}
 .pill-locked{background:var(--text-muted);color:#fff}
-.btn-details{font-size:10.5px;color:var(--primary);cursor:pointer;background:none;font-weight:600;padding:3px 6px;border-radius:var(--radius-sm)}
-.btn-details:hover{background:var(--primary-bg)}
+.btn-details{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--text-secondary);cursor:pointer;background:var(--bg);font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid var(--border-light);transition:var(--transition)}
+.btn-details:hover{background:var(--primary-bg);color:var(--primary);border-color:var(--primary)}
+.btn-details.open{background:var(--primary-bg);color:var(--primary);border-color:var(--primary)}
+.btn-details svg{width:12px;height:12px;transition:transform .2s ease;transform:rotate(-90deg)}
+.btn-details.open svg{transform:rotate(0deg)}
 
 /* ===== DETAILS DRAWER ===== */
 .details-drawer{display:none;background:var(--bg);border-bottom:1px solid var(--border)}
@@ -334,19 +374,27 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   html,body{overflow:auto;height:auto}
   #app{height:auto;min-height:100vh;max-height:none}
   .main{
-    grid-template-columns:1fr!important;
+    display:flex!important;flex-direction:column!important;
     gap:10px;padding:10px 12px;
     overflow:visible;
   }
-  .left-col,.center-col,.right-col{overflow:visible}
+  .left-col,.center-col,.right-col{display:contents!important}
   .alloc-card{overflow:visible}
+
+  /* Reorder: wallet → pools → features → insights → policy → activity */
+  .wallet-card{order:1!important}
+  .pools-card{order:2!important}
+  .alloc-card{order:3!important}
+  .insight-card{order:4!important}
+  .policy-card{order:5!important}
+  .activity-card{order:6!important}
 
   /* Header */
   .header{flex-wrap:wrap;gap:10px;padding:10px 14px}
   .header-left{flex:1;min-width:0}
   .header-title{font-size:16px;gap:8px}
   .header-icon{width:32px;height:32px;border-radius:8px}
-  .header-icon img{width:20px;height:20px}
+  .header-icon svg{width:18px;height:18px}
   .header-subtitle{font-size:11px}
   .header-right{flex-wrap:wrap;gap:6px}
 
@@ -355,7 +403,6 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .footer-left{flex-wrap:wrap;gap:8px}
 
   /* Insights */
-  .right-col{gap:8px}
   .insight-card{padding:10px}
 
   /* Modal */
@@ -401,49 +448,68 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   .toggle::after{width:14px;height:14px}
   .toggle.active::after{left:16px}
 
-  /* ===== TABLE → CARD LAYOUT ===== */
+  /* ===== TABLE → COLLAPSED CARD LAYOUT ===== */
   .alloc-table-wrapper{overflow-x:visible}
   table,thead,tbody,tr,th,td{display:block;width:100%;min-width:0!important}
   table{min-width:0!important}
   thead{display:none}
   tr.data-row{
     border:1px solid var(--border);border-radius:var(--radius-lg);
-    margin-bottom:8px;padding:12px;position:relative;
-    border-left:3px solid;background:var(--surface);
+    margin-bottom:6px;padding:0;position:relative;
+    border-left:3px solid;background:var(--surface);overflow:hidden;
   }
-  tr.data-row td{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:3px 0;border:none;white-space:normal;
+  /* First cell = always visible header with offering + status pill */
+  tr.data-row td:first-child{
+    display:flex!important;align-items:center;justify-content:space-between;
+    padding:10px 12px;border:none!important;white-space:normal;
+    cursor:pointer;box-shadow:none!important;border-right:none!important;
+    position:relative!important;
   }
-  tr.data-row td::before{
+  tr.data-row td:first-child::before{display:none}
+  /* All other cells: hidden by default */
+  tr.data-row td:not(:first-child){
+    display:none!important;
+  }
+  /* When row is expanded, show other cells */
+  tr.data-row.mobile-open td:not(:first-child){
+    display:flex!important;align-items:center;justify-content:space-between;
+    padding:4px 12px;border:none;white-space:normal;
+  }
+  tr.data-row.mobile-open td:not(:first-child)::before{
     content:attr(data-label);font-size:10px;font-weight:600;
     color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;
     min-width:80px;flex-shrink:0;
   }
-  /* First cell (offering) is the card header */
-  tr.data-row td:first-child{
-    padding-bottom:8px;margin-bottom:6px;border-bottom:1px solid var(--border-light)!important;
+  /* Add a subtle top border to the first expanded cell */
+  tr.data-row.mobile-open td:nth-child(2){
+    border-top:1px solid var(--border-light)!important;padding-top:8px;margin-top:2px;
   }
-  tr.data-row td:first-child::before{display:none}
-  .offering-cell{gap:10px}
-  .offering-icon{width:28px;height:28px;border-radius:7px}
-  .offering-icon.icon-credits{width:30px;height:30px}
-  .offering-icon.icon-credits svg{width:28px;height:28px}
-  .offering-name{font-size:13px;font-weight:700}
-  .offering-sub{font-size:10px}
+  /* Last visible cell gets bottom padding */
+  tr.data-row.mobile-open td:last-child{padding-bottom:10px}
+  .offering-cell{gap:8px;flex:1}
+  .offering-icon{width:26px;height:26px;border-radius:7px}
+  .offering-icon.icon-credits{width:28px;height:28px}
+  .offering-icon.icon-credits svg{width:26px;height:26px}
+  .offering-name{font-size:12px;font-weight:700}
+  .offering-sub{font-size:9px}
   .input-money{width:80px;font-size:13px;padding:6px 8px;text-align:right}
   .input-cap{width:70px;font-size:13px;padding:6px 8px}
   .converts-to{font-size:12px}
-  .pill{font-size:10px;padding:3px 12px;min-width:60px}
-  .pool-badge{font-size:9px;padding:3px 8px}
+  .pill{font-size:9px;padding:2px 10px;min-width:50px}
+  .pool-badge{font-size:8px;padding:2px 6px}
   select.type-select{font-size:12px;padding:5px 8px}
   select.dept-select{font-size:11px;padding:5px 8px;max-width:none}
-  .btn-details{font-size:11px;padding:4px 8px}
+  /* Show status pill inline on mobile, hide duplicate */
+  .mobile-pill{display:inline-flex!important;flex-shrink:0;margin-left:auto}
+  .status-cell{display:none!important}
+  /* Mobile toggle arrow styling */
+  .btn-details{font-size:10px;padding:3px 6px;border:none;background:transparent}
+  .btn-details:hover{background:transparent}
 
   /* Details drawer in card mode */
   .details-drawer{display:none}
   .details-drawer.open{display:block}
-  .details-drawer.open td{display:block;padding:0;border:none}
+  .details-drawer.open td{display:block!important;padding:0!important;border:none}
   .details-drawer.open td::before{display:none}
   .details-inner{grid-template-columns:1fr;gap:10px;padding:12px}
   .team-pills,.dept-pills{gap:4px}
@@ -488,7 +554,7 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
   <header class="header">
     <div class="header-left">
       <div class="header-icon">
-        <img src="assets/wallet-icon.png" alt="monday Wallet"/>
+        <svg viewBox="0 0 48 48" width="22" height="22" fill="none"><rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity=".9"/><rect x="4" y="12" width="40" height="10" rx="4" fill="#fff"/><rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity=".6"/><rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(245,183,49,.35)"/><circle cx="36" cy="28" r="3" fill="#fff"/></svg>
       </div>
       <div>
         <div class="header-title"><span style="font-weight:400">monday</span> Wallet</div>
@@ -517,8 +583,8 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
     <div class="left-col">
       <!-- Wallet Funds -->
       <div class="card wallet-card">
-        <div class="wallet-label">Available Funds</div>
-        <div class="wallet-balance" id="walletBalance">$25,000</div>
+        <div class="wallet-label">Total Balance</div>
+        <div class="wallet-balance" id="walletBalance">$34,700</div>
         <!-- Billing Cycle -->
         <div class="billing-cycle">
           <div class="cycle-header">
@@ -597,6 +663,22 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
           </div>
         </div>
 
+        <!-- Vibe Apps Pool -->
+        <div class="pool-section">
+          <div class="pool-header">
+            <span class="pool-name">
+              <span class="pool-icon" style="background:var(--vibe)">V</span>
+              Vibe Apps
+            </span>
+            <span class="pool-amount" id="poolVibeAmt" style="color:var(--vibe)">$4,000</span>
+          </div>
+          <div class="pool-bar"><div class="pool-bar-fill" id="poolVibeBar" style="width:50%;background:var(--vibe)"></div></div>
+          <div class="pool-meta">
+            <span>Covers <strong id="poolVibeUnits">200</strong> active apps</span>
+            <span>Spent <strong id="poolVibeSpent">$800</strong></span>
+          </div>
+        </div>
+
         <div class="pool-divider"></div>
         <div class="pool-unalloc">
           <span>Unallocated</span>
@@ -637,15 +719,12 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
           <table>
             <thead>
               <tr>
-                <th style="width:18%">Offering</th>
-                <th style="width:6%">Type</th>
-                <th style="width:10%">Period</th>
-                <th style="width:12%">Dept / Workspace</th>
-                <th style="width:11%">Allocated ($)</th>
-                <th style="width:15%">Converts To</th>
-                <th style="width:9%">Cap</th>
-                <th style="width:8%">Status</th>
-                <th style="width:5%"></th>
+                <th style="width:22%">Offering</th>
+                <th style="width:8%">Type</th>
+                <th style="width:12%">Period</th>
+                <th style="width:24%">Consumption</th>
+                <th style="width:10%">Cap</th>
+                <th style="width:10%">Status</th>
               </tr>
             </thead>
             <tbody id="allocBody"></tbody>
@@ -711,7 +790,7 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
 const TEAMS = ['Sales','CS','R&D','Marketing','Product'];
 const DEPARTMENTS = ['All Workspaces','Engineering','Sales','Customer Success','Marketing','Product','Finance'];
 
-let walletBalance = 25000;
+let walletBalance = 34700;
 let policies = { approval: true, block: true, notify: true };
 
 /*  monday.com palette per offering
@@ -721,12 +800,23 @@ const ICON_CREDITS_SVG = `<svg viewBox="0 0 44 44" fill="none" xmlns="http://www
 const ICON_SEATS_SVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="32" height="32" rx="8" fill="#9AADBD"/><circle cx="15" cy="16" r="4" fill="#fff"/><circle cx="25" cy="16" r="4" fill="#fff"/><path d="M10 28c0-4 4-6 10-6s10 2 10 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>`;
 
 const offerings = [
-  { id:'credits',  name:'AI Credits',     iconType:'svg', iconData:ICON_CREDITS_SVG,       color:'#DAA520', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:5000, cap:6000,  locked:false, rate:1000,  rateUnit:'$1 =',    perLabel:'credits',    spent:1200, teams:['Sales','R&D'],       departments:['Engineering','Sales'],       autoTopUp:false, topUpThreshold:500,  topUpAmount:1000 },
-  { id:'vibe',     name:'Vibe Apps',      iconType:'img', iconData:'assets/vibe.png',      color:'#E8618C', poolType:'seats',   budgetType:'Monthly',   department:'Engineering',    allocated:4000, cap:5000,  locked:false, rate:20,    rateUnit:'$20 =',   perLabel:'app seat/mo',spent:800,  teams:['Product','R&D'],     departments:['Engineering','Product'],     autoTopUp:false, topUpThreshold:400,  topUpAmount:500 },
-  { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:3000, cap:4000,  locked:false, rate:12,    rateUnit:'$12 =',   perLabel:'seat/mo',    spent:960,  teams:['Sales','CS'],        departments:['Sales','Customer Success'],  autoTopUp:true,  topUpThreshold:300,  topUpAmount:600 },
-  { id:'agents',   name:'AI Agents',      iconType:'img', iconData:'assets/agents.png',    color:'#7B68EE', poolType:'credits', budgetType:'Quarterly', department:'Engineering',    allocated:2000, cap:3000,  locked:false, rate:0.02,  rateUnit:'$0.02/',  perLabel:'action',     spent:540,  teams:['CS','Marketing'],    departments:['Engineering','Marketing'],   autoTopUp:false, topUpThreshold:200,  topUpAmount:500 },
-  { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:1000, cap:2000,  locked:false, rate:0.01,  rateUnit:'$0.01/',  perLabel:'minute',     spent:250,  teams:['Sales','Product'],   departments:['Sales','Product'],           autoTopUp:false, topUpThreshold:100,  topUpAmount:300 },
-  { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:2500, cap:3500,  locked:false, rate:10,    rateUnit:'$10 =',   perLabel:'seat/mo',    spent:400,  teams:['Sales','CS','R&D'],  departments:['Engineering','Sales','Customer Success'], autoTopUp:false, topUpThreshold:250, topUpAmount:500 },
+  { id:'credits',  name:'AI Credits',     iconType:'svg', iconData:ICON_CREDITS_SVG,       color:'#DAA520', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:5000, cap:6000,  locked:false, rate:1000,  rateUnit:'$1 =',    perLabel:'credits',    spent:1200, teams:['Sales','R&D'],       departments:['Engineering','Sales'],       autoTopUp:false, topUpThreshold:500,  topUpAmount:1000,
+    usage:{ boards:47, boardsLimit:100 } },
+  { id:'vibe',     name:'Vibe Apps',      iconType:'img', iconData:'assets/vibe.png',      color:'#E8618C', poolType:'vibe',   budgetType:'Monthly',   department:'Engineering',    allocated:4000, cap:5000,  locked:false, rate:20,    rateUnit:'$20 =',   perLabel:'active app/mo',spent:800,  teams:['Product','R&D'],     departments:['Engineering','Product'],     autoTopUp:false, topUpThreshold:400,  topUpAmount:500,
+    usage:{ paid:25, published:8 } },
+  { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:3000, cap:4000,  locked:false, rate:12,    rateUnit:'$12 =',   perLabel:'seat/mo',    spent:960,  teams:['Sales','CS'],        departments:['Sales','Customer Success'],  autoTopUp:true,  topUpThreshold:300,  topUpAmount:600,
+    usage:{ usersAllocated:185, usersLimit:250 } },
+  { id:'agents',   name:'AI Agents',      iconType:'img', iconData:'assets/agents.png',    color:'#7B68EE', poolType:'credits', budgetType:'Quarterly', department:'Engineering',    allocated:2000, cap:3000,  locked:false, rate:0.02,  rateUnit:'$0.02/',  perLabel:'action',     spent:540,  teams:['CS','Marketing'],    departments:['Engineering','Marketing'],   autoTopUp:false, topUpThreshold:200,  topUpAmount:500,
+    usage:{ creditsUsed:27000, creditsLimit:100000, agents:12,
+      breakdown:[
+        { name:'SDR Agent', color:'#E8618C', desc:'Outbound prospecting & lead qualification', creditsUsed:18200, creditsLimit:60000, actions:4120, actionsLimit:8000, status:'active' },
+        { name:'PMO Agent', color:'#0073EA', desc:'Project tracking & resource management',    creditsUsed:8800,  creditsLimit:40000, actions:1940, actionsLimit:5000, status:'active' }
+      ]
+    } },
+  { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:1000, cap:2000,  locked:false, rate:0.01,  rateUnit:'$0.01/',  perLabel:'minute',     spent:250,  teams:['Sales','Product'],   departments:['Sales','Product'],           autoTopUp:false, topUpThreshold:100,  topUpAmount:300,
+    usage:{ minutesUsed:25000, minutesLimit:100000, hours:417 } },
+  { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:2500, cap:3500,  locked:false, rate:10,    rateUnit:'$10 =',   perLabel:'seat/mo',    spent:400,  teams:['Sales','CS','R&D'],  departments:['Engineering','Sales','Customer Success'], autoTopUp:false, topUpThreshold:250, topUpAmount:500,
+    usage:{ usersAllocated:250, products:[{name:'CRM',count:120},{name:'Service',count:80},{name:'Work Mgmt',count:50}] } },
 ];
 
 let activities = [
@@ -783,6 +873,12 @@ function poolSeatsUnits(){
   },0);
 }
 
+function poolVibeUnits(){
+  return offerings.filter(o=>o.poolType==='vibe').reduce((s,o)=>{
+    return s + Math.floor(o.allocated / o.rate);
+  },0);
+}
+
 function getStatus(o){
   if(o.locked) return 'locked';
   const pct = o.allocated > 0 ? o.spent / o.allocated : 0;
@@ -798,6 +894,54 @@ function convertsTo(o){
   if(o.id === 'sidekick')  return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
   if(o.id === 'seats')     return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
   return '-';
+}
+
+function miniBar(pct, color){
+  return `<div class="usage-bar"><div class="usage-bar-fill" style="width:${Math.min(pct,100)}%;background:${color}"></div></div>`;
+}
+
+function usageHtml(o){
+  const u = o.usage;
+  if(!u) return '';
+  const c = o.color;
+  if(o.id === 'credits'){
+    const pct = u.boardsLimit > 0 ? u.boards/u.boardsLimit*100 : 0;
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${u.boards}</strong>/<strong>${u.boardsLimit}</strong> AI Boards ${miniBar(pct,c)}</div>
+    </div>`;
+  }
+  if(o.id === 'vibe'){
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${u.paid}</strong> paid apps &middot; <strong>${u.published}</strong> published</div>
+    </div>`;
+  }
+  if(o.id === 'sidekick'){
+    const pct = u.usersLimit > 0 ? u.usersAllocated/u.usersLimit*100 : 0;
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${fmt(u.usersAllocated)}</strong>/<strong>${fmt(u.usersLimit)}</strong> users ${miniBar(pct,c)}</div>
+    </div>`;
+  }
+  if(o.id === 'agents'){
+    const pct = u.creditsLimit > 0 ? u.creditsUsed/u.creditsLimit*100 : 0;
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${fmt(u.creditsUsed)}</strong>/<strong>${fmt(u.creditsLimit)}</strong> credits ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>${u.agents}</strong> active agents</div>
+    </div>`;
+  }
+  if(o.id === 'notetaker'){
+    const pct = u.minutesLimit > 0 ? u.minutesUsed/u.minutesLimit*100 : 0;
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${fmt(u.minutesUsed)}</strong>/<strong>${fmt(u.minutesLimit)}</strong> min ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>${fmt(u.hours)}</strong> hours</div>
+    </div>`;
+  }
+  if(o.id === 'seats'){
+    return `<div class="usage-cell">
+      <div class="usage-row"><strong>${fmt(u.usersAllocated)}</strong> users allocated</div>
+      <div class="usage-tags">${u.products.map(p=>`<span class="usage-tag">${p.name} <strong>${p.count}</strong></span>`).join('')}</div>
+    </div>`;
+  }
+  return '';
 }
 
 /* =================================================================
@@ -834,6 +978,13 @@ function renderWallet(){
   $('#poolSeatsBar').style.width = (walletBalance > 0 ? seatsAlloc/walletBalance*100 : 0)+'%';
   $('#poolSeatsUnits').textContent = fmt(poolSeatsUnits());
   $('#poolSeatsSpent').textContent = fmtMoney(seatsSpent);
+
+  const vibeAlloc = poolAllocated('vibe');
+  const vibeSpent = poolSpent('vibe');
+  $('#poolVibeAmt').textContent = fmtMoney(vibeAlloc);
+  $('#poolVibeBar').style.width = (walletBalance > 0 ? vibeAlloc/walletBalance*100 : 0)+'%';
+  $('#poolVibeUnits').textContent = fmt(poolVibeUnits());
+  $('#poolVibeSpent').textContent = fmtMoney(vibeSpent);
 
   $('#poolUnalloc').textContent = fmtMoney(unalloc);
 
@@ -880,6 +1031,8 @@ function renderTable(){
     const pillText = st === 'healthy' ? 'Healthy' : st === 'near' ? 'Near limit' : 'Locked';
     const poolBadge = o.poolType === 'credits'
       ? '<span class="pool-badge pool-badge-credits">Credits</span>'
+      : o.poolType === 'vibe'
+      ? '<span class="pool-badge pool-badge-vibe">Vibe Apps</span>'
       : '<span class="pool-badge pool-badge-seats">Seats</span>';
 
     const tr = document.createElement('tr');
@@ -889,25 +1042,22 @@ function renderTable(){
     tr.innerHTML = `
       <td>
         <div class="offering-cell">
+          <button class="btn-details${openDrawer===o.id?' open':''}" data-id="${o.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
           <div class="offering-icon${o.id==='credits'?' icon-credits':''}" style="background:${o.iconType==='img'?'transparent':o.color+'18'};color:${o.color}">${o.iconType==='img'?`<img src="${o.iconData}" alt="${o.name}"/>`:o.iconData}</div>
-          <div>
+          <div style="flex:1;min-width:0">
             <div class="offering-name">${o.name}</div>
             <div class="offering-sub">${o.rateUnit} ${o.id==='agents'||o.id==='notetaker'?'per '+o.perLabel:fmt(o.rate)+' '+o.perLabel}</div>
           </div>
+          <span class="mobile-pill pill ${pillClass}">${pillText}</span>
         </div>
       </td>
       <td data-label="Type">${poolBadge}</td>
       <td data-label="Period"><select class="type-select" data-id="${o.id}" ${o.locked?'disabled':''}>
         ${['Monthly','Quarterly','Annual','One-time'].map(t=>`<option${t===o.budgetType?' selected':''}>${t}</option>`).join('')}
       </select></td>
-      <td data-label="Dept"><select class="dept-select" data-id="${o.id}" data-field="department" ${o.locked?'disabled':''}>
-        ${DEPARTMENTS.map(d=>`<option${d===o.department?' selected':''}>${d}</option>`).join('')}
-      </select></td>
-      <td data-label="Allocated"><input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
-      <td data-label="Converts To"><span class="converts-to">${convertsTo(o)}</span></td>
+      <td data-label="Consumption">${usageHtml(o)}</td>
       <td data-label="Cap"><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
-      <td data-label="Status"><span class="pill ${pillClass}">${pillText}</span></td>
-      <td data-label=""><button class="btn-details" data-id="${o.id}">${openDrawer===o.id?'Close':'Details'}</button></td>
+      <td data-label="Status" class="status-cell"><span class="pill ${pillClass}">${pillText}</span></td>
     `;
     tbody.appendChild(tr);
 
@@ -915,8 +1065,15 @@ function renderTable(){
     if(openDrawer === o.id){
       const dr = document.createElement('tr');
       dr.className = 'details-drawer open';
-      dr.innerHTML = `<td colspan="9">
+      dr.innerHTML = `<td colspan="6">
         <div class="details-inner">
+          <div class="detail-group">
+            <label>Allocated ($)</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/>
+              <span class="converts-to" style="font-size:10.5px">${convertsTo(o)}</span>
+            </div>
+          </div>
           <div class="detail-group">
             <label>Conversion Rate</label>
             <div style="display:flex;align-items:center;gap:6px">
@@ -944,6 +1101,29 @@ function renderTable(){
             <label style="display:flex;align-items:center;gap:8px;margin:0">Lock Budget <div class="toggle${o.locked?' active':''}" data-field="locked" data-id="${o.id}" tabindex="0" role="switch" aria-checked="${o.locked}"></div></label>
             <span style="font-size:10px;color:var(--text-muted);font-weight:500">Locking prevents all spend and edits</span>
           </div>
+          ${o.id==='agents' && o.usage.breakdown ? `
+          <div class="agent-breakdown">
+            <div class="agent-breakdown-title">Agent Breakdown (${o.usage.breakdown.length} active agents)</div>
+            <div class="agent-cards">
+              ${o.usage.breakdown.map(a => `
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <div class="agent-avatar" style="background:${a.color}">${a.name.charAt(0)}</div>
+                  <div>
+                    <div class="agent-card-name">${a.name}</div>
+                    <span style="font-size:9px;padding:1px 6px;border-radius:10px;background:${a.status==='active'?'var(--success)':'var(--text-muted)'};color:#fff;font-weight:600;text-transform:uppercase">${a.status}</span>
+                  </div>
+                </div>
+                <div class="agent-card-desc">${a.desc}</div>
+                <div class="agent-stat-row"><span>Credits Used</span><strong>${fmt(a.creditsUsed)} / ${fmt(a.creditsLimit)}</strong></div>
+                <div class="agent-stat-bar"><div class="agent-stat-bar-fill" style="width:${Math.min(100,a.creditsUsed/a.creditsLimit*100)}%;background:${a.color}"></div></div>
+                <div class="agent-stat-row" style="margin-top:4px"><span>Actions</span><strong>${fmt(a.actions)} / ${fmt(a.actionsLimit)}</strong></div>
+                <div class="agent-stat-bar"><div class="agent-stat-bar-fill" style="width:${Math.min(100,a.actions/a.actionsLimit*100)}%;background:${a.color}80"></div></div>
+              </div>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
         </div>
       </td>`;
       tbody.appendChild(dr);
@@ -1025,9 +1205,29 @@ $('#addFundsConfirm').addEventListener('click', ()=>{
    TABLE INTERACTIONS (delegation)
    ================================================================= */
 $('#allocBody').addEventListener('click', e=>{
+  /* Mobile: tap offering header row to expand/collapse */
+  const isMobile = window.innerWidth <= 600;
+  if(isMobile){
+    const firstCell = e.target.closest('tr.data-row td:first-child');
+    if(firstCell && !e.target.closest('.btn-details')){
+      const row = firstCell.closest('tr.data-row');
+      row.classList.toggle('mobile-open');
+      const btn = row.querySelector('.btn-details');
+      if(btn) btn.classList.toggle('open', row.classList.contains('mobile-open'));
+      return;
+    }
+  }
   const detBtn = e.target.closest('.btn-details');
   if(detBtn){
     const id = detBtn.dataset.id;
+    if(isMobile){
+      const row = detBtn.closest('tr.data-row');
+      if(row){
+        row.classList.toggle('mobile-open');
+        detBtn.classList.toggle('open', row.classList.contains('mobile-open'));
+      }
+      return;
+    }
     openDrawer = openDrawer === id ? null : id;
     renderTable();
     renderInsights();
