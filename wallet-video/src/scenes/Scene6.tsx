@@ -4,8 +4,6 @@ import {
   useVideoConfig,
   interpolate,
   spring,
-  Img,
-  staticFile,
   AbsoluteFill,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Poppins";
@@ -16,135 +14,95 @@ const { fontFamily } = loadFont("normal", {
   subsets: ["latin"],
 });
 
-const GoldCoinSvg: React.FC<{ size?: number }> = ({ size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="10" fill="url(#coinGrad)" />
-    <path
-      d="M12 6 L13.5 10 L18 10.5 L14.5 13 L15.5 17 L12 14.5 L8.5 17 L9.5 13 L6 10.5 L10.5 10 Z"
-      fill="url(#coinStar)"
-    />
-    <defs>
-      <linearGradient id="coinGrad" x1="4" y1="4" x2="20" y2="20">
-        <stop offset="0%" stopColor="#F5D060" />
-        <stop offset="50%" stopColor="#DAA520" />
-        <stop offset="100%" stopColor="#B8860B" />
-      </linearGradient>
-      <linearGradient id="coinStar" x1="8" y1="6" x2="16" y2="18">
-        <stop offset="0%" stopColor="#FFF8DC" />
-        <stop offset="100%" stopColor="#FFD700" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-const TABLE_ROWS = [
-  { name: "AI Agents", icon: "assets/icon-agents.png", alloc: "$8,000", spent: "$5,320", cap: "$10,000", status: "ok" as const },
-  { name: "Sidekick", icon: "assets/icon-sidekick.png", alloc: "$6,500", spent: "$5,890", cap: "$7,000", status: "near" as const },
-  { name: "Vibe Coding", icon: "assets/icon-vibe.png", alloc: "$12,000", spent: "$7,140", cap: "$15,000", status: "ok" as const },
-  { name: "AI Workflows", icon: "assets/icon-workflows.png", alloc: "$4,200", spent: "$2,100", cap: "$5,000", status: "ok" as const },
-  { name: "AI Credits", icon: null, alloc: "$9,800", spent: "$8,610", cap: "$10,000", status: "near" as const },
-];
-
-const SPEND_BY_EXP = [
-  { name: "AI Credits", pct: 92 },
-  { name: "AI Agents", pct: 64 },
-  { name: "Workflows", pct: 50 },
-  { name: "Apps", pct: 38 },
-];
-
-const TOP_TEAMS = [
-  { name: "Sales", val: "$12.4k" },
-  { name: "R&D", val: "$10.2k" },
-  { name: "CS", val: "$8.3k" },
-  { name: "Marketing", val: "$6.3k" },
+const VALUE_PROPS = [
+  { label: "Business Agility", gradFrom: "#F5B731", gradTo: "#FF8A47" },
+  { label: "Optimized Scale", gradFrom: "#4C9AFF", gradTo: "#A29BFE" },
 ];
 
 export const Scene6: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Headline: blur/fade 0-18
-  const headlineOpacity = interpolate(
-    frame,
-    [0, 18],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const headlineBlur = interpolate(
-    frame,
-    [0, 18],
-    [8, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Hero "This is" — subtle fade in 0-10
+  const heroSmallOpacity = interpolate(frame, [0, 10], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Sub-headline: spring slide-up at frame 18
-  const subHeadSpring = spring({
-    frame: frame - 18,
+  // Hero "monday Wallet" — spring in at frame 6
+  const heroSpring = spring({
+    frame: frame - 6,
+    fps,
+    config: { damping: 14, stiffness: 140 },
+  });
+  const heroScale = interpolate(heroSpring, [0, 1], [0.85, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const heroOpacity = interpolate(heroSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Wallet icon — spring scale from frame 3
+  const iconSpring = spring({
+    frame: frame - 3,
+    fps,
+    config: { damping: 16, stiffness: 180 },
+  });
+  const iconScale = interpolate(iconSpring, [0, 1], [0.4, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const iconOpacity = interpolate(iconSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Glow ring pulse behind wallet icon
+  const glowPulse = frame > 15 ? 0.3 + Math.sin((frame - 15) * 0.08) * 0.12 : 0;
+
+  // Value prop pills — staggered entrance
+  const pill0Spring = spring({ frame: frame - 40, fps, config: { damping: 200 } });
+  const pill1Spring = spring({ frame: frame - 50, fps, config: { damping: 200 } });
+  const pillSprings = [pill0Spring, pill1Spring];
+
+  // Divider line
+  const dividerWidth = interpolate(frame, [30, 50], [0, 100], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Closing tagline
+  const taglineSpring = spring({
+    frame: frame - 65,
     fps,
     config: { damping: 200 },
   });
-  const subHeadTranslateY = interpolate(
-    subHeadSpring,
-    [0, 1],
-    [20, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const subHeadOpacity = interpolate(
-    subHeadSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-
-  // Platform mock: spring scale + translateY at frame 42
-  const mockSpring = spring({
-    frame: frame - 42,
-    fps,
-    config: { damping: 200 },
+  const taglineOpacity = interpolate(taglineSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
   });
-  const mockScale = interpolate(
-    mockSpring,
-    [0, 1],
-    [0.95, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const mockTranslateY = interpolate(
-    mockSpring,
-    [0, 1],
-    [20, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const mockOpacity = interpolate(
-    mockSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const taglineY = interpolate(taglineSpring, [0, 1], [12, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // CTA: spring scale-up + translateY at frame 90
+  // CTA button
   const ctaSpring = spring({
-    frame: frame - 90,
+    frame: frame - 85,
     fps,
-    config: { damping: 20, stiffness: 200 },
+    config: { damping: 16, stiffness: 160 },
   });
-  const ctaScale = interpolate(
-    ctaSpring,
-    [0, 1],
-    [0.9, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const ctaTranslateY = interpolate(
-    ctaSpring,
-    [0, 1],
-    [15, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const ctaOpacity = interpolate(
-    ctaSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const ctaScale = interpolate(ctaSpring, [0, 1], [0.8, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const ctaOpacity = interpolate(ctaSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const ctaGlow = frame > 100 ? 0.3 + Math.sin((frame - 100) * 0.1) * 0.15 : 0;
 
   return (
     <AbsoluteFill>
@@ -157,382 +115,208 @@ export const Scene6: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 24,
+          gap: 0,
           fontFamily,
         }}
       >
-        {/* Headline */}
+        {/* Wallet icon */}
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            alignItems: "baseline",
-            gap: "0.25em",
-            opacity: headlineOpacity,
-            filter: `blur(${headlineBlur}px)`,
+            position: "relative",
+            marginBottom: 28,
+            opacity: iconOpacity,
+            transform: `scale(${iconScale})`,
           }}
         >
-          <span
+          {/* Glow ring */}
+          <div
             style={{
-              fontSize: 46,
-              fontWeight: 900,
-              color: "rgba(255,255,255,0.95)",
+              position: "absolute",
+              inset: -30,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(245,183,49,0.25), transparent 70%)",
+              filter: "blur(16px)",
+              opacity: glowPulse,
+            }}
+          />
+          <div
+            style={{
+              width: 80,
+              height: 80,
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A47 40%, #4C9AFF 100%)",
+              borderRadius: 22,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 40px rgba(255,138,71,0.35)",
+              position: "relative",
             }}
           >
-            One wallet for your entire{" "}
-          </span>
+            <svg viewBox="0 0 48 48" style={{ width: 40, height: 40 }}>
+              <rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity="0.9" />
+              <rect x="4" y="12" width="40" height="10" rx="4" fill="#fff" />
+              <rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity="0.6" />
+              <rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(255,255,255,0.4)" />
+              <circle cx="36" cy="28" r="3" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+
+        {/* "This is" */}
+        <div
+          style={{
+            opacity: heroSmallOpacity,
+            fontSize: 22,
+            fontWeight: 500,
+            color: "rgba(255,255,255,0.5)",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase" as const,
+            marginBottom: 8,
+          }}
+        >
+          This is
+        </div>
+
+        {/* "monday Wallet" */}
+        <div
+          style={{
+            opacity: heroOpacity,
+            transform: `scale(${heroScale})`,
+            fontSize: 62,
+            fontWeight: 900,
+            lineHeight: 1.1,
+            textAlign: "center",
+            marginBottom: 24,
+          }}
+        >
+          <span style={{ color: "rgba(255,255,255,0.95)" }}>monday </span>
           <span
             style={{
-              fontSize: 46,
-              fontWeight: 900,
-              background: "linear-gradient(135deg, #F5B731, #F7D060)",
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A47 50%, #4C9AFF 100%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
-            Work OS.
+            Wallet
           </span>
         </div>
 
-        {/* Sub-headline */}
+        {/* Divider line */}
         <div
           style={{
-            opacity: subHeadOpacity,
-            transform: `translateY(${subHeadTranslateY}px)`,
-            fontSize: 24,
-            fontWeight: 600,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase" as const,
-            background: "linear-gradient(135deg, #F5B731, #F7D060)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            width: `${dividerWidth * 3}px`,
+            maxWidth: 300,
+            height: 2,
+            background: "linear-gradient(90deg, transparent, rgba(245,183,49,0.4), transparent)",
+            marginBottom: 24,
           }}
-        >
-          Standardize. Govern. Scale.
-        </div>
+        />
 
-        {/* Platform mock */}
-        <div
-          style={{
-            opacity: mockOpacity,
-            transform: `scale(${mockScale}) translateY(${mockTranslateY}px)`,
-          }}
-        >
-          <div
-            style={{
-              width: 880,
-              borderRadius: 16,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.35)",
-              transform: "perspective(1200px) rotateX(4deg)",
-              overflow: "hidden",
-            }}
-          >
-          {/* Browser header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "12px 20px",
-              background: "rgba(0,0,0,0.2)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", gap: 6 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF5F57" }} />
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FDBB2E" }} />
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#27CA40" }} />
-            </div>
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: "#A0A3B1",
-              }}
-            >
-              monday Wallet — Admin Dashboard
-            </span>
-          </div>
-
-          {/* 3-column body */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "200px 1fr 170px",
-              minHeight: 320,
-            }}
-          >
-            {/* Left sidebar */}
-            <div
-              style={{
-                padding: 20,
-                borderRight: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
+        {/* Value prop pills */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 28 }}>
+          {VALUE_PROPS.map((vp, i) => {
+            const s = pillSprings[i];
+            const pillY = interpolate(s, [0, 1], [15, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            const pillOpacity = interpolate(s, [0, 1], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            return (
               <div
+                key={vp.label}
                 style={{
-                  fontSize: 8,
-                  fontWeight: 600,
-                  color: "#A0A3B1",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase" as const,
-                  marginBottom: 6,
-                }}
-              >
-                Total Balance
-              </div>
-              <div
-                style={{
-                  fontSize: 24,
-                  fontWeight: 800,
-                  color: "#FFFFFF",
-                  marginBottom: 12,
-                }}
-              >
-                $50,000
-              </div>
-              <div
-                style={{
-                  height: 6,
-                  borderRadius: 3,
+                  padding: "12px 28px",
+                  borderRadius: 50,
                   background: "rgba(255,255,255,0.04)",
-                  overflow: "hidden",
-                  marginBottom: 8,
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(12px)",
+                  transform: `translateY(${pillY}px)`,
+                  opacity: pillOpacity,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
                 }}
               >
                 <div
                   style={{
-                    width: "64%",
-                    height: "100%",
-                    borderRadius: 3,
-                    background: "linear-gradient(90deg, #F5B731, #F7D060)",
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    background: `linear-gradient(135deg, ${vp.gradFrom}, ${vp.gradTo})`,
+                    boxShadow: `0 0 8px ${vp.gradFrom}40`,
                   }}
                 />
-              </div>
-              <div style={{ fontSize: 10, color: "#A0A3B1", marginBottom: 16 }}>
-                64% allocated
-              </div>
-              {["AI Credits", "Vibe Apps", "Sidekick"].map((name, i) => (
-                <div
-                  key={name}
+                <span
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "8px 0",
-                    borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    fontSize: 16,
+                    fontWeight: 700,
+                    background: `linear-gradient(135deg, ${vp.gradFrom}, ${vp.gradTo})`,
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                   }}
                 >
-                  <div
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 8,
-                      background: "rgba(255,255,255,0.06)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {name === "AI Credits" ? (
-                      <GoldCoinSvg size={16} />
-                    ) : (
-                      <Img
-                        src={staticFile(name === "Vibe Apps" ? "assets/icon-vibe.png" : "assets/icon-sidekick.png")}
-                        style={{ width: 16, height: 16, objectFit: "contain" }}
-                      />
-                    )}
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: "#FFFFFF" }}>{name}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Center: table */}
-            <div style={{ padding: 20, overflow: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign: "left" as const, color: "#A0A3B1", fontWeight: 600, paddingBottom: 12 }}>Offering</th>
-                    <th style={{ textAlign: "right" as const, color: "#A0A3B1", fontWeight: 600, paddingBottom: 12 }}>Allocated</th>
-                    <th style={{ textAlign: "right" as const, color: "#A0A3B1", fontWeight: 600, paddingBottom: 12 }}>Spent</th>
-                    <th style={{ textAlign: "right" as const, color: "#A0A3B1", fontWeight: 600, paddingBottom: 12 }}>Cap</th>
-                    <th style={{ textAlign: "left" as const, color: "#A0A3B1", fontWeight: 600, paddingBottom: 12 }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {TABLE_ROWS.map((row, i) => {
-                    const rowStartFrame = 42 + i * 4;
-                    const rowSpring = spring({
-                      frame: frame - rowStartFrame,
-                      fps,
-                      config: { damping: 200 },
-                    });
-                    const rowOpacity = interpolate(
-                      rowSpring,
-                      [0, 1],
-                      [0, 1],
-                      { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-                    );
-                    const rowTranslateX = interpolate(
-                      rowSpring,
-                      [0, 1],
-                      [15, 0],
-                      { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-                    );
-                    return (
-                      <tr
-                        key={row.name}
-                        style={{
-                          opacity: rowOpacity,
-                          transform: `translateX(${rowTranslateX}px)`,
-                        }}
-                      >
-                        <td style={{ padding: "10px 0", color: "#FFFFFF" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div
-                              style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: 6,
-                                background: "rgba(255,255,255,0.06)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              {row.icon ? (
-                                <Img
-                                  src={staticFile(row.icon)}
-                                  style={{ width: 14, height: 14, objectFit: "contain" }}
-                                />
-                              ) : (
-                                <GoldCoinSvg size={14} />
-                              )}
-                            </div>
-                            {row.name}
-                          </div>
-                        </td>
-                        <td style={{ padding: "10px 0", color: "#A0A3B1", textAlign: "right" as const }}>{row.alloc}</td>
-                        <td style={{ padding: "10px 0", color: "#A0A3B1", textAlign: "right" as const }}>{row.spent}</td>
-                        <td style={{ padding: "10px 0", color: "#A0A3B1", textAlign: "right" as const }}>{row.cap}</td>
-                        <td style={{ padding: "10px 0" }}>
-                          <span
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: 100,
-                              fontSize: 10,
-                              fontWeight: 600,
-                              background: row.status === "ok" ? "rgba(0,202,114,0.15)" : "rgba(253,171,61,0.15)",
-                              color: row.status === "ok" ? "#00CA72" : "#FDAB3D",
-                            }}
-                          >
-                            {row.status === "ok" ? "On track" : "Near cap"}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Right panel */}
-            <div
-              style={{
-                padding: 20,
-                borderLeft: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                  marginBottom: 12,
-                }}
-              >
-                Spend by Experience
+                  {vp.label}
+                </span>
               </div>
-              {SPEND_BY_EXP.map((item) => (
-                <div key={item.name} style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 9, color: "#A0A3B1", marginBottom: 4 }}>{item.name}</div>
-                  <div
-                    style={{
-                      height: 6,
-                      borderRadius: 3,
-                      background: "rgba(255,255,255,0.04)",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: `${item.pct}%`,
-                        height: "100%",
-                        borderRadius: 3,
-                        background: "linear-gradient(90deg, #F5B731, #F7D060)",
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-              <div
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                  marginTop: 16,
-                  marginBottom: 12,
-                }}
-              >
-                Top Teams
-              </div>
-              {TOP_TEAMS.map((t) => (
-                <div
-                  key={t.name}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: 10,
-                    color: "#A0A3B1",
-                    padding: "4px 0",
-                  }}
-                >
-                  <span>{t.name}</span>
-                  <span style={{ fontWeight: 600 }}>{t.val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          </div>
+            );
+          })}
         </div>
 
-        {/* CTA - sibling of platform mock */}
+        {/* Closing tagline */}
+        <div
+          style={{
+            opacity: taglineOpacity,
+            transform: `translateY(${taglineY}px)`,
+            fontSize: 15,
+            fontWeight: 500,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase" as const,
+            color: "rgba(255,255,255,0.35)",
+            marginBottom: 32,
+          }}
+        >
+          Standardize &middot; Govern &middot; Scale
+        </div>
+
+        {/* CTA Button */}
         <div
           style={{
             opacity: ctaOpacity,
-            transform: `scale(${ctaScale}) translateY(${ctaTranslateY}px)`,
+            transform: `scale(${ctaScale})`,
+            position: "relative",
           }}
         >
+          <div
+            style={{
+              position: "absolute",
+              inset: -24,
+              borderRadius: 30,
+              background: "radial-gradient(ellipse, rgba(245,183,49,0.3), transparent 70%)",
+              filter: "blur(20px)",
+              opacity: ctaGlow,
+            }}
+          />
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 12,
-              padding: "18px 44px",
-              background: "linear-gradient(135deg, #F5B731, #F7D060)",
-              color: "#0F1117",
+              padding: "18px 48px",
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A47 40%, #4C9AFF 100%)",
+              color: "#FFFFFF",
               borderRadius: 14,
-              fontSize: 18,
-              fontWeight: 700,
+              fontSize: 20,
+              fontWeight: 800,
+              boxShadow: "0 12px 40px rgba(255,138,71,0.35)",
+              position: "relative",
             }}
           >
-            Discover Monday Wallet
+            Discover monday Wallet
           </div>
         </div>
       </div>

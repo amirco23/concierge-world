@@ -595,12 +595,18 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
 .scene-dot:hover .scene-dot-tip{opacity:1}
 .monday-logo{
   position:fixed;top:20px;left:24px;z-index:100;
-  display:flex;align-items:center;opacity:.7;transition:opacity .3s ease;
+  display:flex;align-items:center;gap:12px;opacity:.7;transition:opacity .3s ease;
 }
 .monday-logo:hover{opacity:1}
+.monday-logo-icon{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(255,138,71,.3);
+}
+.monday-logo-icon svg{display:block}
 .monday-logo-img{
   height:28px;width:auto;display:block;
-  /* Invert black text to white for dark background, keep colors via hue-rotate */
   filter:brightness(0) invert(1);
 }
 .replay-btn{
@@ -624,7 +630,56 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--text);
 <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
 <script type="text/babel">
-const {useState,useEffect,useRef,useMemo} = React;
+const {useState,useEffect,useRef,useMemo,useCallback} = React;
+
+/* ================================================
+   ELEVENLABS CONFIG — paste your API key below
+   ================================================ */
+const ELEVEN_API_KEY = ''; // <-- paste your ElevenLabs API key here
+const ELEVEN_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" — change to any voice ID
+const ELEVEN_MODEL = 'eleven_multilingual_v2';
+
+const VOICEOVER_LINES = [
+  "More products. More consumption. But budgeting and controlling them is fragmented across subscriptions, credits, add-ons, and seats.",
+  "Introducing Monday Wallet. One place to fund, allocate, and control every work experience across your organization.",
+  "Load funds into a single wallet. Then allocate budgets to AI Credits, Vibe Apps, Sidekick, Agents, and more — in real time.",
+  "Set spending caps, auto top-up rules, and approval thresholds. Budget controls that enforce your organization's policies automatically.",
+  "See spend by team, department, and product. Finance, IT, and Ops finally speak the same language — with full company-wide visibility.",
+  "Monday Wallet. One wallet for your entire Work OS. Standardize. Govern. Scale."
+];
+
+/* ================================================
+   ELEVENLABS TTS ENGINE
+   ================================================ */
+const voiceCache = {};
+
+async function fetchVoiceover(text, sceneIdx) {
+  if (voiceCache[sceneIdx]) return voiceCache[sceneIdx];
+  if (!ELEVEN_API_KEY) return null;
+
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE_ID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': ELEVEN_API_KEY,
+      },
+      body: JSON.stringify({
+        text,
+        model_id: ELEVEN_MODEL,
+        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3 }
+      })
+    });
+    if (!res.ok) { console.warn('ElevenLabs error:', res.status); return null; }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    voiceCache[sceneIdx] = url;
+    return url;
+  } catch (e) {
+    console.warn('ElevenLabs fetch failed:', e);
+    return null;
+  }
+}
 
 /* ================================================
    CONSTANTS
@@ -671,6 +726,55 @@ function useCountUp(target,dur,delay){
   return v;
 }
 
+/* Voiceover hook — fetches and plays audio for a scene */
+function useVoiceover(sceneIdx, paused) {
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Stop any playing audio first
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+
+    if (!ELEVEN_API_KEY || sceneIdx < 0 || sceneIdx >= VOICEOVER_LINES.length) return;
+    let cancelled = false;
+
+    // Fetch and play current scene audio
+    fetchVoiceover(VOICEOVER_LINES[sceneIdx], sceneIdx).then(url => {
+      if (cancelled || !url) return;
+      const audio = new Audio(url);
+      audio.volume = 0.85;
+      audioRef.current = audio;
+      if (!paused) audio.play().catch(() => {});
+    });
+
+    // Pre-fetch next scene
+    if (sceneIdx + 1 < VOICEOVER_LINES.length) {
+      fetchVoiceover(VOICEOVER_LINES[sceneIdx + 1], sceneIdx + 1);
+    }
+
+    return () => {
+      cancelled = true;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current = null;
+      }
+    };
+  }, [sceneIdx]);
+
+  // Handle pause/resume
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (paused) audioRef.current.pause();
+    else audioRef.current.play().catch(() => {});
+  }, [paused]);
+
+  return audioRef;
+}
+
 /* ================================================
    BACKGROUND
    ================================================ */
@@ -692,6 +796,9 @@ function Background(){
 function MondayLogo(){
   return(
     <div className="monday-logo">
+      <div className="monday-logo-icon">
+        <svg viewBox="0 0 48 48" width="20" height="20" fill="none"><rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity=".9"/><rect x="4" y="12" width="40" height="10" rx="4" fill="#fff"/><rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity=".6"/><rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(245,183,49,.35)"/><circle cx="36" cy="28" r="3" fill="#fff"/></svg>
+      </div>
       <img src="assets/monday-logo.png" alt="monday.com" className="monday-logo-img"/>
     </div>
   );
@@ -1081,10 +1188,14 @@ function App(){
   const [key,setKey]=useState(0);
   const [done,setDone]=useState(false);
   const [paused,setPaused]=useState(false);
+  const [muted,setMuted]=useState(false);
   const [elapsed,setElapsed]=useState(0);
   const t0=useRef(performance.now());
   const autoTimer1=useRef(null);
   const autoTimer2=useRef(null);
+
+  /* Voiceover */
+  useVoiceover(muted ? -1 : si, paused);
 
   /* Progress tracking */
   useEffect(()=>{
@@ -1151,6 +1262,15 @@ function App(){
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="5" height="18" rx="1"/><rect x="14" y="3" width="5" height="18" rx="1"/></svg>
           )}
         </button>
+        {ELEVEN_API_KEY && (
+          <button className="pause-btn" onClick={()=>setMuted(m=>!m)} title={muted?'Unmute':'Mute'} style={{marginLeft:'4px'}}>
+            {muted?(
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            ):(
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+            )}
+          </button>
+        )}
       </div>
       <button className={`replay-btn ${done?'v':''}`} onClick={replay}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

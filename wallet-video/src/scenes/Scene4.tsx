@@ -13,86 +13,70 @@ const { fontFamily } = loadFont("normal", {
 });
 
 const TOGGLE_ROWS = [
-  { label: "Monthly caps", onFrame: 21 },
-  { label: "Auto top-up", onFrame: 39 },
-  { label: "Alerts at 80%", onFrame: 57 },
-  { label: "Approval required above threshold", onFrame: 75 },
+  { label: "Monthly caps", onFrame: 18, desc: "Limit monthly spending per offering" },
+  { label: "Auto top-up", onFrame: 33, desc: "Refill when balance drops below threshold" },
+  { label: "Alerts at 80%", onFrame: 48, desc: "Notify admins when nearing budget limit" },
+  { label: "Approval required above threshold", onFrame: 63, desc: "Manager sign-off for large purchases" },
 ];
 
 export const Scene4: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Headline: blur/fade in 0-15
-  const headlineOpacity = interpolate(
-    frame,
-    [0, 15],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const headlineBlur = interpolate(
-    frame,
-    [0, 15],
-    [8, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Headline: blur/fade in 0-12
+  const headlineOpacity = interpolate(frame, [0, 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const headlineBlur = interpolate(frame, [0, 12], [8, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Control panel: spring scale in at frame 9
+  // Control panel: spring scale in at frame 6
   const panelSpring = spring({
-    frame: frame - 9,
+    frame: frame - 6,
     fps,
     config: { damping: 200 },
   });
-  const panelScale = interpolate(
-    panelSpring,
-    [0, 1],
-    [0.92, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const panelOpacity = interpolate(
-    panelSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const panelScale = interpolate(panelSpring, [0, 1], [0.92, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const panelOpacity = interpolate(panelSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Warning toast: slides up from bottom at frame 117
+  // Warning toast: slides up from bottom at frame 105
   const warningSpring = spring({
-    frame: frame - 117,
+    frame: frame - 105,
     fps,
-    config: { damping: 20, stiffness: 200 },
+    config: { damping: 18, stiffness: 180 },
   });
-  const warningTranslateY = interpolate(
-    warningSpring,
-    [0, 1],
-    [80, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const warningOpacity = interpolate(
-    warningSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const warningTranslateY = interpolate(warningSpring, [0, 1], [60, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const warningOpacity = interpolate(warningSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // OK toast: slides up at frame 150
+  // OK toast: slides up at frame 135
   const okSpring = spring({
-    frame: frame - 150,
+    frame: frame - 135,
     fps,
-    config: { damping: 20, stiffness: 200 },
+    config: { damping: 18, stiffness: 180 },
   });
-  const okTranslateY = interpolate(
-    okSpring,
-    [0, 1],
-    [80, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const okOpacity = interpolate(
-    okSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const okTranslateY = interpolate(okSpring, [0, 1], [60, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const okOpacity = interpolate(okSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <div
@@ -104,7 +88,7 @@ export const Scene4: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 36,
+        gap: 28,
         fontFamily,
       }}
     >
@@ -122,7 +106,7 @@ export const Scene4: React.FC = () => {
       >
         <span
           style={{
-            fontSize: 34,
+            fontSize: 38,
             fontWeight: 900,
             color: "rgba(255,255,255,0.95)",
           }}
@@ -131,7 +115,7 @@ export const Scene4: React.FC = () => {
         </span>
         <span
           style={{
-            fontSize: 34,
+            fontSize: 38,
             fontWeight: 900,
             background: "linear-gradient(135deg, #F5B731, #F7D060)",
             backgroundClip: "text",
@@ -146,7 +130,7 @@ export const Scene4: React.FC = () => {
       {/* Control panel */}
       <div
         style={{
-          width: 520,
+          width: 560,
           background: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.06)",
           borderRadius: 18,
@@ -168,9 +152,9 @@ export const Scene4: React.FC = () => {
         >
           <div
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
+              width: 34,
+              height: 34,
+              borderRadius: 17,
               background: "linear-gradient(135deg, #F5B731, #F7D060)",
               display: "flex",
               alignItems: "center",
@@ -190,13 +174,7 @@ export const Scene4: React.FC = () => {
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </div>
-          <span
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#FFFFFF",
-            }}
-          >
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>
             Budget Controls
           </span>
         </div>
@@ -209,12 +187,10 @@ export const Scene4: React.FC = () => {
             config: { damping: 200 },
           });
           const isOn = toggleSpring > 0.5;
-          const knobX = interpolate(
-            toggleSpring,
-            [0, 1],
-            [2, 20],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
+          const knobX = interpolate(toggleSpring, [0, 1], [2, 20], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          });
 
           return (
             <div
@@ -223,11 +199,11 @@ export const Scene4: React.FC = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "16px 0",
+                padding: "14px 0",
                 borderBottom: "1px solid rgba(255,255,255,0.04)",
               }}
             >
-              {/* Left: check circle + label */}
+              {/* Left: check circle + label + description */}
               <div
                 style={{
                   display: "flex",
@@ -237,9 +213,9 @@ export const Scene4: React.FC = () => {
               >
                 <div
                   style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: 10,
+                    width: 22,
+                    height: 22,
+                    borderRadius: 11,
                     border: isOn ? "none" : "2px solid rgba(255,255,255,0.3)",
                     background: isOn
                       ? "linear-gradient(135deg, #F5B731, #F7D060)"
@@ -247,6 +223,7 @@ export const Scene4: React.FC = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexShrink: 0,
                   }}
                 >
                   {isOn && (
@@ -264,27 +241,27 @@ export const Scene4: React.FC = () => {
                     </svg>
                   )}
                 </div>
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: "#A0A3B1",
-                  }}
-                >
-                  {row.label}
-                </span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: isOn ? "#FFFFFF" : "#A0A3B1" }}>
+                    {row.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#5A5E72", marginTop: 2 }}>
+                    {row.desc}
+                  </div>
+                </div>
               </div>
 
               {/* Right: toggle switch */}
               <div
                 style={{
-                  width: 40,
-                  height: 22,
-                  borderRadius: 11,
+                  width: 42,
+                  height: 24,
+                  borderRadius: 12,
                   background: isOn
                     ? "linear-gradient(135deg, #F5B731, #F7D060)"
                     : "rgba(255,255,255,0.08)",
                   position: "relative",
+                  flexShrink: 0,
                 }}
               >
                 <div
@@ -292,10 +269,11 @@ export const Scene4: React.FC = () => {
                     position: "absolute",
                     left: knobX,
                     top: 3,
-                    width: 16,
-                    height: 16,
-                    borderRadius: 8,
+                    width: 18,
+                    height: 18,
+                    borderRadius: 9,
                     background: "#FFFFFF",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
                   }}
                 />
               </div>
@@ -308,47 +286,57 @@ export const Scene4: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          bottom: 80,
+          bottom: 72,
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
           flexDirection: "column",
-          gap: 12,
+          gap: 10,
           alignItems: "center",
         }}
       >
         {/* Warning toast */}
         <div
           style={{
-            background: "rgba(245,183,49,0.08)",
-            border: "1px solid rgba(245,183,49,0.2)",
+            background: "rgba(245,183,49,0.1)",
+            border: "1px solid rgba(245,183,49,0.25)",
             color: "#F5B731",
             borderRadius: 14,
-            padding: "14px 24px",
+            padding: "12px 24px",
             transform: `translateY(${warningTranslateY}px)`,
             opacity: warningOpacity,
             fontSize: 14,
             fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
           }}
         >
-          ⚠️ Agents reached 80% of budget
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          AI Agents reached 80% of budget
         </div>
 
-        {/* OK toast - success feel */}
+        {/* OK toast - success */}
         <div
           style={{
             background: "rgba(34,197,94,0.12)",
             border: "1px solid rgba(34,197,94,0.25)",
             color: "#22C55E",
             borderRadius: 14,
-            padding: "14px 24px",
+            padding: "12px 24px",
             transform: `translateY(${okTranslateY}px)`,
             opacity: okOpacity,
             fontSize: 14,
             fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
           }}
         >
-          ⬆️ Auto-top-up triggered: +$2,000
+          <span style={{ fontSize: 18 }}>✅</span>
+          Auto top-up triggered: +$2,000
         </div>
       </div>
     </div>

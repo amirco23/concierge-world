@@ -4,6 +4,8 @@ import {
   useVideoConfig,
   interpolate,
   spring,
+  Img,
+  staticFile,
   AbsoluteFill,
 } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Poppins";
@@ -42,64 +44,67 @@ export const Scene5: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Headline: blur/fade in 0-15
-  const headlineOpacity = interpolate(
-    frame,
-    [0, 15],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const headlineBlur = interpolate(
-    frame,
-    [0, 15],
-    [8, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Headline: blur/fade in 0-12
+  const headlineOpacity = interpolate(frame, [0, 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const headlineBlur = interpolate(frame, [0, 12], [8, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Left card: slide from left at frame 51
+  // Left card: slide from left at frame 36
   const leftCardSpring = spring({
-    frame: frame - 51,
+    frame: frame - 36,
     fps,
     config: { damping: 200 },
   });
-  const leftCardTranslateX = interpolate(
-    leftCardSpring,
-    [0, 1],
-    [-30, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const leftCardTranslateX = interpolate(leftCardSpring, [0, 1], [-40, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const leftCardOpacity = interpolate(leftCardSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Right card: slide from right at frame 55
+  // Right card: slide from right at frame 42
   const rightCardSpring = spring({
-    frame: frame - 55,
+    frame: frame - 42,
     fps,
     config: { damping: 200 },
   });
-  const rightCardTranslateX = interpolate(
-    rightCardSpring,
-    [0, 1],
-    [30, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const rightCardTranslateX = interpolate(rightCardSpring, [0, 1], [40, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const rightCardOpacity = interpolate(rightCardSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Subtitle: spring slide-up at frame 108
-  const subtitleSpring = spring({
-    frame: frame - 108,
+  // CTA: spring scale-up + translateY at frame 120
+  const ctaSpring = spring({
+    frame: frame - 120,
     fps,
-    config: { damping: 200 },
+    config: { damping: 18, stiffness: 180 },
   });
-  const subtitleTranslateY = interpolate(
-    subtitleSpring,
-    [0, 1],
-    [20, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const subtitleOpacity = interpolate(
-    subtitleSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const ctaScale = interpolate(ctaSpring, [0, 1], [0.85, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const ctaTranslateY = interpolate(ctaSpring, [0, 1], [15, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const ctaOpacity = interpolate(ctaSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // CTA pulse glow
+  const ctaGlow = frame > 135 ? 0.3 + Math.sin((frame - 135) * 0.12) * 0.15 : 0;
 
   return (
     <AbsoluteFill>
@@ -112,7 +117,7 @@ export const Scene5: React.FC = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 28,
+          gap: 22,
           fontFamily,
         }}
       >
@@ -130,7 +135,7 @@ export const Scene5: React.FC = () => {
         >
           <span
             style={{
-              fontSize: 34,
+              fontSize: 38,
               fontWeight: 900,
               color: "rgba(255,255,255,0.95)",
             }}
@@ -139,7 +144,7 @@ export const Scene5: React.FC = () => {
           </span>
           <span
             style={{
-              fontSize: 34,
+              fontSize: 38,
               fontWeight: 900,
               background: "linear-gradient(135deg, #F5B731, #F7D060)",
               backgroundClip: "text",
@@ -161,31 +166,27 @@ export const Scene5: React.FC = () => {
           }}
         >
           {TEAM_CHIPS.map((chip, i) => {
-            const chipStartFrame = 27 + i * 3;
+            const chipStartFrame = 18 + i * 2;
             const chipSpring = spring({
               frame: frame - chipStartFrame,
               fps,
               config: { damping: 200 },
             });
-            const chipTranslateY = interpolate(
-              chipSpring,
-              [0, 1],
-              [10, 0],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            );
-            const chipOpacity = interpolate(
-              chipSpring,
-              [0, 1],
-              [0, 1],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            );
+            const chipTranslateY = interpolate(chipSpring, [0, 1], [10, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            const chipOpacity = interpolate(chipSpring, [0, 1], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
             return (
               <div
                 key={chip.name}
                 style={{
                   padding: "8px 20px",
                   borderRadius: 100,
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: 700,
                   color: "#0F1117",
                   background: chip.color,
@@ -200,21 +201,17 @@ export const Scene5: React.FC = () => {
         </div>
 
         {/* Two-card grid */}
-        <div
-          style={{
-            display: "flex",
-            gap: 20,
-          }}
-        >
+        <div style={{ display: "flex", gap: 20 }}>
           {/* Left card - Spend by Team */}
           <div
             style={{
-              width: 320,
+              width: 340,
               background: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 16,
               padding: 24,
               transform: `translateX(${leftCardTranslateX}px)`,
+              opacity: leftCardOpacity,
             }}
           >
             <div
@@ -228,8 +225,8 @@ export const Scene5: React.FC = () => {
               Spend by Team
             </div>
             {SPEND_BY_TEAM.map((row, i) => {
-              const barStartFrame = 51 + i * 4;
-              const barEndFrame = barStartFrame + 20;
+              const barStartFrame = 42 + i * 3;
+              const barEndFrame = barStartFrame + 18;
               const barWidthPct = interpolate(
                 frame,
                 [barStartFrame, barEndFrame],
@@ -248,7 +245,7 @@ export const Scene5: React.FC = () => {
                 >
                   <div
                     style={{
-                      width: 60,
+                      width: 65,
                       fontSize: 12,
                       color: "#A0A3B1",
                       textAlign: "right" as const,
@@ -276,7 +273,7 @@ export const Scene5: React.FC = () => {
                   </div>
                   <div
                     style={{
-                      width: 50,
+                      width: 55,
                       fontSize: 12,
                       fontWeight: 700,
                       color: "#A0A3B1",
@@ -293,12 +290,13 @@ export const Scene5: React.FC = () => {
           {/* Right card - Spend by Experience */}
           <div
             style={{
-              width: 320,
+              width: 340,
               background: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.06)",
               borderRadius: 16,
               padding: 24,
               transform: `translateX(${rightCardTranslateX}px)`,
+              opacity: rightCardOpacity,
             }}
           >
             <div
@@ -312,8 +310,8 @@ export const Scene5: React.FC = () => {
               Spend by Experience
             </div>
             {SPEND_BY_EXPERIENCE.map((row, i) => {
-              const barStartFrame = 55 + i * 4;
-              const barEndFrame = barStartFrame + 20;
+              const barStartFrame = 48 + i * 3;
+              const barEndFrame = barStartFrame + 18;
               const barWidthPct = interpolate(
                 frame,
                 [barStartFrame, barEndFrame],
@@ -332,7 +330,7 @@ export const Scene5: React.FC = () => {
                 >
                   <div
                     style={{
-                      width: 60,
+                      width: 65,
                       fontSize: 12,
                       color: "#A0A3B1",
                       textAlign: "right" as const,
@@ -360,7 +358,7 @@ export const Scene5: React.FC = () => {
                   </div>
                   <div
                     style={{
-                      width: 50,
+                      width: 55,
                       fontSize: 12,
                       fontWeight: 700,
                       color: "#A0A3B1",
@@ -375,20 +373,79 @@ export const Scene5: React.FC = () => {
           </div>
         </div>
 
-        {/* Subtitle */}
+        {/* CTA */}
         <div
           style={{
-            opacity: subtitleOpacity,
-            transform: `translateY(${subtitleTranslateY}px)`,
-            fontSize: 18,
-            color: "#A0A3B1",
-            textAlign: "center" as const,
+            opacity: ctaOpacity,
+            transform: `scale(${ctaScale}) translateY(${ctaTranslateY}px)`,
+            position: "relative",
           }}
         >
-          Finance, IT and Ops finally{" "}
-          <span style={{ fontWeight: 700, color: "#FFFFFF" }}>
-            speak the same language.
-          </span>
+          {/* Glow behind CTA */}
+          <div
+            style={{
+              position: "absolute",
+              inset: -20,
+              borderRadius: 30,
+              background: "radial-gradient(ellipse, rgba(245,183,49,0.3), transparent 70%)",
+              filter: "blur(20px)",
+              opacity: ctaGlow,
+            }}
+          />
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "18px 44px",
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A47 40%, #4C9AFF 100%)",
+              color: "#FFFFFF",
+              borderRadius: 14,
+              fontSize: 20,
+              fontWeight: 800,
+              boxShadow: "0 8px 32px rgba(255,138,71,0.35)",
+              position: "relative",
+            }}
+          >
+            {/* Mini wallet logo in button */}
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                background: "rgba(255,255,255,0.2)",
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <svg viewBox="0 0 48 48" style={{ width: 18, height: 18 }}>
+                <rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity="0.9" />
+                <rect x="4" y="12" width="40" height="10" rx="4" fill="#fff" />
+                <rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity="0.6" />
+                <rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(255,255,255,0.4)" />
+                <circle cx="36" cy="28" r="3" fill="#fff" />
+              </svg>
+            </div>
+            Discover monday Wallet
+          </div>
+        </div>
+
+        {/* Tagline */}
+        <div
+          style={{
+            opacity: ctaOpacity,
+            fontSize: 18,
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase" as const,
+            background: "linear-gradient(135deg, #FFB800 0%, #FF8A47 50%, #4C9AFF 100%)",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Standardize. Govern. Scale.
         </div>
       </div>
     </AbsoluteFill>

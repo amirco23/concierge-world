@@ -1,21 +1,33 @@
 import { Composition } from "remotion";
 import { WalletExplainer } from "./WalletExplainer";
+import { WalletExplainerV2 } from "./WalletExplainerV2";
 
-// 30fps, scene durations: 5.5 + 5.2 + 6.0 + 6.2 + 5.8 + 7.3 = 36s = 1080 frames
-// With 5 fade transitions of ~15 frames each, subtract ~75 frames ≈ 1005 frames
-// Let's use 1080 frames (36s) total, transitions handled internally
+// 30fps — scene durations calibrated to actual audio with 20f+ safety buffers
 const FPS = 30;
-const TOTAL_FRAMES = 1080;
+// V1: 336+230+296+196+204 - 4×12 = 1214 frames (~40.5s)
+const TOTAL_FRAMES = 1214;
+// V2: 336+230+296+196+204+200 - 5×12 = 1402 frames (~46.7s)
+const TOTAL_FRAMES_V2 = 1402;
 
 export const RemotionRoot: React.FC = () => {
   return (
-    <Composition
-      id="WalletExplainer"
-      component={WalletExplainer}
-      durationInFrames={TOTAL_FRAMES}
-      fps={FPS}
-      width={1920}
-      height={1080}
-    />
+    <>
+      <Composition
+        id="WalletExplainer"
+        component={WalletExplainer}
+        durationInFrames={TOTAL_FRAMES}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="WalletExplainerV2"
+        component={WalletExplainerV2}
+        durationInFrames={TOTAL_FRAMES_V2}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
+    </>
   );
 };

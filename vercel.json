@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/wallet-explainer-backup.html" }
+    { "source": "/", "destination": "/landing.html" }
   ]
 }

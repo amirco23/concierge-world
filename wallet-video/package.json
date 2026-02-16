@@ -5,12 +5,14 @@
   "scripts": {
     "start": "npx remotion studio",
     "build": "npx remotion render WalletExplainer out/wallet-explainer.mp4",
+    "build:v2": "npx remotion render WalletExplainerV2 out/wallet-explainer-v2.mp4",
     "upgrade": "npx remotion upgrade"
   },
   "dependencies": {
     "@remotion/cli": "^4",
     "@remotion/google-fonts": "^4",
     "@remotion/transitions": "^4",
+    "elevenlabs": "^1.59.0",
     "react": "^19",
     "react-dom": "^19",
     "remotion": "^4"

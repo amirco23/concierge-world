@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>monday Wallet — One wallet for your entire Work OS</title>
+<meta name="description" content="Centralize funding, allocate budgets, and control AI spending across your entire monday.com platform with monday Wallet."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   RESET & VARIABLES
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --font:'Poppins',system-ui,-apple-system,sans-serif;
+  --bg:#0B0D14;
+  --bg-elevated:#131620;
+  --card:#141825;
+  --card-border:rgba(255,255,255,.06);
+  --card-hover:rgba(255,255,255,.12);
+  /* Cool yellow for text & UI accents */
+  --accent:#FFD93D;
+  --accent-dim:rgba(255,217,61,.10);
+  --accent-glow:rgba(255,217,61,.18);
+  /* Teal/cyan for background ambiance only */
+  --teal:#36D8B7;
+  --cyan:#4ECDC4;
+  --mint:#00CA72;
+  --pink:#FD79A8;
+  --orange:#FDAB3D;
+  --purple:#A29BFE;
+  --blue:#579BFC;
+  --text:#FFFFFF;
+  --text-sec:#9BA0B4;
+  --text-muted:#4E5368;
+  --grad-accent:linear-gradient(135deg,#FFD93D,#FFE873);
+  --grad-bg:linear-gradient(135deg,#00CA72,#36D8B7,#4ECDC4);
+  --ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+html{scroll-behavior:smooth;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+html,body{font-family:var(--font);color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+/* Scroll offset for fixed nav */
+section[id]{scroll-margin-top:80px}
+
+/* ============================================================
+   BACKGROUND
+   ============================================================ */
+.bg-fixed{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:var(--bg);
+}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.18;pointer-events:none}
+.bg-orb-1{width:50vmax;height:50vmax;top:-25%;left:-10%;background:radial-gradient(circle,rgba(0,202,114,.14),transparent 70%)}
+.bg-orb-2{width:40vmax;height:40vmax;bottom:-20%;right:-10%;background:radial-gradient(circle,rgba(54,216,183,.10),transparent 70%)}
+.bg-orb-3{width:30vmax;height:30vmax;top:40%;right:20%;background:radial-gradient(circle,rgba(78,205,196,.08),transparent 70%)}
+.bg-dots{
+  position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.bg-noise{
+  position:absolute;inset:0;opacity:.025;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+}
+
+/* ============================================================
+   GLOBAL LAYOUT
+   ============================================================ */
+.page{position:relative;z-index:1;overflow-x:hidden}
+.container{max-width:1200px;margin:0 auto;padding:0 clamp(24px,5vw,48px)}
+section{padding:clamp(140px,20vh,220px) 0}
+
+/* ============================================================
+   ALTERNATING SECTION BACKGROUNDS
+   ============================================================ */
+/* Full-bleed tinted backgrounds — soft gradient edges, no hard lines */
+.section-alt,
+.section-dark{
+  position:relative;
+  z-index:0;
+}
+.section-alt::before,
+.section-dark::before{
+  content:'';position:absolute;
+  top:-60px;bottom:-60px;
+  left:50%;transform:translateX(-50%);
+  width:100vw;z-index:-1;
+  pointer-events:none;
+}
+.section-alt::before{
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(19,22,32,.55) 8%,
+    rgba(19,22,32,.6) 50%,
+    rgba(19,22,32,.55) 92%,
+    transparent 100%
+  );
+}
+.section-dark::before{
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(10,12,20,.45) 8%,
+    rgba(10,12,20,.5) 50%,
+    rgba(10,12,20,.45) 92%,
+    transparent 100%
+  );
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 clamp(24px,5vw,48px);
+  background:rgba(11,13,20,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .3s ease;
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;gap:16px;
+}
+.nav-logo{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.nav-logo-icon{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(255,138,71,.3);
+}
+.nav-logo-icon svg{display:block}
+.nav-logo-img{height:28px;width:auto;filter:brightness(0) invert(1);opacity:.9}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-link{
+  font-size:14px;font-weight:500;color:var(--text-sec);
+  transition:color .2s ease;white-space:nowrap;
+}
+.nav-link:hover{color:var(--text)}
+.nav-cta{
+  padding:9px 22px;border-radius:10px;
+  background:var(--grad-accent);color:#0B0D14;
+  font-size:13px;font-weight:600;
+  transition:transform .2s var(--ease-spring),box-shadow .3s ease;
+  box-shadow:0 4px 20px rgba(255,217,61,.18);
+  white-space:nowrap;flex-shrink:0;
+}
+.nav-cta:hover{transform:translateY(-1px) scale(1.02);box-shadow:0 8px 32px rgba(255,217,61,.3)}
+/* Mobile CTA in nav (shown only on mobile) */
+.nav-cta-mobile{
+  display:none;padding:8px 18px;border-radius:10px;
+  background:var(--grad-accent);color:#0B0D14;
+  font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding-top:clamp(110px,16vh,160px);padding-bottom:clamp(80px,10vh,120px);
+  position:relative;
+}
+.hero-glow{
+  position:absolute;top:50%;left:50%;width:140%;height:140%;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(ellipse,rgba(0,202,114,.05) 0%,rgba(54,216,183,.02) 30%,transparent 55%);
+}
+.hero-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);
+  align-items:center;width:100%;
+}
+.hero-content{display:flex;flex-direction:column;gap:32px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:100px;width:fit-content;
+  background:var(--accent-dim);border:1px solid rgba(255,217,61,.15);
+  font-size:12px;font-weight:600;color:var(--accent);
+  letter-spacing:.03em;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{
+  font-size:clamp(36px,5vw,64px);font-weight:600;line-height:1.1;
+  letter-spacing:-.02em;
+}
+.hero-title-accent{
+  background:var(--grad-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:clamp(16px,1.6vw,20px);font-weight:400;line-height:1.65;
+  color:var(--text-sec);max-width:480px;
+}
+.hero-sub strong{color:var(--accent);font-weight:600}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;padding-top:4px}
+.btn-hero{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 32px;border-radius:14px;
+  font-family:var(--font);font-size:15px;font-weight:600;
+  cursor:pointer;transition:transform .2s var(--ease-spring),box-shadow .3s ease;
+  border:none;
+}
+.btn-hero-primary{
+  background:var(--grad-accent);color:#0B0D14;
+  box-shadow:0 8px 40px rgba(255,217,61,.2);
+}
+.btn-hero-primary:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 16px 56px rgba(255,217,61,.3)}
+.btn-hero-secondary{
+  background:rgba(255,255,255,.05);color:var(--text);
+  border:1px solid rgba(255,255,255,.1);
+}
+.btn-hero-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center;overflow:visible}
+
+/* Mini wallet card in hero */
+.hero-wallet{
+  width:100%;max-width:480px;
+  background:rgba(26,29,43,.75);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1px solid var(--card-border);
+  border-radius:24px;
+  box-shadow:0 32px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04);
+  padding:clamp(20px,3vw,32px);
+  transform:perspective(1000px) rotateY(-4deg) rotateX(2deg);
+  transition:transform .6s var(--ease-expo);
+}
+.hero-wallet:hover{transform:perspective(1000px) rotateY(0deg) rotateX(0deg)}
+.hw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.hw-icon{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(255,138,71,.25);
+}
+.hw-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
+.hw-balance{font-size:36px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-bottom:6px;overflow:hidden}
+.hw-balance-label{font-size:12px;color:var(--text-muted);font-weight:500;letter-spacing:.5px;margin-bottom:20px}
+.hw-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden;display:flex;margin-bottom:8px}
+.hw-bar-spent{height:100%;background:var(--accent);border-radius:4px 0 0 4px;width:25%;transition:width 1.5s var(--ease-expo)}
+.hw-bar-alloc{height:100%;background:rgba(255,217,61,.18);width:40%;transition:width 1.5s var(--ease-expo)}
+.hw-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:11px;color:var(--text-sec);font-weight:500;margin-bottom:20px}
+.hw-legend span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.hw-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.hw-products{display:flex;flex-direction:column;gap:10px}
+.hw-product{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;
+  border-radius:12px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.04);
+  transition:background .2s ease;
+}
+.hw-product:hover{background:rgba(255,255,255,.06)}
+.hw-product-icon{width:32px;height:32px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.hw-product-icon img{width:100%;height:100%;object-fit:cover}
+.hw-product-name{font-size:13px;font-weight:600;flex:1}
+.hw-product-amount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.hw-product-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;margin:0 8px}
+.hw-product-bar-fill{height:100%;border-radius:2px;transition:width 1.5s var(--ease-expo)}
+
+/* Floating elements around hero wallet */
+.hero-float{
+  position:absolute;padding:10px 18px;border-radius:14px;
+  background:rgba(26,29,43,.85);backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.06);
+  font-size:12px;font-weight:600;
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+  animation:float 6s ease-in-out infinite;
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;z-index:2;
+}
+.hero-float-1{top:0;right:0;transform:translate(30%,-50%);animation-delay:0s}
+.hero-float-2{bottom:30px;left:0;transform:translate(-30%,0);animation-delay:2s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ============================================================
+   VIDEO SECTION
+   ============================================================ */
+.video-section{
+  position:relative;overflow:hidden;
+  padding:clamp(100px,14vh,140px) 0 clamp(60px,8vh,80px);
+}
+.video-wrapper{
+  position:relative;max-width:960px;margin:0 auto;
+  border-radius:20px;overflow:hidden;
+  background:#0a0c12;
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 40px 120px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03);
+  aspect-ratio:16/9;
+  cursor:pointer;
+}
+.video-wrapper video{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.video-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:rgba(11,13,20,.55);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:opacity .4s ease,visibility .4s ease;
+  z-index:2;
+}
+.video-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.video-play-btn{
+  width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 40px rgba(255,138,71,.35);
+  transition:transform .25s var(--ease-spring),box-shadow .3s ease;
+}
+.video-play-btn:hover{transform:scale(1.1);box-shadow:0 12px 56px rgba(255,138,71,.5)}
+.video-play-btn svg{margin-left:4px}
+.video-overlay-text{font-size:14px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.06em}
+
+/* Floating controls when playing */
+.video-controls{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;z-index:3;
+  background:linear-gradient(transparent,rgba(0,0,0,.6));
+  opacity:0;transition:opacity .3s ease;
+  pointer-events:none;
+}
+.video-wrapper:hover .video-controls,
+.video-wrapper.paused .video-controls{opacity:1;pointer-events:auto}
+.video-ctrl-btn{
+  background:none;border:none;cursor:pointer;
+  color:#fff;opacity:.8;transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;
+  -webkit-tap-highlight-color:transparent;
+}
+.video-ctrl-btn:hover{opacity:1}
+.video-progress{
+  flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.15);
+  cursor:pointer;position:relative;overflow:hidden;
+  touch-action:none;
+}
+.video-progress-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,#FFD93D,#FFE873);
+  width:0%;transition:width .1s linear;
+}
+.video-time{font-size:11px;font-weight:600;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums;white-space:nowrap}
+.video-sound-badge{
+  position:absolute;top:16px;right:16px;z-index:3;
+  padding:8px 16px;border-radius:100px;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(8px);
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.7);
+  display:flex;align-items:center;gap:6px;
+  opacity:0;transition:opacity .3s ease;pointer-events:none;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.video-sound-badge.visible{opacity:1;pointer-events:auto}
+.video-section-label{
+  text-align:center;margin-bottom:clamp(40px,6vh,56px);
+}
+.video-section-label .section-eyebrow{display:flex;justify-content:center}
+
+@media(max-width:900px){
+  .video-wrapper{border-radius:14px}
+  .video-play-btn{width:64px;height:64px}
+  .video-play-btn svg{width:24px;height:24px}
+  .video-overlay-text{font-size:12px}
+}
+@media(max-width:600px){
+  .video-section{padding:clamp(56px,8vh,80px) 0 clamp(32px,5vh,40px)}
+  .video-wrapper{border-radius:12px}
+  .video-play-btn{width:56px;height:56px}
+  .video-play-btn svg{width:20px;height:20px}
+  .video-controls{padding:8px 14px;gap:8px}
+  .video-time{font-size:10px}
+}
+
+/* ============================================================
+   PRODUCTS STRIP
+   ============================================================ */
+.products-strip{
+  padding:clamp(64px,10vh,96px) 0;
+  position:relative;z-index:0;
+}
+.products-strip::before{
+  content:'';position:absolute;
+  top:-40px;bottom:-40px;
+  left:50%;transform:translateX(-50%);
+  width:100vw;z-index:-1;pointer-events:none;
+  background:linear-gradient(180deg,
+    transparent 0%,
+    rgba(17,19,28,.5) 10%,
+    rgba(17,19,28,.55) 50%,
+    rgba(17,19,28,.5) 90%,
+    transparent 100%
+  );
+}
+.strip-label{
+  text-align:center;font-size:12px;font-weight:600;
+  text-transform:uppercase;letter-spacing:1.5px;
+  color:var(--text-muted);margin-bottom:36px;
+}
+.strip-row{
+  display:flex;gap:clamp(16px,3vw,36px);justify-content:center;
+  align-items:center;flex-wrap:wrap;
+}
+.strip-chip{
+  display:flex;align-items:center;gap:clamp(8px,.8vw,12px);
+  padding:10px 20px;border-radius:100px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);
+  transition:all .3s ease;
+}
+.strip-chip:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
+.strip-chip-icon{width:32px;height:32px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.strip-chip-icon img{width:100%;height:100%;object-fit:cover}
+.strip-chip-name{font-size:14px;font-weight:600;color:rgba(255,255,255,.7)}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:500;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--accent);margin-bottom:32px;
+}
+.section-eyebrow-line{width:28px;height:2px;background:var(--grad-accent);border-radius:1px}
+.section-title{
+  font-size:clamp(30px,4.5vw,54px);font-weight:600;line-height:1.2;
+  letter-spacing:-.02em;margin-bottom:32px;
+}
+.section-title-accent{
+  background:var(--grad-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.section-desc{
+  font-size:clamp(16px,1.5vw,19px);line-height:1.75;
+  color:var(--text-sec);max-width:600px;margin-bottom:24px;
+}
+
+/* ============================================================
+   TAGS STRIP
+   ============================================================ */
+.tags-strip{padding:clamp(72px,10vh,100px) 0;text-align:center}
+.chaos-tags{display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+.chaos-tag{
+  padding:12px 28px;border-radius:100px;
+  font-size:14px;font-weight:500;
+  background:rgba(255,217,61,.05);color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,217,61,.1);
+  transition:all .3s ease;
+}
+.chaos-tag:hover{background:rgba(255,217,61,.1);color:rgba(255,255,255,.7);transform:translateY(-2px)}
+
+/* ============================================================
+   FEATURES GRID
+   ============================================================ */
+.features{position:relative}
+.features-header{text-align:center;display:flex;flex-direction:column;align-items:center;margin-bottom:clamp(72px,14vh,112px)}
+.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(28px,3.5vw,40px)}
+.feature-card{
+  padding:clamp(32px,4vw,48px);border-radius:20px;
+  background:rgba(26,29,43,.6);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--card-border);
+  transition:all .4s var(--ease-expo);
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--grad-accent);opacity:0;
+  transition:opacity .4s ease;
+}
+.feature-card:hover{border-color:var(--card-hover);transform:translateY(-4px)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{
+  width:52px;height:52px;border-radius:16px;
+  background:var(--accent-dim);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+  transition:transform .3s var(--ease-spring);
+}
+.feature-card:hover .feature-icon{transform:scale(1.08) rotate(-3deg)}
+.feature-icon svg{color:var(--accent)}
+.feature-title{font-size:20px;font-weight:600;margin-bottom:14px}
+.feature-desc{font-size:15px;line-height:1.75;color:var(--text-sec)}
+
+/* ============================================================
+   DASHBOARD PREVIEW
+   ============================================================ */
+.preview{position:relative;overflow:hidden}
+.preview-inner{display:flex;flex-direction:column;align-items:center;gap:20px}
+.preview-mock{
+  width:100%;max-width:1060px;margin-top:clamp(56px,10vh,80px);
+  border-radius:16px;overflow:hidden;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 40px 100px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);
+  backdrop-filter:blur(12px);
+  transform:perspective(1200px) rotateX(3deg);
+  transition:transform .6s var(--ease-expo);
+}
+.preview-mock:hover{transform:perspective(1200px) rotateX(0deg)}
+.pm-top{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.pm-dots{display:flex;gap:6px}
+.pm-dot{width:10px;height:10px;border-radius:50%}
+.pm-dot:nth-child(1){background:#FF5F57}
+.pm-dot:nth-child(2){background:#FDBB2E}
+.pm-dot:nth-child(3){background:#27CA40}
+.pm-title-bar{font-size:12px;font-weight:600;color:var(--text-sec);margin-left:12px;white-space:nowrap}
+.pm-body{display:grid;grid-template-columns:200px 1fr 170px;min-height:320px}
+
+/* Sidebar */
+.pm-sidebar{border-right:1px solid rgba(255,255,255,.04);padding:18px}
+.pm-bal-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
+.pm-bal{font-size:28px;font-weight:600;margin:4px 0 12px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.pm-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden;margin-bottom:6px}
+.pm-bar-fill{height:100%;border-radius:3px;background:var(--grad-accent)}
+.pm-bar-legend{display:flex;justify-content:space-between;font-size:8px;color:var(--text-muted);font-weight:500;margin-bottom:14px}
+.pm-pool{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.03);margin-bottom:6px}
+.pm-pool-icon{width:24px;height:24px;border-radius:7px;overflow:hidden;flex-shrink:0}
+.pm-pool-icon img{width:100%;height:100%;object-fit:cover}
+.pm-pool-name{font-size:10px;font-weight:600;color:rgba(255,255,255,.6)}
+.pm-pool-val{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;margin-left:auto}
+
+/* Center table */
+.pm-center{padding:18px;overflow:hidden}
+.pm-th{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr .8fr;gap:8px;
+  padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;
+  font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);font-weight:600;
+  margin-bottom:4px;
+}
+.pm-row{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr .8fr;gap:8px;
+  padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.03);
+  align-items:center;
+}
+.pm-row-name{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:rgba(255,255,255,.8)}
+.pm-row-icon{width:22px;height:22px;border-radius:6px;overflow:hidden;flex-shrink:0}
+.pm-row-icon img{width:100%;height:100%;object-fit:cover}
+.pm-row-val{font-size:10px;font-weight:600;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
+.pm-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:8px;font-weight:700;text-transform:uppercase}
+.pm-pill-ok{background:rgba(0,202,114,.15);color:#00CA72}
+.pm-pill-near{background:rgba(253,171,61,.15);color:#FDAB3D}
+
+/* Right column */
+.pm-right{border-left:1px solid rgba(255,255,255,.04);padding:18px;display:flex;flex-direction:column;gap:16px}
+.pm-insight-label{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);font-weight:600;margin-bottom:8px}
+.pm-spend-row{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.pm-spend-label{width:48px;font-size:8px;color:var(--text-muted);text-align:right;font-weight:500}
+.pm-spend-track{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden}
+.pm-spend-fill{height:100%;border-radius:3px}
+.pm-team-row{display:flex;justify-content:space-between;padding:4px 0;font-size:9px;border-bottom:1px solid rgba(255,255,255,.03)}
+.pm-team-name{font-weight:600;color:rgba(255,255,255,.55)}
+.pm-team-val{color:var(--text-muted);font-variant-numeric:tabular-nums;font-weight:500}
+
+/* ============================================================
+   GOVERNANCE SECTION
+   ============================================================ */
+.governance{position:relative;overflow:hidden}
+.gov-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(48px,7vw,100px);align-items:center}
+.gov-content{display:flex;flex-direction:column;gap:36px}
+.gov-list{display:flex;flex-direction:column;gap:20px;margin-top:24px}
+.gov-item{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.04);
+  transition:all .3s ease;
+}
+.gov-item:hover{background:rgba(255,217,61,.04);border-color:rgba(255,217,61,.1);transform:translateX(4px)}
+.gov-check{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:var(--grad-accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:#0B0D14;
+}
+.gov-text{font-size:15px;font-weight:500;color:var(--text-sec)}
+.gov-visual{display:flex;justify-content:center;position:relative;overflow:visible}
+.gov-panel{
+  width:100%;max-width:420px;
+  background:rgba(26,29,43,.7);
+  backdrop-filter:blur(24px);
+  border:1px solid var(--card-border);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.gov-panel-header{
+  padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:16px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.gov-panel-icon{
+  width:32px;height:32px;border-radius:10px;
+  background:var(--grad-accent);display:flex;align-items:center;justify-content:center;
+}
+.gov-toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.gov-toggle-row:last-child{border-bottom:none}
+.gov-toggle-label{font-size:14px;font-weight:500;color:var(--text-sec)}
+.gov-switch{
+  width:44px;height:24px;border-radius:12px;
+  background:var(--grad-accent);position:relative;
+}
+.gov-switch-knob{
+  position:absolute;top:3px;right:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+/* Toast-like floaters */
+.gov-toast{
+  position:absolute;
+  padding:12px 20px;border-radius:14px;
+  font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(12px);
+  animation:float 5s ease-in-out infinite;
+  white-space:nowrap;z-index:2;
+}
+.gov-toast-1{
+  top:5%;right:0;
+  background:rgba(54,216,183,.1);border:1px solid rgba(54,216,183,.2);
+  color:var(--teal);animation-delay:0s;
+}
+.gov-toast-2{
+  bottom:10%;left:0;
+  background:rgba(255,217,61,.06);border:1px solid rgba(255,217,61,.15);
+  color:var(--accent);animation-delay:1.5s;
+}
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+.cta-section{
+  position:relative;overflow:hidden;
+  text-align:center;
+  padding-bottom:clamp(80px,10vh,120px);
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;width:120%;height:120%;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(ellipse,rgba(54,216,183,.05) 0%,transparent 50%);
+}
+.cta-inner{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:36px;
+  padding:clamp(80px,14vh,140px) clamp(40px,7vw,80px);
+  border-radius:28px;
+  background:rgba(26,29,43,.5);
+  border:1px solid rgba(255,217,61,.08);
+}
+.cta-title{
+  font-size:clamp(28px,4vw,52px);font-weight:600;line-height:1.15;
+  letter-spacing:-.02em;
+}
+.cta-sub{font-size:clamp(15px,1.4vw,18px);color:var(--text-sec);max-width:500px;line-height:1.6}
+.cta-tagline{
+  font-size:clamp(14px,1.6vw,22px);font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;
+  background:var(--grad-accent);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{
+  padding:64px 0;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.footer-inner{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.footer-logo{display:flex;align-items:center;gap:12px}
+.footer-logo-icon{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  background:linear-gradient(135deg,#FFB800 0%,#FF8A47 40%,#4C9AFF 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(255,138,71,.2);
+  opacity:.6;
+}
+.footer-logo-icon svg{display:block}
+.footer-logo-img{height:22px;filter:brightness(0) invert(1);opacity:.5}
+.footer-text{font-size:12px;color:var(--text-muted);font-weight:400}
+.footer-links{display:flex;gap:24px}
+.footer-link{font-size:13px;color:var(--text-sec);font-weight:500;transition:color .2s ease}
+.footer-link:hover{color:var(--accent)}
+
+/* ============================================================
+   ANIMATIONS — initial hidden state (GSAP handles animation)
+   ============================================================ */
+.reveal,.reveal-left,.reveal-right,.reveal-scale{visibility:hidden}
+
+/* ============================================================
+   RESPONSIVE — TABLET (max 1024px)
+   ============================================================ */
+@media(max-width:1024px){
+  .pm-body{grid-template-columns:180px 1fr 160px}
+  .pm-bal{font-size:22px}
+  .nav-links{gap:20px}
+  .nav-link{font-size:13px}
+  .gov-grid{gap:clamp(32px,4vw,60px)}
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL TABLET (max 900px)
+   ============================================================ */
+@media(max-width:900px){
+  .container{padding:0 clamp(20px,5vw,40px)}
+  section{padding:clamp(80px,14vh,140px) 0}
+
+  /* Section headers */
+  .section-eyebrow{margin-bottom:22px}
+  .section-title{margin-bottom:22px;line-height:1.25}
+  .section-desc{margin-bottom:16px}
+
+  /* Nav */
+  .nav{padding:0 clamp(16px,4vw,32px)}
+  .nav-links{display:none}
+  .nav-cta-mobile{display:block}
+
+  /* Hero */
+  .hero{min-height:auto;padding-top:clamp(100px,16vh,128px);padding-bottom:clamp(56px,8vh,72px)}
+  .hero-grid{grid-template-columns:1fr;text-align:center;gap:56px}
+  .hero-content{align-items:center;gap:28px}
+  .hero-sub{max-width:100%}
+  .hero-actions{justify-content:center}
+  .hero-visual{margin-top:8px}
+  .hero-wallet{transform:none;max-width:480px;margin:0 auto}
+  .hero-wallet:hover{transform:none}
+  .hero-float{display:none}
+
+  /* Products strip */
+  .strip-row{gap:12px}
+  .strip-chip{padding:8px 16px}
+  .strip-chip-icon{width:28px;height:28px;border-radius:8px}
+  .strip-chip-name{font-size:13px}
+
+  /* Features */
+  .features-header{margin-bottom:clamp(48px,8vh,72px)}
+  .features-grid{grid-template-columns:1fr;gap:20px}
+
+  /* Dashboard preview */
+  .preview-mock{transform:none;border-radius:14px;margin-top:clamp(40px,6vh,60px)}
+  .preview-mock:hover{transform:none}
+  .pm-body{grid-template-columns:1fr;min-height:auto}
+  .pm-sidebar{border-right:none;border-bottom:1px solid rgba(255,255,255,.04);padding:18px}
+  .pm-center{padding:18px}
+  .pm-right{border-left:none;border-top:1px solid rgba(255,255,255,.04);padding:18px}
+
+  /* Governance */
+  .gov-grid{grid-template-columns:1fr;gap:48px}
+  .gov-visual{order:-1}
+  .gov-panel{max-width:100%}
+  .gov-toast{display:none}
+
+  /* CTA */
+  .cta-inner{padding:clamp(48px,10vh,80px) clamp(28px,5vw,48px);border-radius:20px}
+
+  /* Footer */
+  .footer{padding:40px 0}
+  .footer-inner{flex-direction:column;gap:20px;text-align:center}
+  .footer-links{flex-wrap:wrap;justify-content:center;gap:16px}
+}
+
+/* ============================================================
+   RESPONSIVE — PHONE (max 600px)
+   ============================================================ */
+@media(max-width:600px){
+  .container{padding:0 20px}
+  .nav{padding:0 16px}
+  section{padding:clamp(72px,12vh,112px) 0}
+
+  /* Section headers */
+  .section-title{font-size:clamp(24px,6vw,36px);margin-bottom:20px;line-height:1.25}
+  .section-desc{font-size:clamp(14px,3.5vw,16px);margin-bottom:12px}
+  .section-eyebrow{font-size:11px;margin-bottom:18px}
+
+  /* Hero */
+  .hero{padding-top:96px;padding-bottom:48px}
+  .hero-title{font-size:clamp(28px,8vw,42px)}
+  .hero-badge{font-size:11px;padding:5px 14px}
+  .hero-actions{flex-direction:column;width:100%;gap:12px}
+  .btn-hero{justify-content:center;width:100%;padding:14px 24px;font-size:14px;border-radius:12px}
+  .hw-balance{font-size:28px}
+  .hw-header{margin-bottom:14px}
+  .hw-legend{font-size:10px;gap:4px 12px;margin-bottom:16px}
+  .hw-product{padding:8px 12px;gap:10px}
+  .hw-product-name{font-size:12px}
+  .hw-product-amount{font-size:12px}
+  .hw-product-icon{width:28px;height:28px;border-radius:8px}
+
+  /* Products strip — 2 rows on phone (3 + 2) */
+  .strip-label{font-size:11px;margin-bottom:20px}
+  .strip-row{gap:8px;justify-content:center}
+  .strip-chip{padding:6px 10px;border-radius:40px;width:calc(33.33% - 6px)}
+  .strip-chip-icon{width:22px;height:22px;border-radius:6px}
+  .strip-chip-name{font-size:11px}
+
+  /* Problem */
+  .tags-strip{padding:clamp(32px,5vh,48px) 0}
+  .chaos-tags{gap:8px}
+  .chaos-tag{font-size:12px;padding:8px 18px}
+
+  /* Features */
+  .features-header{margin-bottom:clamp(36px,6vh,56px)}
+  .features-grid{gap:16px}
+  .feature-card{padding:28px;border-radius:16px}
+  .feature-icon{width:44px;height:44px;border-radius:12px;margin-bottom:18px}
+  .feature-title{font-size:17px;margin-bottom:10px}
+  .feature-desc{font-size:13px;line-height:1.7}
+
+  /* Dashboard preview */
+  .preview-mock{border-radius:12px;margin-top:clamp(36px,6vh,52px)}
+  .pm-top{padding:8px 12px}
+  .pm-dot{width:8px;height:8px}
+  .pm-title-bar{font-size:10px;margin-left:8px}
+  .pm-center{display:none}
+  .pm-sidebar{padding:14px}
+  .pm-bal{font-size:24px}
+  .pm-right{padding:14px}
+
+  /* Governance */
+  .gov-grid{gap:40px}
+  .gov-panel{border-radius:16px}
+  .gov-panel-header{padding:14px 18px;font-size:14px}
+  .gov-toggle-row{padding:12px 18px}
+  .gov-toggle-label{font-size:13px}
+  .gov-switch{width:40px;height:22px;border-radius:11px}
+  .gov-switch-knob{width:16px;height:16px;top:3px;right:3px}
+  .gov-item{padding:14px 16px;border-radius:12px;gap:12px}
+  .gov-check{width:24px;height:24px;font-size:11px}
+  .gov-text{font-size:13px}
+
+  /* CTA */
+  .cta-inner{padding:48px 24px;border-radius:16px;gap:28px}
+  .cta-title{font-size:clamp(24px,6vw,36px)}
+  .cta-sub{font-size:14px}
+  .cta-tagline{font-size:clamp(12px,3.5vw,18px)}
+
+  /* Footer */
+  .footer{padding:28px 0}
+  .footer-logo{flex-direction:column;gap:8px}
+  .footer-text{font-size:11px}
+  .footer-links{gap:12px}
+  .footer-link{font-size:12px}
+}
+
+/* ============================================================
+   MOBILE PERFORMANCE — reduce GPU-heavy effects
+   ============================================================ */
+@media(max-width:900px){
+  .bg-orb{filter:blur(80px);opacity:.10;will-change:auto}
+  .hero-glow{display:none}
+  .nav{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .hero-wallet{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .hero-float{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .feature-card{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .preview-mock{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .gov-panel{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .video-overlay{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(11,13,20,.7)}
+}
+@media(max-width:600px){
+  .bg-orb{filter:blur(60px);opacity:.07}
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-fixed">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  <div class="bg-dots"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<div class="page">
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 48 48" width="22" height="22" fill="none"><rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity=".9"/><rect x="4" y="12" width="40" height="10" rx="4" fill="#fff"/><rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity=".6"/><rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(245,183,49,.35)"/><circle cx="36" cy="28" r="3" fill="#fff"/></svg>
+      </div>
+      <img src="assets/monday-logo.png" alt="monday.com" class="nav-logo-img"/>
+    </a>
+    <div class="nav-links">
+      <a href="#video" class="nav-link">Watch</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#preview" class="nav-link">Dashboard</a>
+      <a href="#governance" class="nav-link">Governance</a>
+      <a href="wallet.html" class="nav-cta">Try the Demo</a>
+    </div>
+    <a href="wallet.html" class="nav-cta-mobile">Try Demo</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero container">
+  <div class="hero-glow"></div>
+  <div class="hero-grid">
+    <div class="hero-content reveal">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Now available for monday.com
+      </div>
+      <h1 class="hero-title">
+        One wallet for your<br/>entire <span class="hero-title-accent">Work OS.</span>
+      </h1>
+      <p class="hero-sub">
+        Centralize funding, allocate budgets, and <strong>control AI spending</strong> across every product and team in your organization.
+      </p>
+      <div class="hero-actions">
+        <a href="wallet.html" class="btn-hero btn-hero-primary">
+          Explore the Dashboard
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#video" class="btn-hero btn-hero-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+          Watch the Story
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual reveal-right">
+      <div class="hero-wallet">
+        <div class="hw-header">
+          <div class="hw-icon">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+              <rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity=".9"/>
+              <rect x="4" y="12" width="40" height="10" rx="4" fill="#fff"/>
+              <rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity=".6"/>
+              <rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(245,183,49,.35)"/>
+              <circle cx="36" cy="28" r="3" fill="#fff"/>
+            </svg>
+          </div>
+          <span class="hw-label">monday Wallet</span>
+        </div>
+        <div class="hw-balance" id="hero-balance" data-target="34700">$0</div>
+        <div class="hw-balance-label">Total Balance</div>
+        <div class="hw-bar">
+          <div class="hw-bar-spent"></div>
+          <div class="hw-bar-alloc"></div>
+        </div>
+        <div class="hw-legend">
+          <span><span class="hw-dot" style="background:var(--accent)"></span> Spent $12,060</span>
+          <span><span class="hw-dot" style="background:rgba(255,217,61,.25)"></span> Allocated $32,500</span>
+          <span><span class="hw-dot" style="background:rgba(255,255,255,.1)"></span> Free $5,440</span>
+        </div>
+        <div class="hw-products">
+          <div class="hw-product">
+            <div class="hw-product-icon"><img src="assets/icon-agents.png" alt="AI Agents"/></div>
+            <span class="hw-product-name">AI Agents</span>
+            <div class="hw-product-bar"><div class="hw-product-bar-fill" style="width:66%;background:linear-gradient(90deg,#A29BFE,#74B9FF)"></div></div>
+            <span class="hw-product-amount">$8,000</span>
+          </div>
+          <div class="hw-product">
+            <div class="hw-product-icon"><img src="assets/icon-vibe.png" alt="Vibe Apps"/></div>
+            <span class="hw-product-name">Vibe Apps</span>
+            <div class="hw-product-bar"><div class="hw-product-bar-fill" style="width:80%;background:linear-gradient(90deg,#E17055,#FDAB3D)"></div></div>
+            <span class="hw-product-amount">$12,000</span>
+          </div>
+          <div class="hw-product">
+            <div class="hw-product-icon"><img src="assets/icon-sidekick.png" alt="Sidekick"/></div>
+            <span class="hw-product-name">Sidekick</span>
+            <div class="hw-product-bar"><div class="hw-product-bar-fill" style="width:43%;background:linear-gradient(90deg,#FFD93D,#FFE873)"></div></div>
+            <span class="hw-product-amount">$6,500</span>
+          </div>
+        </div>
+      </div>
+      <!-- Floating badges -->
+      <div class="hero-float hero-float-1">
+        <span style="font-size:16px">⚡</span>
+        Auto top-up triggered
+      </div>
+      <div class="hero-float hero-float-2">
+        <span style="font-size:16px">📊</span>
+        80% budget alert
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIDEO SECTION
+     ============================================================ -->
+<section class="video-section section-alt container" id="video">
+  <div class="video-section-label">
+    <div class="section-eyebrow reveal">
+      <span class="section-eyebrow-line"></span>
+      See it in action
+    </div>
+    <h2 class="section-title reveal" style="text-align:center;margin-bottom:8px">
+      The <span class="section-title-accent">monday Wallet</span> story
+    </h2>
+    <p class="section-desc reveal" style="text-align:center;margin:0 auto">
+      47 seconds that explain everything.
+    </p>
+  </div>
+  <div class="video-wrapper reveal-scale" id="videoWrapper">
+    <video id="explainerVideo" preload="metadata" playsinline webkit-playsinline>
+      <source src="wallet-video/out/wallet-explainer-v2.mp4" type="video/mp4"/>
+    </video>
+    <!-- Play overlay -->
+    <div class="video-overlay" id="videoOverlay">
+      <button class="video-play-btn" id="videoPlayBtn" aria-label="Play video">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><polygon points="6,3 20,12 6,21"/></svg>
+      </button>
+      <span class="video-overlay-text">Play with sound</span>
+    </div>
+    <!-- Sound badge (shows briefly after play) -->
+    <div class="video-sound-badge" id="videoSoundBadge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      Sound on
+    </div>
+    <!-- Controls bar -->
+    <div class="video-controls" id="videoControls">
+      <button class="video-ctrl-btn" id="videoToggleBtn" aria-label="Pause">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" id="ctrlIcon"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </button>
+      <div class="video-progress" id="videoProgress">
+        <div class="video-progress-fill" id="videoProgressFill"></div>
+      </div>
+      <span class="video-time" id="videoTime">0:00 / 0:00</span>
+      <button class="video-ctrl-btn" id="videoMuteBtn" aria-label="Mute">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="muteIcon"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      </button>
+      <button class="video-ctrl-btn" id="videoFullscreenBtn" aria-label="Fullscreen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PRODUCTS STRIP
+     ============================================================ -->
+<div class="products-strip">
+  <div class="container">
+    <div class="strip-label">One wallet. Every AI experience.</div>
+    <div class="strip-row">
+      <div class="strip-chip">
+        <div class="strip-chip-icon"><img src="assets/icon-vibe.png" alt="Vibe Apps"/></div>
+        <span class="strip-chip-name">Vibe Apps</span>
+      </div>
+      <div class="strip-chip">
+        <div class="strip-chip-icon"><img src="assets/icon-agents.png" alt="AI Agents"/></div>
+        <span class="strip-chip-name">AI Agents</span>
+      </div>
+      <div class="strip-chip">
+        <div class="strip-chip-icon"><img src="assets/icon-workflows.png" alt="AI Workflows"/></div>
+        <span class="strip-chip-name">AI Workflows</span>
+      </div>
+      <div class="strip-chip">
+        <div class="strip-chip-icon"><img src="assets/icon-sidekick.png" alt="Sidekick"/></div>
+        <span class="strip-chip-name">Sidekick</span>
+      </div>
+      <div class="strip-chip">
+        <div class="strip-chip-icon"><img src="assets/icon-automations.png" alt="Notetaker"/></div>
+        <span class="strip-chip-name">Notetaker</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="features section-dark container" id="features">
+  <div class="features-header">
+    <h2 class="section-title reveal">
+      Everything you need to<br/><span class="section-title-accent">fund, allocate & control.</span>
+    </h2>
+    <p class="section-desc reveal">
+      monday Wallet gives admins, finance, and IT leaders a single control plane for every AI investment.
+    </p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <h3 class="feature-title">Centralized Funding</h3>
+      <p class="feature-desc">Load funds once into a single wallet. No more managing separate budgets across products, teams, and departments.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h3 class="feature-title">Flexible Allocation</h3>
+      <p class="feature-desc">Assign budgets to AI Credits, Vibe Apps, Sidekick, Agents, and more. Reallocate as needs change &mdash; in real time.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h3 class="feature-title">Budget Controls</h3>
+      <p class="feature-desc">Spending caps, auto top-up, 80% alerts, and approval thresholds. Stay in the driver's seat with policy-based guardrails.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/>
+        </svg>
+      </div>
+      <h3 class="feature-title">Company-Wide Visibility</h3>
+      <p class="feature-desc">See spend by team, department, and product. Finance, IT, and Ops finally speak the same language.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TAGS STRIP
+     ============================================================ -->
+<div class="tags-strip section-alt container">
+  <div class="chaos-tags reveal">
+    <span class="chaos-tag">Subscriptions</span>
+    <span class="chaos-tag">Credits</span>
+    <span class="chaos-tag">Add-ons</span>
+    <span class="chaos-tag">Usage-based</span>
+    <span class="chaos-tag">Seats</span>
+    <span class="chaos-tag">Per-team budgets</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     DASHBOARD PREVIEW
+     ============================================================ -->
+<section class="preview section-alt container" id="preview">
+  <div class="preview-inner">
+    <h2 class="section-title reveal" style="text-align:center">
+      Your AI budget,<br/><span class="section-title-accent">at a glance.</span>
+    </h2>
+    <p class="section-desc reveal" style="text-align:center;margin:0 auto">
+      A single admin view for balances, allocations, spend tracking, and governance — all in one place.
+    </p>
+    <div class="preview-mock reveal-scale">
+      <div class="pm-top">
+        <div class="pm-dots"><div class="pm-dot"></div><div class="pm-dot"></div><div class="pm-dot"></div></div>
+        <span class="pm-title-bar">monday Wallet — Admin Dashboard</span>
+      </div>
+      <div class="pm-body">
+        <!-- Sidebar -->
+        <div class="pm-sidebar">
+          <div class="pm-bal-label">Total Balance</div>
+          <div class="pm-bal">$50,000</div>
+          <div class="pm-bar"><div class="pm-bar-fill" style="width:64%"></div></div>
+          <div class="pm-bar-legend"><span>Spent $32,060</span><span>Free $9,500</span></div>
+          <div style="margin-top:12px">
+            <div class="pm-insight-label">Quick Stats</div>
+            <div class="pm-team-row"><span class="pm-team-name">Products</span><span class="pm-team-val">5 active</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">Teams</span><span class="pm-team-val">12</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">Alerts</span><span class="pm-team-val">2 near cap</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">Auto top-up</span><span class="pm-team-val">Enabled</span></div>
+          </div>
+        </div>
+        <!-- Center table -->
+        <div class="pm-center">
+          <div class="pm-th">
+            <span>Offering</span><span>Allocated</span><span>Spent</span><span>Cap</span><span>Status</span>
+          </div>
+          <div class="pm-row">
+            <div class="pm-row-name"><div class="pm-row-icon"><img src="assets/icon-agents.png" alt=""/></div>AI Agents</div>
+            <div class="pm-row-val">$8,000</div>
+            <div class="pm-row-val">$5,320</div>
+            <div class="pm-row-val">$10,000</div>
+            <div><span class="pm-pill pm-pill-ok">Healthy</span></div>
+          </div>
+          <div class="pm-row">
+            <div class="pm-row-name"><div class="pm-row-icon"><img src="assets/icon-sidekick.png" alt=""/></div>Sidekick</div>
+            <div class="pm-row-val">$6,500</div>
+            <div class="pm-row-val">$5,890</div>
+            <div class="pm-row-val">$7,000</div>
+            <div><span class="pm-pill pm-pill-near">Near cap</span></div>
+          </div>
+          <div class="pm-row">
+            <div class="pm-row-name"><div class="pm-row-icon"><img src="assets/icon-vibe.png" alt=""/></div>Vibe Apps</div>
+            <div class="pm-row-val">$12,000</div>
+            <div class="pm-row-val">$7,140</div>
+            <div class="pm-row-val">$15,000</div>
+            <div><span class="pm-pill pm-pill-ok">Healthy</span></div>
+          </div>
+          <div class="pm-row">
+            <div class="pm-row-name"><div class="pm-row-icon"><img src="assets/icon-workflows.png" alt=""/></div>AI Workflows</div>
+            <div class="pm-row-val">$4,200</div>
+            <div class="pm-row-val">$2,100</div>
+            <div class="pm-row-val">$5,000</div>
+            <div><span class="pm-pill pm-pill-ok">Healthy</span></div>
+          </div>
+          <div class="pm-row">
+            <div class="pm-row-name">
+              <div class="pm-row-icon" style="background:#8B7A1E;border-radius:50%;display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#FFD93D"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+              </div>
+              AI Credits
+            </div>
+            <div class="pm-row-val">$9,800</div>
+            <div class="pm-row-val">$8,610</div>
+            <div class="pm-row-val">$10,000</div>
+            <div><span class="pm-pill pm-pill-near">Near cap</span></div>
+          </div>
+        </div>
+        <!-- Right insights -->
+        <div class="pm-right">
+          <div>
+            <div class="pm-insight-label">Spend by Product</div>
+            <div class="pm-spend-row"><span class="pm-spend-label">Vibe</span><div class="pm-spend-track"><div class="pm-spend-fill" style="width:60%;background:#A25DDC"></div></div></div>
+            <div class="pm-spend-row"><span class="pm-spend-label">Agents</span><div class="pm-spend-track"><div class="pm-spend-fill" style="width:45%;background:#FFD93D"></div></div></div>
+            <div class="pm-spend-row"><span class="pm-spend-label">Sidekick</span><div class="pm-spend-track"><div class="pm-spend-fill" style="width:82%;background:#579BFC"></div></div></div>
+            <div class="pm-spend-row"><span class="pm-spend-label">Workflows</span><div class="pm-spend-track"><div class="pm-spend-fill" style="width:30%;background:#FDAB3D"></div></div></div>
+          </div>
+          <div>
+            <div class="pm-insight-label">Top Teams</div>
+            <div class="pm-team-row"><span class="pm-team-name">Engineering</span><span class="pm-team-val">$12,400</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">Sales</span><span class="pm-team-val">$8,200</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">Marketing</span><span class="pm-team-val">$6,100</span></div>
+            <div class="pm-team-row"><span class="pm-team-name">CS</span><span class="pm-team-val">$3,800</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     GOVERNANCE
+     ============================================================ -->
+<section class="governance section-dark container" id="governance">
+  <div class="gov-grid">
+    <div class="gov-content">
+      <h2 class="section-title reveal-left">
+        Always in the<br/><span class="section-title-accent">driver's seat.</span>
+      </h2>
+      <p class="section-desc reveal-left">
+        Set policies and guardrails that enforce your organization's spending rules automatically. No surprises, no overruns.
+      </p>
+      <div class="gov-list reveal-left">
+        <div class="gov-item">
+          <div class="gov-check">&#10003;</div>
+          <span class="gov-text">Require approval above custom thresholds</span>
+        </div>
+        <div class="gov-item">
+          <div class="gov-check">&#10003;</div>
+          <span class="gov-text">Block spend when budget is depleted</span>
+        </div>
+        <div class="gov-item">
+          <div class="gov-check">&#10003;</div>
+          <span class="gov-text">Get notified when 80% of budget is used</span>
+        </div>
+        <div class="gov-item">
+          <div class="gov-check">&#10003;</div>
+          <span class="gov-text">Auto top-up to keep teams running</span>
+        </div>
+      </div>
+    </div>
+    <div class="gov-visual reveal-right">
+      <div class="gov-panel">
+        <div class="gov-panel-header">
+          <div class="gov-panel-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0B0D14" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          Budget Controls
+        </div>
+        <div class="gov-toggle-row">
+          <span class="gov-toggle-label">Monthly spending caps</span>
+          <div class="gov-switch"><div class="gov-switch-knob"></div></div>
+        </div>
+        <div class="gov-toggle-row">
+          <span class="gov-toggle-label">Auto top-up</span>
+          <div class="gov-switch"><div class="gov-switch-knob"></div></div>
+        </div>
+        <div class="gov-toggle-row">
+          <span class="gov-toggle-label">Alert at 80% usage</span>
+          <div class="gov-switch"><div class="gov-switch-knob"></div></div>
+        </div>
+        <div class="gov-toggle-row">
+          <span class="gov-toggle-label">Approval above threshold</span>
+          <div class="gov-switch"><div class="gov-switch-knob"></div></div>
+        </div>
+      </div>
+      <div class="gov-toast gov-toast-1">
+        <span style="font-size:14px">&#9888;&#65039;</span> Agents reached 80% of budget
+      </div>
+      <div class="gov-toast gov-toast-2">
+        <span style="font-size:14px">&#11014;&#65039;</span> Auto top-up: +$2,000
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+     ============================================================ -->
+<section class="cta-section section-alt container">
+  <div class="cta-glow"></div>
+  <div class="cta-inner reveal">
+    <div class="cta-tagline">Standardize. Govern. Scale.</div>
+    <h2 class="cta-title">
+      Ready to take control of your<br/><span class="hero-title-accent">AI spending?</span>
+    </h2>
+    <p class="cta-sub">
+      See how centralized budget management transforms your organization.
+    </p>
+    <a href="wallet.html" class="btn-hero btn-hero-primary">
+      Try the Interactive Demo
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="footer-logo-icon">
+          <svg viewBox="0 0 48 48" width="16" height="16" fill="none"><rect x="4" y="12" width="40" height="28" rx="6" fill="#fff" opacity=".9"/><rect x="4" y="12" width="40" height="10" rx="4" fill="#fff"/><rect x="4" y="8" width="32" height="8" rx="4" fill="#fff" opacity=".6"/><rect x="30" y="22" width="14" height="12" rx="4" fill="rgba(245,183,49,.35)"/><circle cx="36" cy="28" r="3" fill="#fff"/></svg>
+        </div>
+        <img src="assets/monday-logo.png" alt="monday.com" class="footer-logo-img"/>
+        <span class="footer-text">&copy; 2026 monday.com &middot; monday Wallet</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#preview" class="footer-link">Dashboard</a>
+        <a href="#governance" class="footer-link">Governance</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div><!-- .page -->
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+// ============================================================
+// GSAP DEFAULTS
+// ============================================================
+const ease = 'power3.out';
+const duration = 1;
+
+// ============================================================
+// HERO — staggered entrance (no scroll trigger, plays on load)
+// ============================================================
+const heroTl = gsap.timeline({ delay: 0.2 });
+
+heroTl
+  .fromTo('.hero-content', 
+    { autoAlpha: 0, y: 60 }, 
+    { autoAlpha: 1, y: 0, duration: 1, ease: 'power4.out' }
+  )
+  .fromTo('.hero-badge', 
+    { autoAlpha: 0, y: 20, scale: 0.9 }, 
+    { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease }, 
+    '-=0.6'
+  )
+  .fromTo('.hero-visual', 
+    { autoAlpha: 0, x: 80, rotateY: -8 }, 
+    { autoAlpha: 1, x: 0, rotateY: 0, duration: 1.2, ease: 'power4.out' }, 
+    '-=0.7'
+  )
+  .fromTo('.hero-float', 
+    { autoAlpha: 0, scale: 0.6 }, 
+    { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2)', stagger: 0.2 }, 
+    '-=0.4'
+  );
+
+// Trigger the slot-machine counter every time hero wallet scrolls into view
+const balanceEl = document.getElementById('hero-balance');
+if (balanceEl) {
+  const balanceTarget = parseInt(balanceEl.dataset.target, 10);
+  // Fire on initial load after hero timeline
+  heroTl.call(() => animateBalance(balanceEl, balanceTarget), null, '-=0.8');
+  // Re-fire when scrolling back up into view
+  ScrollTrigger.create({
+    trigger: balanceEl,
+    start: 'top 90%',
+    onEnter: () => animateBalance(balanceEl, balanceTarget),
+    onEnterBack: () => animateBalance(balanceEl, balanceTarget),
+  });
+}
+
+// ============================================================
+// PRODUCTS STRIP — slide in from below
+// ============================================================
+gsap.fromTo('.strip-chip', 
+  { autoAlpha: 0, y: 30 }, 
+  { 
+    autoAlpha: 1, y: 0, duration: 0.6, ease, 
+    stagger: 0.08,
+    scrollTrigger: { trigger: '.products-strip', start: 'top 85%' }
+  }
+);
+
+// ============================================================
+// GENERIC REVEALS — .reveal, .reveal-left, .reveal-right, .reveal-scale
+// ============================================================
+document.querySelectorAll('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { autoAlpha: 0, y: 50 },
+    {
+      autoAlpha: 1, y: 0, duration, ease,
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    }
+  );
+});
+
+document.querySelectorAll('.reveal-left').forEach(el => {
+  gsap.fromTo(el,
+    { autoAlpha: 0, x: -60 },
+    {
+      autoAlpha: 1, x: 0, duration, ease,
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    }
+  );
+});
+
+document.querySelectorAll('.reveal-right').forEach(el => {
+  gsap.fromTo(el,
+    { autoAlpha: 0, x: 60 },
+    {
+      autoAlpha: 1, x: 0, duration, ease,
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    }
+  );
+});
+
+document.querySelectorAll('.reveal-scale').forEach(el => {
+  gsap.fromTo(el,
+    { autoAlpha: 0, scale: 0.88 },
+    {
+      autoAlpha: 1, scale: 1, duration: 1.2, ease: 'power4.out',
+      scrollTrigger: { trigger: el, start: 'top 85%' }
+    }
+  );
+});
+
+// ============================================================
+// FEATURE CARDS — staggered grid entrance
+// ============================================================
+gsap.fromTo('.feature-card',
+  { autoAlpha: 0, y: 60, scale: 0.95 },
+  {
+    autoAlpha: 1, y: 0, scale: 1,
+    duration: 0.8, ease: 'power4.out',
+    stagger: { amount: 0.4, from: 'start' },
+    scrollTrigger: { trigger: '.features-grid', start: 'top 80%' }
+  }
+);
+
+// ============================================================
+// CHAOS TAGS — pop in one by one
+// ============================================================
+gsap.fromTo('.chaos-tag',
+  { autoAlpha: 0, scale: 0.7, y: 20 },
+  {
+    autoAlpha: 1, scale: 1, y: 0,
+    duration: 0.5, ease: 'back.out(1.7)',
+    stagger: 0.06,
+    scrollTrigger: { trigger: '.chaos-tags', start: 'top 85%' }
+  }
+);
+
+// ============================================================
+// GOVERNANCE ITEMS — slide in from left with stagger
+// ============================================================
+gsap.fromTo('.gov-item',
+  { autoAlpha: 0, x: -40 },
+  {
+    autoAlpha: 1, x: 0,
+    duration: 0.6, ease,
+    stagger: 0.1,
+    scrollTrigger: { trigger: '.gov-list', start: 'top 80%' }
+  }
+);
+
+// ============================================================
+// GOVERNANCE PANEL — float up with rotation
+// ============================================================
+gsap.fromTo('.gov-panel',
+  { autoAlpha: 0, y: 40, rotateX: 6 },
+  {
+    autoAlpha: 1, y: 0, rotateX: 0,
+    duration: 1, ease: 'power4.out',
+    scrollTrigger: { trigger: '.gov-visual', start: 'top 80%' }
+  }
+);
+
+// ============================================================
+// BACKGROUND ORBS — subtle parallax (desktop only for perf)
+// ============================================================
+ScrollTrigger.matchMedia({
+  '(min-width: 901px)': function(){
+    gsap.to('.bg-orb-1', {
+      y: -100,
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 1.5 }
+    });
+    gsap.to('.bg-orb-2', {
+      y: 80,
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 2 }
+    });
+    gsap.to('.bg-orb-3', {
+      y: -60, x: 40,
+      scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 1.8 }
+    });
+  }
+});
+
+// ============================================================
+// NAV — background on scroll
+// ============================================================
+const nav = document.querySelector('.nav');
+ScrollTrigger.create({
+  start: 50,
+  onUpdate: (self) => {
+    if (self.scroll() > 50) {
+      nav.style.background = 'rgba(11,13,20,.95)';
+      nav.style.borderBottomColor = 'rgba(255,255,255,.06)';
+    } else {
+      nav.style.background = 'rgba(11,13,20,.85)';
+      nav.style.borderBottomColor = 'rgba(255,255,255,.04)';
+    }
+  }
+});
+
+// ============================================================
+// SMOOTH SCROLL for anchor links
+// ============================================================
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      gsap.to(window, {
+        scrollTo: { y: target, offsetY: 80 },
+        duration: 1, ease: 'power3.inOut'
+      });
+    }
+  });
+});
+
+// ============================================================
+// SLOT-MACHINE COUNTER
+// ============================================================
+let _balanceTimer = null;
+function animateBalance(el, target) {
+  if (_balanceTimer) clearInterval(_balanceTimer);
+
+  const dur = 2200;
+  const fps = 60;
+  const totalFrames = Math.round(dur / (1000 / fps));
+  let frame = 0;
+  const slotPhaseFrames = Math.round(200 / (1000 / fps));
+
+  el.textContent = '$0';
+
+  _balanceTimer = setInterval(() => {
+    frame++;
+    if (frame <= slotPhaseFrames) {
+      const rand = Math.floor(Math.random() * 99999);
+      el.textContent = '$' + rand.toLocaleString('en-US');
+    } else {
+      const p = (frame - slotPhaseFrames) / (totalFrames - slotPhaseFrames);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const current = Math.round(eased * target);
+      el.textContent = '$' + current.toLocaleString('en-US');
+    }
+    if (frame >= totalFrames) {
+      clearInterval(_balanceTimer);
+      _balanceTimer = null;
+      el.textContent = '$' + target.toLocaleString('en-US');
+    }
+  }, 1000 / fps);
+}
+</script>
+
+<!-- VIDEO PLAYER — isolated script to avoid GSAP errors blocking it -->
+<script>
+(function(){
+  var video = document.getElementById('explainerVideo');
+  var wrapper = document.getElementById('videoWrapper');
+  var overlay = document.getElementById('videoOverlay');
+  var playBtn = document.getElementById('videoPlayBtn');
+  var toggleBtn = document.getElementById('videoToggleBtn');
+  var ctrlIcon = document.getElementById('ctrlIcon');
+  var progress = document.getElementById('videoProgress');
+  var progressFill = document.getElementById('videoProgressFill');
+  var timeDisplay = document.getElementById('videoTime');
+  var muteBtn = document.getElementById('videoMuteBtn');
+  var muteIcon = document.getElementById('muteIcon');
+  var fsBtn = document.getElementById('videoFullscreenBtn');
+  var soundBadge = document.getElementById('videoSoundBadge');
+
+  if (!video || !wrapper || !overlay || !playBtn) return;
+
+  var playIcon = '<polygon points="6,3 20,12 6,21"/>';
+  var pauseIcon = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+  var mutedIcon = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+  var unmutedIcon = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>';
+
+  function fmt(s){ var m=Math.floor(s/60); return m+':'+(('0'+Math.floor(s%60)).slice(-2)); }
+
+  function updateUI(){
+    if(!video.duration) return;
+    progressFill.style.width = (video.currentTime/video.duration*100)+'%';
+    timeDisplay.textContent = fmt(video.currentTime)+' / '+fmt(video.duration);
+  }
+
+  function showOverlay(){ overlay.classList.remove('hidden'); wrapper.classList.add('paused'); }
+  function hideOverlay(){ overlay.classList.add('hidden'); wrapper.classList.remove('paused'); }
+
+  function playVideo(){
+    var p = video.play();
+    if(p && p.then){
+      p.then(function(){
+        hideOverlay();
+        ctrlIcon.innerHTML = pauseIcon;
+        soundBadge.classList.add('visible');
+        setTimeout(function(){ soundBadge.classList.remove('visible'); }, 2500);
+      }).catch(function(){
+        video.muted = true;
+        muteIcon.innerHTML = mutedIcon;
+        video.play().then(function(){
+          hideOverlay();
+          ctrlIcon.innerHTML = pauseIcon;
+        }).catch(function(){});
+      });
+    }
+  }
+
+  function pauseVideo(){
+    video.pause();
+    ctrlIcon.innerHTML = playIcon;
+  }
+
+  playBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    video.muted = false;
+    video.volume = 1;
+    playVideo();
+  });
+
+  wrapper.addEventListener('click', function(e){
+    if(e.target.closest('.video-controls') || e.target.closest('.video-play-btn')) return;
+    if(video.paused){ video.muted = false; playVideo(); }
+    else { pauseVideo(); showOverlay(); }
+  });
+
+  toggleBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(video.paused) playVideo();
+    else pauseVideo();
+  });
+
+  muteBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    video.muted = !video.muted;
+    muteIcon.innerHTML = video.muted ? mutedIcon : unmutedIcon;
+  });
+
+  progress.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(!video.duration) return;
+    var rect = progress.getBoundingClientRect();
+    var pct = (e.clientX - rect.left)/rect.width;
+    video.currentTime = pct * video.duration;
+  });
+
+  fsBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    else if(wrapper.requestFullscreen) wrapper.requestFullscreen();
+    else if(wrapper.webkitRequestFullscreen) wrapper.webkitRequestFullscreen();
+  });
+
+  video.addEventListener('timeupdate', updateUI);
+  video.addEventListener('loadedmetadata', updateUI);
+  video.addEventListener('ended', function(){ showOverlay(); ctrlIcon.innerHTML = playIcon; });
+
+  wrapper.setAttribute('tabindex','0');
+  wrapper.addEventListener('keydown', function(e){
+    if(e.code==='Space'||e.key===' '){
+      e.preventDefault();
+      if(video.paused){ video.muted=false; playVideo(); }
+      else { pauseVideo(); showOverlay(); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

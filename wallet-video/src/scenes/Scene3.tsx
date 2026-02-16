@@ -67,25 +67,27 @@ const ALLOCATIONS = [
 ];
 
 const MAX_AMOUNT = 15000;
-const UNALLOCATED = 51000;
+const TOTAL_BUDGET = 50000;
 
 export const Scene3: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
 
-  // Headline: blur/fade in 0-15
-  const headlineOpacity = interpolate(
-    frame,
-    [0, 15],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const headlineBlur = interpolate(
-    frame,
-    [0, 15],
-    [8, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Fade out content in last 18 frames to avoid overlap with next scene
+  const exitFade = interpolate(frame, [durationInFrames - 18, durationInFrames], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Headline: blur/fade in 0-12
+  const headlineOpacity = interpolate(frame, [0, 12], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  }) * exitFade;
+  const headlineBlur = interpolate(frame, [0, 12], [8, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   // Allocation panel: spring scale + opacity from frame 6
   const panelSpring = spring({
@@ -93,28 +95,32 @@ export const Scene3: React.FC = () => {
     fps,
     config: { damping: 200 },
   });
-  const panelScale = interpolate(
-    panelSpring,
-    [0, 1],
-    [0.92, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-  const panelOpacity = interpolate(
-    panelSpring,
-    [0, 1],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const panelScale = interpolate(panelSpring, [0, 1], [0.92, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const panelOpacity = interpolate(panelSpring, [0, 1], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Unallocated count: 0 -> 51000 over frames 72-114
-  const unallocatedValue = Math.round(
-    interpolate(
-      frame,
-      [72, 114],
-      [0, UNALLOCATED],
-      { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-    )
-  );
+  // Total allocated counter
+  const allocatedTotal = ALLOCATIONS.reduce((sum, item, i) => {
+    const barStartFrame = 30 + i * 4;
+    const barEndFrame = 72 + i * 4;
+    const amount = Math.round(
+      interpolate(frame, [barStartFrame, barEndFrame], [0, item.amount], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      })
+    );
+    return sum + amount;
+  }, 0);
+
+  const unallocated = TOTAL_BUDGET - allocatedTotal;
+
+  // Budget balance bar
+  const balancePct = (allocatedTotal / TOTAL_BUDGET) * 100;
 
   return (
     <div
@@ -125,7 +131,7 @@ export const Scene3: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 36,
+        gap: 28,
         fontFamily,
       }}
     >
@@ -143,7 +149,7 @@ export const Scene3: React.FC = () => {
       >
         <span
           style={{
-            fontSize: 34,
+            fontSize: 38,
             fontWeight: 900,
             color: "rgba(255,255,255,0.95)",
           }}
@@ -152,7 +158,7 @@ export const Scene3: React.FC = () => {
         </span>
         <span
           style={{
-            fontSize: 34,
+            fontSize: 38,
             fontWeight: 900,
             background: "linear-gradient(135deg, #F5B731, #F7D060)",
             backgroundClip: "text",
@@ -164,177 +170,255 @@ export const Scene3: React.FC = () => {
         </span>
       </div>
 
-      {/* Allocation panel */}
+      {/* Main layout: sidebar + allocation panel */}
       <div
         style={{
-          width: 800,
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: 18,
-          backdropFilter: "blur(20px)",
-          overflow: "hidden",
+          display: "flex",
+          gap: 20,
           transform: `scale(${panelScale})`,
-          opacity: panelOpacity,
+          opacity: panelOpacity * exitFade,
         }}
       >
-        {/* Header */}
+        {/* Left sidebar - Balance summary */}
         <div
           style={{
+            width: 200,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 18,
+            padding: 24,
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "18px 28px",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
+            flexDirection: "column",
+            gap: 16,
           }}
         >
-          <span
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#FFFFFF",
-            }}
+          <div
+            style={{ fontSize: 11, fontWeight: 600, color: "#A0A3B1", letterSpacing: "0.08em", textTransform: "uppercase" as const }}
           >
-            Budget Allocation
-          </span>
-          <span
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#A0A3B1",
-              fontVariantNumeric: "tabular-nums",
-            }}
+            Total Balance
+          </div>
+          <div
+            style={{ fontSize: 32, fontWeight: 800, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}
           >
-            Unallocated: ${unallocatedValue.toLocaleString()}
-          </span>
-        </div>
+            ${TOTAL_BUDGET.toLocaleString()}
+          </div>
 
-        {/* Allocation rows */}
-        {ALLOCATIONS.map((item, i) => {
-          const rowStartFrame = 12 + i * 3;
-          const barStartFrame = 36 + i * 5;
-          const barEndFrame = 90 + i * 5;
-
-          const rowSpring = spring({
-            frame: frame - rowStartFrame,
-            fps,
-            config: { damping: 200 },
-          });
-          const rowTranslateX = interpolate(
-            rowSpring,
-            [0, 1],
-            [30, 0],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
-          const rowOpacity = interpolate(
-            rowSpring,
-            [0, 1],
-            [0, 1],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
-
-          const barWidthPct = interpolate(
-            frame,
-            [barStartFrame, barEndFrame],
-            [0, (item.amount / MAX_AMOUNT) * 100],
-            { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-          );
-
-          const amountValue = Math.round(
-            interpolate(
-              frame,
-              [barStartFrame, barEndFrame],
-              [0, item.amount],
-              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-            )
-          );
-
-          return (
+          {/* Balance bar */}
+          <div>
             <div
-              key={item.name}
               style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "12px 28px",
-                gap: 16,
-                transform: `translateX(${rowTranslateX}px)`,
-                opacity: rowOpacity,
+                height: 8,
+                borderRadius: 4,
+                background: "rgba(255,255,255,0.05)",
+                overflow: "hidden",
+                marginBottom: 6,
               }}
             >
-              {/* Icon */}
               <div
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 14,
-                  overflow: "hidden",
-                  background: "rgba(255,255,255,0.06)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  width: `${balancePct}%`,
+                  height: "100%",
+                  borderRadius: 4,
+                  background: "linear-gradient(90deg, #F5B731, #F7D060)",
+                  transition: "width 0.1s",
                 }}
-              >
-                {item.icon === "coin" ? (
-                  <CoinIcon size={36} />
-                ) : (
-                  <Img
-                    src={staticFile(item.icon)}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      objectFit: "cover",
-                    }}
-                  />
-                )}
-              </div>
+              />
+            </div>
+            <div style={{ fontSize: 11, color: "#A0A3B1" }}>
+              {Math.round(balancePct)}% allocated
+            </div>
+          </div>
 
-              {/* Name */}
+          {/* Unallocated */}
+          <div
+            style={{
+              padding: "12px 16px",
+              background: "rgba(245,183,49,0.06)",
+              borderRadius: 12,
+              border: "1px solid rgba(245,183,49,0.1)",
+            }}
+          >
+            <div style={{ fontSize: 10, color: "#A0A3B1", marginBottom: 4 }}>Unallocated</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#F5B731", fontVariantNumeric: "tabular-nums" }}>
+              ${unallocated.toLocaleString()}
+            </div>
+          </div>
+        </div>
+
+        {/* Allocation panel */}
+        <div
+          style={{
+            width: 680,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 18,
+            backdropFilter: "blur(20px)",
+            overflow: "hidden",
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "16px 24px",
+              borderBottom: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}>
+              Budget Allocation
+            </span>
+            <div style={{ display: "flex", gap: 8 }}>
               <span
                 style={{
-                  fontSize: 15,
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                  fontSize: 11,
                   fontWeight: 600,
-                  color: "#FFFFFF",
-                  width: 160,
+                  background: "linear-gradient(135deg, #F5B731, #F7D060)",
+                  color: "#0F1117",
                 }}
               >
-                {item.name}
+                + Add Funds
               </span>
-
-              {/* Bar */}
-              <div
-                style={{
-                  flex: 1,
-                  height: 10,
-                  borderRadius: 5,
-                  background: "rgba(255,255,255,0.05)",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    width: `${barWidthPct}%`,
-                    height: "100%",
-                    borderRadius: 5,
-                    background: `linear-gradient(90deg, ${item.gradFrom}, ${item.gradTo})`,
-                  }}
-                />
-              </div>
-
-              {/* Amount */}
               <span
                 style={{
-                  width: 80,
-                  textAlign: "right",
-                  fontWeight: 700,
-                  fontVariantNumeric: "tabular-nums",
-                  color: item.color,
-                  fontSize: 15,
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#A0A3B1",
                 }}
               >
-                ${amountValue.toLocaleString()}
+                Transfer Back
               </span>
             </div>
-          );
-        })}
+          </div>
+
+          {/* Allocation rows */}
+          {ALLOCATIONS.map((item, i) => {
+            const rowStartFrame = 10 + i * 2;
+            const barStartFrame = 30 + i * 4;
+            const barEndFrame = 72 + i * 4;
+
+            const rowSpring = spring({
+              frame: frame - rowStartFrame,
+              fps,
+              config: { damping: 200 },
+            });
+            const rowTranslateX = interpolate(rowSpring, [0, 1], [30, 0], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            const rowOpacity = interpolate(rowSpring, [0, 1], [0, 1], {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+
+            const barWidthPct = interpolate(
+              frame,
+              [barStartFrame, barEndFrame],
+              [0, (item.amount / MAX_AMOUNT) * 100],
+              { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+            );
+
+            const amountValue = Math.round(
+              interpolate(frame, [barStartFrame, barEndFrame], [0, item.amount], {
+                extrapolateLeft: "clamp",
+                extrapolateRight: "clamp",
+              })
+            );
+
+            return (
+              <div
+                key={item.name}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "11px 24px",
+                  gap: 14,
+                  transform: `translateX(${rowTranslateX}px)`,
+                  opacity: rowOpacity,
+                  borderBottom: i < ALLOCATIONS.length - 1 ? "1px solid rgba(255,255,255,0.03)" : "none",
+                }}
+              >
+                {/* Icon */}
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    background: "rgba(255,255,255,0.06)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.icon === "coin" ? (
+                    <CoinIcon size={34} />
+                  ) : (
+                    <Img
+                      src={staticFile(item.icon)}
+                      style={{ width: 34, height: 34, objectFit: "cover" }}
+                    />
+                  )}
+                </div>
+
+                {/* Name */}
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: "#FFFFFF",
+                    width: 140,
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.name}
+                </span>
+
+                {/* Bar */}
+                <div
+                  style={{
+                    flex: 1,
+                    height: 10,
+                    borderRadius: 5,
+                    background: "rgba(255,255,255,0.05)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${barWidthPct}%`,
+                      height: "100%",
+                      borderRadius: 5,
+                      background: `linear-gradient(90deg, ${item.gradFrom}, ${item.gradTo})`,
+                    }}
+                  />
+                </div>
+
+                {/* Amount */}
+                <span
+                  style={{
+                    width: 80,
+                    textAlign: "right" as const,
+                    fontWeight: 700,
+                    fontVariantNumeric: "tabular-nums",
+                    color: item.color,
+                    fontSize: 14,
+                    flexShrink: 0,
+                  }}
+                >
+                  ${amountValue.toLocaleString()}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

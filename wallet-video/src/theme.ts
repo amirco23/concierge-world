@@ -37,17 +37,73 @@ export const ALLOCS = [
   { name: "Sidekick", icon: "assets/icon-sidekick.png", color: "#F5B731", gradFrom: "#F5B731", gradTo: "#F7D060", amount: 5000 },
   { name: "AI Workflows", icon: "assets/icon-workflows.png", color: "#74B9FF", gradFrom: "#74B9FF", gradTo: "#A29BFE", amount: 7000 },
   { name: "AI Agents", icon: "assets/icon-agents.png", color: "#A29BFE", gradFrom: "#A29BFE", gradTo: "#74B9FF", amount: 10000 },
-  { name: "Marketplace Apps", icon: "assets/icon-vibe.png", color: "#E17055", gradFrom: "#E17055", gradTo: "#FD79A8", amount: 5000 },
 ];
 
-// Scene durations in seconds (at 30fps)
-export const SCENE_DURATIONS = {
-  scene1: 5.5,
-  scene2: 5.2,
-  scene3: 6.0,
-  scene4: 6.2, // Controls
-  scene5: 5.8, // Visibility
-  scene6: 7.3, // Platform
+export const FPS = 30;
+
+// ─── Scene timing ────────────────────────────────────────────────────────
+// Duration = audio_frames + 6 (start delay) + 20+ safety buffer
+// Audio varies slightly per ElevenLabs generation; these accommodate up to ~10% overshoot.
+// V1 total: 336+230+296+196+204 - 4×12 = 1214 frames (~40.5s)
+export const SCENE_FRAMES = {
+  scene1: 336,  // 11.2s — audio ~307f, need 313, buffer 23f
+  scene2: 230,  // 7.7s  — audio ~202f, need 208, buffer 22f
+  scene3: 296,  // 9.9s  — audio ~268f, need 274, buffer 22f
+  scene4: 196,  // 6.5s  — audio ~166f, need 172, buffer 24f
+  scene5: 204,  // 6.8s  — audio ~175f, need 181, buffer 23f
 };
 
-export const FPS = 30;
+export const TRANSITION_FRAMES = 12;
+
+// ─── Subtitle / narration cue data ────────────────────────────────────
+// Timings are scene-local frames. The WalletExplainer maps them to global time.
+// Subtitle timings are scene-local frames, calibrated to audio durations.
+// Each narration starts at frame 6 of its scene (globalOffset + 6).
+export const NARRATION = [
+  {
+    scene: 1,
+    audio: "audio/narration-1.wav",
+    // ~10.25s = 307 frames of audio
+    subtitles: [
+      { start: 0, end: 180, text: "Your monday platform is thriving — credits, seats, AI experiences — all growing fast." },
+      { start: 180, end: 313, text: "And now, there's one smart way to power it all." },
+    ],
+  },
+  {
+    scene: 2,
+    audio: "audio/narration-2.wav",
+    // 6.91s = 208 frames of audio
+    subtitles: [
+      { start: 0, end: 62, text: "That's why we built monday Wallet!" },
+      { start: 62, end: 214, text: "Load your funds once, and flexibly allocate them across any experience." },
+    ],
+  },
+  {
+    scene: 3,
+    audio: "audio/narration-3.wav",
+    // ~8.95s = 268 frames of audio
+    subtitles: [
+      { start: 0, end: 67, text: "AI Agents, Vibe Apps, Sidekick..." },
+      { start: 67, end: 160, text: "you decide where every dollar goes." },
+      { start: 160, end: 274, text: "Move funds between products as your needs change." },
+    ],
+  },
+  {
+    scene: 4,
+    audio: "audio/narration-4.wav",
+    // ~5.55s = 166 frames of audio
+    subtitles: [
+      { start: 0, end: 75, text: "Spending caps, auto top-up, real-time alerts..." },
+      { start: 75, end: 172, text: "you're always in the driver's seat." },
+    ],
+  },
+  {
+    scene: 5,
+    audio: "audio/narration-5.wav",
+    // ~5.84s = 175 frames of audio
+    subtitles: [
+      { start: 0, end: 96, text: "And the best part? Total visibility across your entire company." },
+      { start: 96, end: 181, text: "This is monday Wallet." },
+    ],
+  },
+];

@@ -1,4 +1,10 @@
-wallet-video/
+wallet-video/node_modules/
+wallet-video/src/
+wallet-video/public/
+wallet-video/generate-audio.js
+wallet-video/package.json
+wallet-video/package-lock.json
+wallet-video/tsconfig.json
 node_modules/
 wallet-explainer.html
 main.js
