@@ -213,7 +213,7 @@ function generateAmbientPad(duration = 45) {
 const NARRATION_LINES = [
   {
     id: "narration-1",
-    text: "Your monday platform is thriving — credits, seats, AI experiences — all growing fast. And now, there's one smart way to power it all.",
+    text: "Your monday platform is growing fast. Now, there's one smart way to power it all.",
   },
   {
     id: "narration-2",

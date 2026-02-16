@@ -38,9 +38,9 @@ export const Scene1: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // Subtitle: slide up from frame 36
+  // Subtitle: slide up from frame 18 (faster for shorter scene)
   const subtitleSpring = spring({
-    frame: frame - 36,
+    frame: frame - 18,
     fps,
     config: { damping: 20, stiffness: 200 },
   });
@@ -145,7 +145,7 @@ export const Scene1: React.FC = () => {
         }}
       >
         {PRODUCTS.map((product, i) => {
-          const chipStartFrame = 16 + i * 2; // faster stagger
+          const chipStartFrame = 8 + i * 2; // even faster for shorter scene
           const chipSpring = spring({
             frame: frame - chipStartFrame,
             fps,
@@ -224,7 +224,7 @@ export const Scene1: React.FC = () => {
         }}
       >
         {CHAOS_TAGS.map((tag, i) => {
-          const tagStartFrame = 60 + i * 2;
+          const tagStartFrame = 30 + i * 2;
           const tagSpring = spring({
             frame: frame - tagStartFrame,
             fps,

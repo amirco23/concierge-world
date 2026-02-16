@@ -44,9 +44,9 @@ export const FPS = 30;
 // ─── Scene timing ────────────────────────────────────────────────────────
 // Duration = audio_frames + 6 (start delay) + 20+ safety buffer
 // Audio varies slightly per ElevenLabs generation; these accommodate up to ~10% overshoot.
-// V1 total: 336+230+296+196+204 - 4×12 = 1214 frames (~40.5s)
+// V1 total: 174+230+296+196+204 - 4×12 = 1052 frames (~35.1s)
 export const SCENE_FRAMES = {
-  scene1: 336,  // 11.2s — audio ~307f, need 313, buffer 23f
+  scene1: 174,  // 5.8s — audio ~148f, need 154, buffer 20f
   scene2: 230,  // 7.7s  — audio ~202f, need 208, buffer 22f
   scene3: 296,  // 9.9s  — audio ~268f, need 274, buffer 22f
   scene4: 196,  // 6.5s  — audio ~166f, need 172, buffer 24f
@@ -63,10 +63,10 @@ export const NARRATION = [
   {
     scene: 1,
     audio: "audio/narration-1.wav",
-    // ~10.25s = 307 frames of audio
+    // ~4.6s = 138 frames of audio
     subtitles: [
-      { start: 0, end: 180, text: "Your monday platform is thriving — credits, seats, AI experiences — all growing fast." },
-      { start: 180, end: 313, text: "And now, there's one smart way to power it all." },
+      { start: 0, end: 66, text: "Your monday platform is growing fast." },
+      { start: 66, end: 144, text: "Now, there's one smart way to power it all." },
     ],
   },
   {

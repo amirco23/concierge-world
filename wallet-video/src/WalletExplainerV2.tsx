@@ -152,10 +152,10 @@ export const WalletExplainerV2: React.FC = () => {
 
       {/* ─── UI pop sounds at key moments ─── */}
       {/* Scene 1: product chips appearing */}
-      <Sequence from={21}>
+      <Sequence from={12}>
         <Audio src={staticFile("audio/pop.wav")} volume={0.15} />
       </Sequence>
-      <Sequence from={30}>
+      <Sequence from={20}>
         <Audio src={staticFile("audio/pop.wav")} volume={0.12} />
       </Sequence>
 
