@@ -258,6 +258,7 @@ span.mobile-pill{display:none!important}
 .input-money:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
 .input-money.error{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-bg)}
 select.type-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:11px;font-weight:500}
+select.bucket-select{width:100%;max-width:320px;font-size:11px;padding:6px 8px}
 select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-size:10.5px;font-weight:500;max-width:96px}
 .converts-to{font-size:11.5px;color:var(--primary);font-weight:600;font-variant-numeric:tabular-nums}
 /* ===== USAGE CELL ===== */
@@ -799,23 +800,81 @@ let policies = { approval: true, block: true, notify: true };
 const ICON_CREDITS_SVG = `<svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="coinG" x1="8" y1="8" x2="36" y2="36"><stop offset="0%" stop-color="#F5D060"/><stop offset="50%" stop-color="#D4A520"/><stop offset="100%" stop-color="#B8860B"/></linearGradient><linearGradient id="coinF" x1="10" y1="10" x2="34" y2="34"><stop offset="0%" stop-color="#FFE87C"/><stop offset="50%" stop-color="#DAA520"/><stop offset="100%" stop-color="#C49000"/></linearGradient><linearGradient id="starG" x1="16" y1="12" x2="28" y2="30"><stop offset="0%" stop-color="#FFF8DC"/><stop offset="100%" stop-color="#FFD700"/></linearGradient></defs><circle cx="22" cy="23" r="17" fill="#8B6914" opacity=".35"/><circle cx="22" cy="21" r="17" fill="url(#coinG)"/><circle cx="22" cy="21" r="13.5" fill="url(#coinF)"/><circle cx="22" cy="21" r="11.5" fill="none" stroke="#B8860B" stroke-width=".7" opacity=".5"/><polygon points="22,12.5 24.4,17.8 30.2,18.5 26,22.4 27,28 22,25.2 17,28 18,22.4 13.8,18.5 19.6,17.8" fill="url(#starG)" stroke="#B8860B" stroke-width=".3"/></svg>`;
 const ICON_SEATS_SVG = `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="32" height="32" rx="8" fill="#9AADBD"/><circle cx="15" cy="16" r="4" fill="#fff"/><circle cx="25" cy="16" r="4" fill="#fff"/><path d="M10 28c0-4 4-6 10-6s10 2 10 6" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>`;
 
+/* ===== BUCKET DEFINITIONS ===== */
+const CREDIT_BUCKETS = [
+  { credits:20000,   yearly:2400,   monthly:200,   label:'20K credits' },
+  { credits:40000,   yearly:4800,   monthly:400,   label:'40K credits' },
+  { credits:80000,   yearly:9600,   monthly:800,   label:'80K credits' },
+  { credits:160000,  yearly:19200,  monthly:1600,  label:'160K credits' },
+  { credits:400000,  yearly:48000,  monthly:4000,  label:'400K credits' },
+  { credits:800000,  yearly:96000,  monthly:8000,  label:'800K credits', ent:true },
+  { credits:2000000, yearly:240000, monthly:20000, label:'2M credits',   ent:true },
+];
+
+const VIBE_BUCKETS = [
+  { apps:10,  monthly:100,  label:'10 active apps' },
+  { apps:25,  monthly:250,  label:'25 active apps' },
+  { apps:50,  monthly:500,  label:'50 active apps' },
+  { apps:100, monthly:1000, label:'100 active apps' },
+  { apps:250, monthly:2500, label:'250 active apps' },
+];
+
+const SIDEKICK_TIERS = [
+  { name:'Sidekick Lite', price:10,  label:'Lite ($10/user/mo)' },
+  { name:'Sidekick Pro',  price:10,  label:'Pro ($10/user/mo)' },
+  { name:'Super Sidekick',price:30,  label:'Super ($30/user/mo)' },
+];
+
 const offerings = [
-  { id:'credits',  name:'AI Credits',     iconType:'svg', iconData:ICON_CREDITS_SVG,       color:'#DAA520', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:5000, cap:6000,  locked:false, rate:1000,  rateUnit:'$1 =',    perLabel:'credits',    spent:1200, teams:['Sales','R&D'],       departments:['Engineering','Sales'],       autoTopUp:false, topUpThreshold:500,  topUpAmount:1000,
+  { id:'credits',  name:'AI Credits',     iconType:'svg', iconData:ICON_CREDITS_SVG,       color:'#DAA520', poolType:'credits', budgetType:'Annual',    department:'All Workspaces',
+    bucketIdx:2, allocated:9600, cap:12000, locked:false,
+    currency:'AI Credits', rateUnit:'$0.01/', perLabel:'credit',
+    spent:3200, teams:['Sales','R&D'], departments:['Engineering','Sales'],
+    autoTopUp:false, topUpThreshold:500, topUpAmount:1000,
     usage:{ boards:47, boardsLimit:100 } },
-  { id:'vibe',     name:'Vibe Apps',      iconType:'img', iconData:'assets/vibe.png',      color:'#E8618C', poolType:'vibe',   budgetType:'Monthly',   department:'Engineering',    allocated:4000, cap:5000,  locked:false, rate:20,    rateUnit:'$20 =',   perLabel:'active app/mo',spent:800,  teams:['Product','R&D'],     departments:['Engineering','Product'],     autoTopUp:false, topUpThreshold:400,  topUpAmount:500,
+
+  { id:'vibe',     name:'Vibe Apps',      iconType:'img', iconData:'assets/vibe.png',      color:'#E8618C', poolType:'vibe',   budgetType:'Monthly',   department:'Engineering',
+    bucketIdx:1, allocated:250, cap:500, locked:false,
+    currency:'Active Apps', rateUnit:'$10/', perLabel:'active app/mo',
+    spent:80, teams:['Product','R&D'], departments:['Engineering','Product'],
+    autoTopUp:false, topUpThreshold:400, topUpAmount:500,
     usage:{ paid:25, published:8 } },
-  { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:3000, cap:4000,  locked:false, rate:12,    rateUnit:'$12 =',   perLabel:'seat/mo',    spent:960,  teams:['Sales','CS'],        departments:['Sales','Customer Success'],  autoTopUp:true,  topUpThreshold:300,  topUpAmount:600,
-    usage:{ usersAllocated:185, usersLimit:250 } },
-  { id:'agents',   name:'AI Agents',      iconType:'img', iconData:'assets/agents.png',    color:'#7B68EE', poolType:'credits', budgetType:'Quarterly', department:'Engineering',    allocated:2000, cap:3000,  locked:false, rate:0.02,  rateUnit:'$0.02/',  perLabel:'action',     spent:540,  teams:['CS','Marketing'],    departments:['Engineering','Marketing'],   autoTopUp:false, topUpThreshold:200,  topUpAmount:500,
-    usage:{ creditsUsed:27000, creditsLimit:100000, agents:12,
+
+  { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces',
+    tierIdx:1, users:30, allocated:300, cap:500, locked:false,
+    currency:'Users', rateUnit:'$10/', perLabel:'user/mo',
+    spent:240, teams:['Sales','CS'], departments:['Sales','Customer Success'],
+    autoTopUp:true, topUpThreshold:300, topUpAmount:600,
+    usage:{ usersAllocated:30, usersLimit:50, tiers:[
+      {name:'Sidekick Lite',users:10,price:10},{name:'Sidekick Pro',users:15,price:10},{name:'Super Sidekick',users:5,price:30}
+    ] } },
+
+  { id:'agents',   name:'AI Agents',      iconType:'img', iconData:'assets/agents.png',    color:'#7B68EE', poolType:'credits', budgetType:'Monthly',   department:'Engineering',
+    allocated:2000, cap:3000, locked:false,
+    currency:'Agent Credits', rateUnit:'$0.02/', perLabel:'action',
+    spent:540, teams:['CS','Marketing'], departments:['Engineering','Marketing'],
+    autoTopUp:false, topUpThreshold:200, topUpAmount:500,
+    usage:{ creditsUsed:27000, creditsLimit:100000, agents:2,
       breakdown:[
-        { name:'SDR Agent', color:'#E8618C', desc:'Outbound prospecting & lead qualification', creditsUsed:18200, creditsLimit:60000, actions:4120, actionsLimit:8000, status:'active' },
-        { name:'PMO Agent', color:'#0073EA', desc:'Project tracking & resource management',    creditsUsed:8800,  creditsLimit:40000, actions:1940, actionsLimit:5000, status:'active' }
+        { name:'SDR Agent', color:'#E8618C', desc:'Outbound prospecting & lead qualification', creditsUsed:18200, creditsLimit:60000, actions:4120, actionsLimit:8000, status:'active',
+          topUp:true, topUpThreshold:5000, topUpAmount:10000, lastTopUp:'Feb 8' },
+        { name:'PMO Agent', color:'#0073EA', desc:'Project tracking & resource management',    creditsUsed:8800,  creditsLimit:40000, actions:1940, actionsLimit:5000, status:'active',
+          topUp:false, topUpThreshold:3000, topUpAmount:5000, lastTopUp:null }
       ]
     } },
-  { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces', allocated:1000, cap:2000,  locked:false, rate:0.01,  rateUnit:'$0.01/',  perLabel:'minute',     spent:250,  teams:['Sales','Product'],   departments:['Sales','Product'],           autoTopUp:false, topUpThreshold:100,  topUpAmount:300,
-    usage:{ minutesUsed:25000, minutesLimit:100000, hours:417 } },
-  { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces', allocated:2500, cap:3500,  locked:false, rate:10,    rateUnit:'$10 =',   perLabel:'seat/mo',    spent:400,  teams:['Sales','CS','R&D'],  departments:['Engineering','Sales','Customer Success'], autoTopUp:false, topUpThreshold:250, topUpAmount:500,
+
+  { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces',
+    allocated:1000, cap:2000, locked:false,
+    currency:'Noted Hours', rateUnit:'$2.40/', perLabel:'hour',
+    spent:250, teams:['Sales','Product'], departments:['Sales','Product'],
+    autoTopUp:false, topUpThreshold:100, topUpAmount:300,
+    usage:{ hoursUsed:104, hoursLimit:417, minutesUsed:6250, minutesLimit:25000 } },
+
+  { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces',
+    allocated:2500, cap:3500, locked:false,
+    currency:'Seats', rateUnit:'$10/', perLabel:'seat/mo',
+    spent:400, teams:['Sales','CS','R&D'], departments:['Engineering','Sales','Customer Success'],
+    autoTopUp:false, topUpThreshold:250, topUpAmount:500,
     usage:{ usersAllocated:250, products:[{name:'CRM',count:120},{name:'Service',count:80},{name:'Work Mgmt',count:50}] } },
 ];
 
@@ -840,7 +899,7 @@ let openDrawer = null;
 let snapshotState = null;
 
 function saveSnapshot(){
-  snapshotState = JSON.stringify(offerings.map(o=>({allocated:o.allocated,cap:o.cap,budgetType:o.budgetType,department:o.department,locked:o.locked,teams:[...o.teams],departments:[...o.departments],autoTopUp:o.autoTopUp,topUpThreshold:o.topUpThreshold,topUpAmount:o.topUpAmount,rate:o.rate})));
+  snapshotState = JSON.stringify(offerings.map(o=>({allocated:o.allocated,cap:o.cap,budgetType:o.budgetType,department:o.department,locked:o.locked,teams:[...o.teams],departments:[...o.departments],autoTopUp:o.autoTopUp,topUpThreshold:o.topUpThreshold,topUpAmount:o.topUpAmount,rate:o.rate,bucketIdx:o.bucketIdx,tierIdx:o.tierIdx,users:o.users})));
 }
 saveSnapshot();
 
@@ -860,9 +919,12 @@ function poolSpent(type){ return offerings.filter(o=>o.poolType===type).reduce((
 
 function poolCreditsUnits(){
   return offerings.filter(o=>o.poolType==='credits').reduce((s,o)=>{
-    if(o.id==='credits')   return s + o.allocated * o.rate;
-    if(o.id==='agents')    return s + Math.floor(o.allocated / o.rate);
-    if(o.id==='notetaker') return s + Math.floor(o.allocated / o.rate);
+    if(o.id==='credits'){
+      const b = CREDIT_BUCKETS[o.bucketIdx || 0];
+      return s + b.credits;
+    }
+    if(o.id==='agents')    return s + Math.floor(o.allocated / 0.02);
+    if(o.id==='notetaker') return s + Math.round(o.allocated / 2.40);
     return s;
   },0);
 }
@@ -875,7 +937,11 @@ function poolSeatsUnits(){
 
 function poolVibeUnits(){
   return offerings.filter(o=>o.poolType==='vibe').reduce((s,o)=>{
-    return s + Math.floor(o.allocated / o.rate);
+    if(o.id==='vibe'){
+      const b = VIBE_BUCKETS[o.bucketIdx || 0];
+      return s + b.apps;
+    }
+    return s + Math.floor(o.allocated / 10);
   },0);
 }
 
@@ -887,13 +953,41 @@ function getStatus(o){
 }
 
 function convertsTo(o){
-  if(o.id === 'agents')    return fmt(Math.floor(o.allocated / o.rate))+' actions';
-  if(o.id === 'notetaker') return fmt(Math.floor(o.allocated / o.rate))+' minutes';
-  if(o.id === 'credits')   return fmt(o.allocated * o.rate)+' credits';
-  if(o.id === 'vibe')      return fmt(Math.floor(o.allocated / o.rate))+' app seats';
-  if(o.id === 'sidekick')  return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
-  if(o.id === 'seats')     return fmt(Math.floor(o.allocated / o.rate))+' seats/mo';
+  if(o.id === 'credits'){
+    const b = CREDIT_BUCKETS[o.bucketIdx || 0];
+    return fmt(b.credits)+' credits';
+  }
+  if(o.id === 'vibe'){
+    const b = VIBE_BUCKETS[o.bucketIdx || 0];
+    return b.apps+' active apps';
+  }
+  if(o.id === 'sidekick'){
+    const t = SIDEKICK_TIERS[o.tierIdx || 0];
+    return o.users+' users ('+t.name+')';
+  }
+  if(o.id === 'agents')    return fmt(Math.floor(o.allocated / 0.02))+' actions';
+  if(o.id === 'notetaker') return fmt(Math.round(o.allocated / 2.40))+' noted hours';
+  if(o.id === 'seats')     return fmt(Math.floor(o.allocated / 10))+' seats/mo';
   return '-';
+}
+
+function offeringSub(o){
+  if(o.id === 'credits'){
+    const b = CREDIT_BUCKETS[o.bucketIdx || 0];
+    return `${b.label} &middot; $${fmt(b.monthly)}/mo`;
+  }
+  if(o.id === 'vibe'){
+    const b = VIBE_BUCKETS[o.bucketIdx || 0];
+    return `${b.label} &middot; $${fmt(b.monthly)}/mo`;
+  }
+  if(o.id === 'sidekick'){
+    const t = SIDEKICK_TIERS[o.tierIdx || 0];
+    return `${t.name} &middot; $${t.price}/user/mo`;
+  }
+  if(o.id === 'agents')    return '$0.02 per action';
+  if(o.id === 'notetaker') return '$2.40 per noted hour';
+  if(o.id === 'seats')     return '$10 per seat/mo';
+  return '';
 }
 
 function miniBar(pct, color){
@@ -905,20 +999,25 @@ function usageHtml(o){
   if(!u) return '';
   const c = o.color;
   if(o.id === 'credits'){
-    const pct = u.boardsLimit > 0 ? u.boards/u.boardsLimit*100 : 0;
+    const b = CREDIT_BUCKETS[o.bucketIdx || 0];
+    const pct = b.credits > 0 ? (o.spent / (b.credits * 0.01)) * 100 : 0;
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${u.boards}</strong>/<strong>${u.boardsLimit}</strong> AI Boards ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>${u.boards}</strong>/<strong>${u.boardsLimit}</strong> AI Boards ${miniBar(pct > 100 ? 100 : pct, c)}</div>
+      <div class="usage-row" style="font-size:9px;color:var(--text-muted)">${fmt(b.credits)} credits &middot; $${fmt(b.monthly)}/mo</div>
     </div>`;
   }
   if(o.id === 'vibe'){
+    const b = VIBE_BUCKETS[o.bucketIdx || 0];
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${u.paid}</strong> paid apps &middot; <strong>${u.published}</strong> published</div>
+      <div class="usage-row"><strong>${u.paid}</strong>/<strong>${b.apps}</strong> active apps ${miniBar(u.paid/b.apps*100, c)}</div>
+      <div class="usage-row"><strong>${u.published}</strong> published</div>
     </div>`;
   }
   if(o.id === 'sidekick'){
     const pct = u.usersLimit > 0 ? u.usersAllocated/u.usersLimit*100 : 0;
     return `<div class="usage-cell">
       <div class="usage-row"><strong>${fmt(u.usersAllocated)}</strong>/<strong>${fmt(u.usersLimit)}</strong> users ${miniBar(pct,c)}</div>
+      <div class="usage-tags">${u.tiers.map(t=>`<span class="usage-tag">${t.name} <strong>${t.users}</strong></span>`).join('')}</div>
     </div>`;
   }
   if(o.id === 'agents'){
@@ -929,10 +1028,9 @@ function usageHtml(o){
     </div>`;
   }
   if(o.id === 'notetaker'){
-    const pct = u.minutesLimit > 0 ? u.minutesUsed/u.minutesLimit*100 : 0;
+    const pct = u.hoursLimit > 0 ? u.hoursUsed/u.hoursLimit*100 : 0;
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${fmt(u.minutesUsed)}</strong>/<strong>${fmt(u.minutesLimit)}</strong> min ${miniBar(pct,c)}</div>
-      <div class="usage-row"><strong>${fmt(u.hours)}</strong> hours</div>
+      <div class="usage-row"><strong>${fmt(u.hoursUsed)}</strong>/<strong>${fmt(u.hoursLimit)}</strong> noted hours ${miniBar(pct,c)}</div>
     </div>`;
   }
   if(o.id === 'seats'){
@@ -994,6 +1092,46 @@ function renderWallet(){
 }
 
 /* =================================================================
+   DRAWER HELPERS — bucket/tier selectors
+   ================================================================= */
+function drawerAllocLabel(o){
+  if(o.id === 'credits')  return 'Credit Bucket';
+  if(o.id === 'vibe')     return 'Active Apps Plan';
+  if(o.id === 'sidekick') return 'Sidekick Tier & Users';
+  if(o.id === 'agents')   return 'Budget ($)';
+  if(o.id === 'notetaker')return 'Budget ($)';
+  return 'Allocated ($)';
+}
+
+function drawerAllocInput(o){
+  if(o.id === 'credits'){
+    return `<select class="type-select bucket-select" data-id="${o.id}" data-bucket="credits" ${o.locked?'disabled':''}>
+      ${CREDIT_BUCKETS.map((b,i)=>`<option value="${i}"${i===o.bucketIdx?' selected':''}>${b.label} — $${fmt(b.monthly)}/mo ($${fmt(b.yearly)}/yr)${b.ent?' [Ent]':''}</option>`).join('')}
+    </select>`;
+  }
+  if(o.id === 'vibe'){
+    return `<select class="type-select bucket-select" data-id="${o.id}" data-bucket="vibe" ${o.locked?'disabled':''}>
+      ${VIBE_BUCKETS.map((b,i)=>`<option value="${i}"${i===o.bucketIdx?' selected':''}>${b.label} — $${fmt(b.monthly)}/mo</option>`).join('')}
+    </select>`;
+  }
+  if(o.id === 'sidekick'){
+    return `<div style="display:flex;flex-direction:column;gap:6px">
+      <select class="type-select bucket-select" data-id="${o.id}" data-bucket="sidekick-tier" ${o.locked?'disabled':''}>
+        ${SIDEKICK_TIERS.map((t,i)=>`<option value="${i}"${i===o.tierIdx?' selected':''}>${t.label}</option>`).join('')}
+      </select>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input class="input-money" type="number" min="1" step="1" value="${o.users}" data-id="${o.id}" data-field="sidekick-users" style="width:60px" ${o.locked?'disabled':''}/>
+        <span style="font-size:10.5px;color:var(--text-muted);font-weight:500">users &middot; ${fmtMoney(o.allocated)}/mo</span>
+      </div>
+    </div>`;
+  }
+  return `<div style="display:flex;align-items:center;gap:6px">
+    <input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/>
+    <span class="converts-to" style="font-size:10.5px">${convertsTo(o)}</span>
+  </div>`;
+}
+
+/* =================================================================
    RENDER — BILLING CYCLE
    ================================================================= */
 function renderBillingCycle(){
@@ -1046,7 +1184,7 @@ function renderTable(){
           <div class="offering-icon${o.id==='credits'?' icon-credits':''}" style="background:${o.iconType==='img'?'transparent':o.color+'18'};color:${o.color}">${o.iconType==='img'?`<img src="${o.iconData}" alt="${o.name}"/>`:o.iconData}</div>
           <div style="flex:1;min-width:0">
             <div class="offering-name">${o.name}</div>
-            <div class="offering-sub">${o.rateUnit} ${o.id==='agents'||o.id==='notetaker'?'per '+o.perLabel:fmt(o.rate)+' '+o.perLabel}</div>
+            <div class="offering-sub">${offeringSub(o)}</div>
           </div>
           <span class="mobile-pill pill ${pillClass}">${pillText}</span>
         </div>
@@ -1068,18 +1206,13 @@ function renderTable(){
       dr.innerHTML = `<td colspan="6">
         <div class="details-inner">
           <div class="detail-group">
-            <label>Allocated ($)</label>
-            <div style="display:flex;align-items:center;gap:6px">
-              <input class="input-money" type="number" min="0" step="100" value="${o.allocated}" data-id="${o.id}" ${o.locked?'disabled':''}/>
-              <span class="converts-to" style="font-size:10.5px">${convertsTo(o)}</span>
-            </div>
+            <label>${drawerAllocLabel(o)}</label>
+            ${drawerAllocInput(o)}
           </div>
           <div class="detail-group">
-            <label>Conversion Rate</label>
-            <div style="display:flex;align-items:center;gap:6px">
-              <input type="number" step="any" min="0" value="${o.rate}" data-field="rate" data-id="${o.id}" style="width:80px" ${o.locked?'disabled':''}/>
-              <span style="font-size:10.5px;color:var(--text-muted);font-weight:500">${o.id==='agents'?'$ per action':o.id==='notetaker'?'$ per minute':o.id==='credits'?'credits per $1':'$ per seat/mo'}</span>
-            </div>
+            <label>Converts To</label>
+            <div style="font-size:12px;font-weight:600;color:var(--primary)">${convertsTo(o)}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Allocated: ${fmtMoney(o.allocated)}</div>
           </div>
           <div class="detail-group">
             <label>Assigned Teams</label>
@@ -1119,6 +1252,17 @@ function renderTable(){
                 <div class="agent-stat-bar"><div class="agent-stat-bar-fill" style="width:${Math.min(100,a.creditsUsed/a.creditsLimit*100)}%;background:${a.color}"></div></div>
                 <div class="agent-stat-row" style="margin-top:4px"><span>Actions</span><strong>${fmt(a.actions)} / ${fmt(a.actionsLimit)}</strong></div>
                 <div class="agent-stat-bar"><div class="agent-stat-bar-fill" style="width:${Math.min(100,a.actions/a.actionsLimit*100)}%;background:${a.color}80"></div></div>
+                <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border-light)">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+                    <span style="font-size:10px;font-weight:600;color:var(--text-secondary)">Auto Top-up</span>
+                    <span style="font-size:9px;padding:1px 6px;border-radius:10px;background:${a.topUp?'var(--success)':'var(--border)'};color:${a.topUp?'#fff':'var(--text-muted)'};font-weight:600">${a.topUp?'ON':'OFF'}</span>
+                  </div>
+                  ${a.topUp ? `
+                  <div class="agent-stat-row"><span>Threshold</span><strong>${fmt(a.topUpThreshold)} credits</strong></div>
+                  <div class="agent-stat-row"><span>Top-up Amount</span><strong>${fmt(a.topUpAmount)} credits</strong></div>
+                  <div class="agent-stat-row"><span>Last Top-up</span><strong>${a.lastTopUp || '—'}</strong></div>
+                  ` : `<div style="font-size:9px;color:var(--text-muted)">Threshold: ${fmt(a.topUpThreshold)} &middot; Amount: ${fmt(a.topUpAmount)}</div>`}
+                </div>
               </div>
               `).join('')}
             </div>
@@ -1280,11 +1424,15 @@ $('#allocBody').addEventListener('input', e=>{
   if(!o) return;
 
   if(e.target.classList.contains('input-money')){
-    o.allocated = Math.max(0, parseInt(e.target.value)||0);
+    if(e.target.dataset.field === 'sidekick-users'){
+      o.users = Math.max(1, parseInt(e.target.value)||1);
+      const t = SIDEKICK_TIERS[o.tierIdx || 0];
+      o.allocated = o.users * t.price;
+    } else {
+      o.allocated = Math.max(0, parseInt(e.target.value)||0);
+    }
     renderWallet();
-    const row = e.target.closest('tr');
-    const ct = row.querySelector('.converts-to');
-    if(ct) ct.textContent = convertsTo(o);
+    renderTable();
     const overBudget = totalAllocated() > walletBalance;
     e.target.classList.toggle('error', overBudget);
   }
@@ -1304,9 +1452,41 @@ $('#allocBody').addEventListener('input', e=>{
 });
 
 $('#allocBody').addEventListener('change', e=>{
-  if(e.target.classList.contains('type-select')){
+  /* Bucket / tier selectors */
+  if(e.target.classList.contains('bucket-select')){
     const o = offerings.find(x=>x.id===e.target.dataset.id);
-    if(o) o.budgetType = e.target.value;
+    if(!o) return;
+    const idx = parseInt(e.target.value);
+    if(e.target.dataset.bucket === 'credits'){
+      o.bucketIdx = idx;
+      const b = CREDIT_BUCKETS[idx];
+      o.allocated = o.budgetType === 'Annual' ? b.yearly : b.monthly;
+    } else if(e.target.dataset.bucket === 'vibe'){
+      o.bucketIdx = idx;
+      const b = VIBE_BUCKETS[idx];
+      o.allocated = b.monthly;
+    } else if(e.target.dataset.bucket === 'sidekick-tier'){
+      o.tierIdx = idx;
+      const t = SIDEKICK_TIERS[idx];
+      o.allocated = o.users * t.price;
+    }
+    activities.unshift({text:`<strong>Admin</strong> changed <strong>${o.name}</strong> plan to <strong>${convertsTo(o)}</strong>`,time:'Just now',color:o.color});
+    renderTable();
+    renderWallet();
+    renderActivity();
+    return;
+  }
+  if(e.target.classList.contains('type-select') && !e.target.classList.contains('bucket-select')){
+    const o = offerings.find(x=>x.id===e.target.dataset.id);
+    if(o){
+      o.budgetType = e.target.value;
+      if(o.id === 'credits'){
+        const b = CREDIT_BUCKETS[o.bucketIdx || 0];
+        o.allocated = o.budgetType === 'Annual' ? b.yearly : b.monthly;
+        renderTable();
+        renderWallet();
+      }
+    }
   }
   if(e.target.classList.contains('dept-select')){
     const o = offerings.find(x=>x.id===e.target.dataset.id);
