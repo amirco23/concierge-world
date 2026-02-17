@@ -249,7 +249,8 @@ tr.data-row:hover td:first-child{background:#F0F6FF}
 .offering-icon.icon-credits svg{width:30px;height:30px}
 .offering-name{font-weight:600;font-size:12px}
 span.mobile-pill{display:none!important}
-.offering-sub{font-size:9.5px;color:var(--text-muted);font-weight:500}
+.offering-sub{font-size:9.5px;color:var(--text-muted);font-weight:500;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.plan-tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:8.5px;font-weight:700;background:var(--primary-bg);color:var(--primary);border:1px solid var(--primary);letter-spacing:.2px}
 .pool-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
 .pool-badge-credits{background:var(--credits-bg);color:var(--credits)}
 .pool-badge-seats{background:var(--seats-bg);color:var(--seats)}
@@ -282,7 +283,7 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
 .agent-stat-row strong{color:var(--text);font-weight:700}
 .agent-stat-bar{height:3px;border-radius:2px;background:var(--border-light);overflow:hidden;margin-top:4px}
 .agent-stat-bar-fill{height:100%;border-radius:2px}
-.input-cap{width:64px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;font-size:12px;font-weight:500}
+.input-cap{width:90px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:right;font-variant-numeric:tabular-nums;font-size:12px;font-weight:500}
 .input-cap:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-bg)}
 .pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;min-width:62px;text-align:center}
 .pill-healthy{background:var(--success);color:#fff}
@@ -722,9 +723,9 @@ select.dept-select{padding:4px 6px;border:1px solid var(--border);border-radius:
               <tr>
                 <th style="width:22%">Offering</th>
                 <th style="width:8%">Type</th>
-                <th style="width:12%">Period</th>
                 <th style="width:24%">Consumption</th>
-                <th style="width:10%">Cap</th>
+                <th style="width:10%">Period</th>
+                <th style="width:14%">Period Cap</th>
                 <th style="width:10%">Status</th>
               </tr>
             </thead>
@@ -971,22 +972,26 @@ function convertsTo(o){
   return '-';
 }
 
+function planTag(text){
+  return `<span class="plan-tag">${text}</span>`;
+}
+
 function offeringSub(o){
   if(o.id === 'credits'){
     const b = CREDIT_BUCKETS[o.bucketIdx || 0];
-    return `${b.label} &middot; $${fmt(b.monthly)}/mo`;
+    return `${planTag(b.label)} $${fmt(b.monthly)}/mo`;
   }
   if(o.id === 'vibe'){
     const b = VIBE_BUCKETS[o.bucketIdx || 0];
-    return `${b.label} &middot; $${fmt(b.monthly)}/mo`;
+    return `${planTag(b.label)} $${fmt(b.monthly)}/mo`;
   }
   if(o.id === 'sidekick'){
     const t = SIDEKICK_TIERS[o.tierIdx || 0];
-    return `${t.name} &middot; $${t.price}/user/mo`;
+    return `${planTag(t.name)} ${o.users} users &middot; $${fmt(o.allocated)}/mo`;
   }
-  if(o.id === 'agents')    return '$0.02 per action';
-  if(o.id === 'notetaker') return '$2.40 per noted hour';
-  if(o.id === 'seats')     return '$10 per seat/mo';
+  if(o.id === 'agents')    return `${planTag('Pay per action')} $0.02/action`;
+  if(o.id === 'notetaker') return `${planTag('Noted Hours')} $2.40/hr`;
+  if(o.id === 'seats')     return `${planTag('Per seat')} $10/seat/mo`;
   return '';
 }
 
@@ -1190,11 +1195,11 @@ function renderTable(){
         </div>
       </td>
       <td data-label="Type">${poolBadge}</td>
+      <td data-label="Consumption">${usageHtml(o)}</td>
       <td data-label="Period"><select class="type-select" data-id="${o.id}" ${o.locked?'disabled':''}>
         ${['Monthly','Quarterly','Annual','One-time'].map(t=>`<option${t===o.budgetType?' selected':''}>${t}</option>`).join('')}
       </select></td>
-      <td data-label="Consumption">${usageHtml(o)}</td>
-      <td data-label="Cap"><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
+      <td data-label="Period Cap"><input class="input-cap" type="number" min="0" step="100" value="${o.cap}" data-id="${o.id}" ${o.locked?'disabled':''}/></td>
       <td data-label="Status" class="status-cell"><span class="pill ${pillClass}">${pillText}</span></td>
     `;
     tbody.appendChild(tr);
