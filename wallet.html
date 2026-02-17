@@ -820,6 +820,14 @@ const VIBE_BUCKETS = [
   { apps:250, monthly:2500, label:'250 active apps' },
 ];
 
+const NOTETAKER_BUCKETS = [
+  { hours:120,  monthly:125,  yearly:1500,  label:'120 hours' },
+  { hours:250,  monthly:250,  yearly:3000,  label:'250 hours' },
+  { hours:400,  monthly:375,  yearly:4500,  label:'400 hours' },
+  { hours:750,  monthly:700,  yearly:8400,  label:'750 hours' },
+  { hours:1000, monthly:900,  yearly:10800, label:'1,000 hours' },
+];
+
 const SIDEKICK_TIERS = [
   { name:'Sidekick Lite', price:10,  label:'Lite ($10/user/mo)' },
   { name:'Sidekick Pro',  price:10,  label:'Pro ($10/user/mo)' },
@@ -865,11 +873,11 @@ const offerings = [
     } },
 
   { id:'notetaker',name:'AI Notetaker',   iconType:'img', iconData:'assets/notetaker.png', color:'#20BF6B', poolType:'credits', budgetType:'Monthly',   department:'All Workspaces',
-    allocated:1000, cap:2000, locked:false,
-    currency:'Noted Hours', rateUnit:'$2.40/', perLabel:'hour',
-    spent:250, teams:['Sales','Product'], departments:['Sales','Product'],
+    bucketIdx:1, allocated:250, cap:500, locked:false,
+    currency:'Noted Hours', rateUnit:'', perLabel:'hour',
+    spent:104, teams:['Sales','Product'], departments:['Sales','Product'],
     autoTopUp:false, topUpThreshold:100, topUpAmount:300,
-    usage:{ hoursUsed:104, hoursLimit:417, minutesUsed:6250, minutesLimit:25000 } },
+    usage:{ hoursUsed:104, hoursLimit:250 } },
 
   { id:'seats',    name:'Seats',          iconType:'svg', iconData:ICON_SEATS_SVG,         color:'#9AADBD', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces',
     allocated:2500, cap:3500, locked:false,
@@ -925,7 +933,10 @@ function poolCreditsUnits(){
       return s + b.credits;
     }
     if(o.id==='agents')    return s + Math.floor(o.allocated / 0.02);
-    if(o.id==='notetaker') return s + Math.round(o.allocated / 2.40);
+    if(o.id==='notetaker'){
+      const b = NOTETAKER_BUCKETS[o.bucketIdx || 0];
+      return s + b.hours;
+    }
     return s;
   },0);
 }
@@ -967,7 +978,10 @@ function convertsTo(o){
     return o.users+' users ('+t.name+')';
   }
   if(o.id === 'agents')    return fmt(Math.floor(o.allocated / 0.02))+' actions';
-  if(o.id === 'notetaker') return fmt(Math.round(o.allocated / 2.40))+' noted hours';
+  if(o.id === 'notetaker'){
+    const b = NOTETAKER_BUCKETS[o.bucketIdx || 0];
+    return fmt(b.hours)+' noted hours';
+  }
   if(o.id === 'seats')     return fmt(Math.floor(o.allocated / 10))+' seats/mo';
   return '-';
 }
@@ -990,7 +1004,10 @@ function offeringSub(o){
     return `${planTag(t.name)} ${o.users} users &middot; $${fmt(o.allocated)}/mo`;
   }
   if(o.id === 'agents')    return `${planTag('Pay per action')} $0.02/action`;
-  if(o.id === 'notetaker') return `${planTag('Noted Hours')} $2.40/hr`;
+  if(o.id === 'notetaker'){
+    const b = NOTETAKER_BUCKETS[o.bucketIdx || 0];
+    return `${planTag(b.label)} $${fmt(b.monthly)}/mo`;
+  }
   if(o.id === 'seats')     return `${planTag('Per seat')} $10/seat/mo`;
   return '';
 }
@@ -1033,9 +1050,11 @@ function usageHtml(o){
     </div>`;
   }
   if(o.id === 'notetaker'){
-    const pct = u.hoursLimit > 0 ? u.hoursUsed/u.hoursLimit*100 : 0;
+    const b = NOTETAKER_BUCKETS[o.bucketIdx || 0];
+    const pct = b.hours > 0 ? u.hoursUsed/b.hours*100 : 0;
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${fmt(u.hoursUsed)}</strong>/<strong>${fmt(u.hoursLimit)}</strong> noted hours ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>${fmt(u.hoursUsed)}</strong>/<strong>${fmt(b.hours)}</strong> noted hours ${miniBar(pct,c)}</div>
+      <div class="usage-row" style="font-size:9px;color:var(--text-muted)">${b.label} &middot; $${fmt(b.monthly)}/mo</div>
     </div>`;
   }
   if(o.id === 'seats'){
@@ -1104,7 +1123,7 @@ function drawerAllocLabel(o){
   if(o.id === 'vibe')     return 'Active Apps Plan';
   if(o.id === 'sidekick') return 'Sidekick Tier & Users';
   if(o.id === 'agents')   return 'Budget ($)';
-  if(o.id === 'notetaker')return 'Budget ($)';
+  if(o.id === 'notetaker')return 'Hours Bucket';
   return 'Allocated ($)';
 }
 
@@ -1117,6 +1136,11 @@ function drawerAllocInput(o){
   if(o.id === 'vibe'){
     return `<select class="type-select bucket-select" data-id="${o.id}" data-bucket="vibe" ${o.locked?'disabled':''}>
       ${VIBE_BUCKETS.map((b,i)=>`<option value="${i}"${i===o.bucketIdx?' selected':''}>${b.label} — $${fmt(b.monthly)}/mo</option>`).join('')}
+    </select>`;
+  }
+  if(o.id === 'notetaker'){
+    return `<select class="type-select bucket-select" data-id="${o.id}" data-bucket="notetaker" ${o.locked?'disabled':''}>
+      ${NOTETAKER_BUCKETS.map((b,i)=>`<option value="${i}"${i===o.bucketIdx?' selected':''}>${b.label} — $${fmt(b.monthly)}/mo ($${fmt(b.yearly)}/yr)</option>`).join('')}
     </select>`;
   }
   if(o.id === 'sidekick'){
@@ -1469,6 +1493,10 @@ $('#allocBody').addEventListener('change', e=>{
     } else if(e.target.dataset.bucket === 'vibe'){
       o.bucketIdx = idx;
       const b = VIBE_BUCKETS[idx];
+      o.allocated = b.monthly;
+    } else if(e.target.dataset.bucket === 'notetaker'){
+      o.bucketIdx = idx;
+      const b = NOTETAKER_BUCKETS[idx];
       o.allocated = b.monthly;
     } else if(e.target.dataset.bucket === 'sidekick-tier'){
       o.tierIdx = idx;
