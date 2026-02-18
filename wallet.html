@@ -1493,10 +1493,12 @@ function renderRequests(){
    TOAST
    ================================================================= */
 function toast(msg, type='success'){
+  const container = $('#toastContainer');
+  container.querySelectorAll('.toast').forEach(t=>t.remove());
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
   el.innerHTML = msg;
-  $('#toastContainer').appendChild(el);
+  container.appendChild(el);
   requestAnimationFrame(()=> el.classList.add('show'));
   setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),400); }, 2500);
 }
