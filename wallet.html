@@ -856,7 +856,7 @@ const offerings = [
     currency:'Active Apps', rateUnit:'$10/', perLabel:'active app/mo',
     spent:80, teams:['Product','R&D'], departments:['Engineering','Product'],
     autoTopUp:false, topUpThreshold:400, topUpAmount:500,
-    usage:{ paid:25, published:8 } },
+    usage:{ paid:25, published:22 } },
 
   { id:'sidekick', name:'Sidekick',       iconType:'img', iconData:'assets/sidekick.png',  color:'#00D2D3', poolType:'seats',   budgetType:'Monthly',   department:'All Workspaces',
     tierIdx:1, users:30, allocated:300, cap:500, locked:false,
@@ -872,7 +872,7 @@ const offerings = [
     currency:'Agent Credits', rateUnit:'$0.02/', perLabel:'action',
     spent:540, teams:['CS','Marketing'], departments:['Engineering','Marketing'],
     autoTopUp:false, topUpThreshold:200, topUpAmount:500,
-    usage:{ creditsUsed:27000, creditsLimit:100000, agents:2,
+    usage:{ creditsUsed:27000, creditsLimit:100000, agents:2, tasksDone:7120,
       breakdown:[
         { name:'SDR Agent', color:'#E8618C', desc:'Outbound prospecting & lead qualification', creditsUsed:18200, creditsLimit:60000, actions:4120, actionsLimit:8000, status:'active',
           topUp:true, topUpThreshold:5000, topUpAmount:10000, lastTopUp:'Feb 8' },
@@ -1030,13 +1030,13 @@ function usageSummary(o){
   }
   if(o.id === 'vibe'){
     const b = VIBE_BUCKETS[o.bucketIdx || 0];
-    return `<span class="usage-summary">${u.paid}/${b.apps} active apps</span>`;
+    return `<span class="usage-summary">${b.apps} apps plan, ${u.published} published</span>`;
   }
   if(o.id === 'sidekick'){
-    return `<span class="usage-summary">${fmt(u.usersAllocated)}/${fmt(u.usersLimit)} users</span>`;
+    return `<span class="usage-summary">Sidekick+ &middot; ${fmt(u.usersAllocated)} users</span>`;
   }
   if(o.id === 'agents'){
-    return `<span class="usage-summary">${fmt(u.creditsUsed)} credits &middot; ${u.agents} agents</span>`;
+    return `<span class="usage-summary">${fmt(u.tasksDone)} tasks done</span>`;
   }
   if(o.id === 'notetaker'){
     const b = NOTETAKER_BUCKETS[o.bucketIdx || 0];
@@ -1067,22 +1067,22 @@ function usageHtml(o){
   if(o.id === 'vibe'){
     const b = VIBE_BUCKETS[o.bucketIdx || 0];
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${u.paid}</strong>/<strong>${b.apps}</strong> active apps ${miniBar(u.paid/b.apps*100, c)}</div>
+      <div class="usage-row"><strong>${b.apps}</strong> apps plan &middot; <strong>${u.paid}</strong> paid ${miniBar(u.paid/b.apps*100, c)}</div>
       <div class="usage-row"><strong>${u.published}</strong> published</div>
     </div>`;
   }
   if(o.id === 'sidekick'){
     const pct = u.usersLimit > 0 ? u.usersAllocated/u.usersLimit*100 : 0;
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${fmt(u.usersAllocated)}</strong>/<strong>${fmt(u.usersLimit)}</strong> users ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>Sidekick+</strong> &middot; <strong>${fmt(u.usersAllocated)}</strong>/<strong>${fmt(u.usersLimit)}</strong> users ${miniBar(pct,c)}</div>
       <div class="usage-tags">${u.tiers.map(t=>`<span class="usage-tag">${t.name} <strong>${t.users}</strong></span>`).join('')}</div>
     </div>`;
   }
   if(o.id === 'agents'){
     const pct = u.creditsLimit > 0 ? u.creditsUsed/u.creditsLimit*100 : 0;
     return `<div class="usage-cell">
-      <div class="usage-row"><strong>${fmt(u.creditsUsed)}</strong>/<strong>${fmt(u.creditsLimit)}</strong> credits ${miniBar(pct,c)}</div>
-      <div class="usage-row"><strong>${u.agents}</strong> active agents</div>
+      <div class="usage-row"><strong>${fmt(u.tasksDone)}</strong> tasks done ${miniBar(pct,c)}</div>
+      <div class="usage-row"><strong>${u.agents}</strong> active agents &middot; <strong>${fmt(u.creditsUsed)}</strong> credits</div>
     </div>`;
   }
   if(o.id === 'notetaker'){
